@@ -3,4 +3,4 @@ from flask import Blueprint
 
 bp = Blueprint('routes', __name__)
 
-from .api import *
+from .api_sync import *
