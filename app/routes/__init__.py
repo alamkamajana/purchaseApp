@@ -3,5 +3,8 @@ from flask import Blueprint
 
 bp = Blueprint('routes', __name__)
 
-from .api_sync import *
-from .api import *
+from .api import bp as api_bp
+from .api_sync import bp as api_sync_bp
+
+bp.register_blueprint(api_bp)
+bp.register_blueprint(api_sync_bp)
