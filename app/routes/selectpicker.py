@@ -1,0 +1,93 @@
+import functools
+
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
+)
+
+from flask import jsonify
+from app.models.db import db
+from werkzeug.security import check_password_hash, generate_password_hash
+from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
+from app.models.models import PurchaseEvent, Transaction
+
+bp = Blueprint('select', __name__, url_prefix='/select')
+
+
+@bp.route('/selectpickerUser', methods=["GET"])
+def selectpickerUser():
+    query = request.args.get('q')
+
+    user_list = ResUserOdoo.query.filter(ResUserOdoo.login.ilike(f'%{query}%')).all()
+
+    res_user = [{
+        "id": user.id,
+        "text": user.login,
+    } for user in user_list]
+
+    # res_users.append({
+    #     "id": "all",
+    #     "text": "All",
+    # })
+
+    return json.dumps(res_user)
+
+
+@bp.route('/selectpickerPo', methods=["GET"])
+def selectpickerPo():
+    query = request.args.get('q')
+
+    po_list = PurchaseOrderOdoo.query.filter(PurchaseOrderOdoo.name.ilike(f'%{query}%')).order_by(
+        PurchaseOrderOdoo.id.desc()).all()
+
+    res_po = [{
+        "id": po.id,
+        "text": po.name,
+    } for po in po_list]
+
+    # res_users.append({
+    #     "id": "all",
+    #     "text": "All",
+    # })
+
+    return json.dumps(res_po)
+
+
+@bp.route('/selectpickerPurchaseEvent', methods=["GET"])
+def selectpickerPurchaseEvent():
+    query = request.args.get('q')
+
+    event_list = PurchaseEvent.query.filter(PurchaseEvent.name.ilike(f'%{query}%')).order_by(
+        PurchaseEvent.id.desc()).all()
+
+    res_event = [{
+        "id": event.id,
+        "text": event.name,
+    } for event in event_list]
+
+    # res_users.append({
+    #     "id": "all",
+    #     "text": "All",
+    # })
+
+    return json.dumps(res_event)
+
+
+@bp.route('/selectpickerFarmer', methods=["GET"])
+def selectpickerFarmer():
+    query = request.args.get('q')
+
+    farmer_list = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).order_by(
+        NfcappFarmerOdoo.farmer_name).all()
+
+    res_farmer = [{
+        "id": farmer.id,
+        "text": farmer.farmer_name,
+    } for farmer in farmer_list]
+
+    # res_users.append({
+    #     "id": "all",
+    #     "text": "All",
+    # })
+
+    return json.dumps(res_farmer)
+
