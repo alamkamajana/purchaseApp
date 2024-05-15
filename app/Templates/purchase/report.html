@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}
+    Purchase Report
+{% endblock %}
+{% block plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+{% endblock %}
+
+{% block header %}
+    <b>Purchase Report</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">report</span>
+<div class="card report-card" style="width: 100%;">
+    <table class="table">
+        <tr>
+            <th class="first-column">Commodity</th>
+            <th class="qty">QTY</th>
+            <th class="amount">Amount</th>
+            <th class="paid">Paid</th>
+        </tr>
+        <tr>
+            <td colspan="4">No data Available</td>
+        </tr>
+    </table>
+</div>
+<div class="card report-card" style="width: 100%;">
+    <table class="table">
+        <tr>
+            <th class="first-column">Item Code</th>
+            <th class="qty">QTY</th>
+            <th class="amount">Amount</th>
+            <th class="paid">Paid</th>
+        </tr>
+        <tr>
+            <td colspan="4">No data Available</td>
+        </tr>
+    </table>
+</div>
+<div class="card report-card" style="width: 100%;">
+    <table class="table">
+        <tr>
+            <th class="first-column">Certification</th>
+            <th class="qty">QTY</th>
+            <th class="amount">Amount</th>
+            <th class="paid">Paid</th>
+        </tr>
+        <tr>
+            <td colspan="4">No data Available</td>
+        </tr>
+    </table>
+</div>
+<div class="card report-card" style="width: 100%;">
+    <table class="table">
+        <tr>
+            <th class="first-column">Village</th>
+            <th class="qty">QTY</th>
+            <th class="amount">Amount</th>
+            <th class="paid">Paid</th>
+        </tr>
+        <tr>
+            <td colspan="4">No data Available</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

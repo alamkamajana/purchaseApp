@@ -1,0 +1,107 @@
+body{
+    position: relative;
+    margin: var(--header-height) 0 0 0;
+    padding: 0 0rem;
+    font-family: var(--body-font);
+    font-size: var(--normal-font-size);
+    transition: .5s
+}
+
+@media screen and (min-width: 768px){
+    body{
+        position: relative;
+        margin: var(--header-height) 0 0 0;
+        padding-left: var(--nav-width);
+        font-family: var(--body-font);
+        font-size: var(--normal-font-size);
+        transition: .5s
+    }
+    .card{
+        border-bottom: none;
+        border-radius: 0;
+        border-top-left-radius: 64px;
+        border-top-right-radius: 64px;
+        margin-top: 20% !important;
+        box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+        min-height: 300px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        padding-top: 40px;
+    }
+
+    .body-pd{
+        padding-left: calc(var(--nav-width) + 156px)
+    }
+
+    .main-menu-btn{
+        background-color: white;
+        width: 200px;
+        height: 200px;
+        border: 1px solid gainsboro;
+        margin: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main-menu-btn:hover{
+        background-color: #f4f4f4;
+    }
+    
+}
+
+@media screen and (max-width: 768px){
+    body{
+        height:60vh;
+        position: relative;
+        margin: var(--header-height) 0 0 0;
+        padding: 0 0rem;
+        font-family: var(--body-font);
+        font-size: var(--normal-font-size);
+        transition: .5s
+    }
+    .card{
+        height:60vh;
+        border-bottom: none;
+        border-radius: 0;
+        border-top-left-radius: 32px;
+        border-top-right-radius: 32px;
+        margin-top: 50% !important;
+        box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+        min-height: 300px;
+        overflow: hidden;
+        display: flex;
+        align-items: center; 
+        padding-top: 20px;
+    }
+
+    .main-menu-btn{
+        background-color: white;
+        width: 80vw;
+        height: 120px;
+        border:none;
+        border-bottom: 1px solid gainsboro;
+        margin-left: 10vw;
+        margin-right: 10vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .body-pd{
+        padding-left: 0;
+    }
+    
+
+}
+
+.main-menu-btn img{
+    height:60%;
+    width: auto;
+}
+
+.menu-container{
+    display: flex;
+    justify-content: center;
+}

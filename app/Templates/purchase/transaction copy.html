@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% block plugin %}
+
+
+{% endblock %}
+
+{% block header %}
+    <b>Transaction</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">transaction</span>
+
+<div class="card">
+    
+    <div class="card-body">
+
+        <form action="/purchase/transaction/add" method="post">
+            <!-- <table style="width: 100%;"> -->
+                <!-- <tr >
+                    <td>Cashier</td>
+                    <td>Purchaser</td>
+                    <td>Fund</td>
+                    <td></td>
+                </tr> -->
+                <div class="row">
+                    <!-- <td> -->
+                        <div class="form-floating col-sm-12 col-lg">
+                            <!-- <select class="form-control selectpicker" name="purchase-order" id="purchase-order" data-live-search="true">
+                                {% for po in po_list %}
+                                    <option value={{po.id}}>{{po.name}}</option>
+                                {% endfor %}
+                            </select> -->
+                            <select name="purchase-order"
+                                    class="form-control selectpicker populateJSON selectpickerPo"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="purchase-order"
+                            >   
+                                <option value="" selected="true">Select Purchase Order...</option>  
+                            </select>
+                            <label class="control-label" for="purchase-order">Purchase Order</label>
+                        </div>
+                       
+                    <!-- </td> -->
+                    <!-- <td> -->
+                        <div class="form-floating col-sm-12 col-lg">
+                            <!-- <select class="form-control selectpicker" name="purchase-event" id="purchase-event" data-live-search="true">
+                                {% for event in event_list %}
+                                    <option value={{event.id}}>{{event.name}}</option>
+                                {% endfor %}
+                            </select> -->
+                            <select name="purchase-event"
+                                    class="form-control selectpicker populateJSON selectpickerPurchaseEvent"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="purchase-event"
+                            >
+                                <option value="" selected="true">Select Purchase Event...</option>
+                                    
+                            </select>
+                            <label class="control-label" for="purchase-event">Purchase Event</label>
+                        </div>
+
+                        <div class="form-floating col-sm-12 col-lg">
+                            <!-- <select class="form-control selectpicker" name="farmer" id="farmer" data-live-search="true">
+                                {% for farmer in farmer_list %}
+                                    <option value={{farmer.id}}>{{farmer.farmer_name}}</option>
+                                {% endfor %}
+                            </select> -->
+                            <select name="farmer"
+                                    class="form-control selectpicker populateJSON selectpickerFarmer"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="farmer"
+                            >
+                                <option value="" selected="true">Select Farmer...</option>
+                            </select>
+                            <label class="control-label" for="purchase-event">Farmer</label>
+                        </div>
+                    <!-- </td>
+                    <td> -->
+                        <div class="form-floating col-sm-6 col-lg-2">
+                            <input class="form-control" type="number" id="price-unit" name="price-unit" value="0" step="any">
+                            <label class="control-label" for="price-unit">Price Unit</label>
+                        </div>
+                        <div class="form-floating col-sm-6 col-lg-2">
+                            <input class="form-control" type="number" id="qty" name="qty" value="0">
+                            <label class="control-label" for="qty">Quantity</label>
+                        </div>
+                        
+                    <!-- </td>
+                    <td> -->
+                        <div class="col col-sm-6 col-lg-1" style="display: flex; align-items: center;">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                        
+                    <!-- </td> -->
+                </tr>
+            <!-- </table> -->
+              
+            <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+        </form>
+
+        <div class="event-container">
+            <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                <tr>
+                    <th style="width: 15%;">
+                        Purchase Order
+                    </th>
+                    <th style="width: 12%;">
+                        Station
+                    </th>
+                    <th style="width: 15%;">
+                        Purchase Event
+                    </th>
+                    <th style="width: 12%;">
+                        Farmer
+                    </th>
+                    <th style="width: 12%;">
+                        Price Unit
+                    </th>
+                    <th style="width: 8%;">
+                        Qty
+                    </th>
+                    <th style="width: 16%;">
+                        Subtotal
+                    </th>
+                    <th style="width: 10%;">
+                        Edit
+                    </th>
+                </tr>
+                {% for transaction in transaction_list %}
+                    <tr class="event-row">
+                        <td>
+                            <div class="transaction-info{{transaction.id}}" id="po-info{{transaction.id}}">
+                                {{transaction.purchase_order.name}}
+                            </div>
+                            <div class="hidden" id="po-id{{transaction.id}}">
+                                {{transaction.purchase_order.id}}
+                            </div>
+                            <div class="transaction-info{{transaction.id}} hidden">
+                                <!-- <select class="update-form selectpicker" name="po" id="po-update{{transaction.id}}" data-live-search="true">
+                                    {% for po in po_list %}
+                                        <option value={{po.id}} {% if po.id == transaction.purchase_order.id %}selected{% endif %}>{{po.name}}</option>
+                                    {% endfor %}
+                                </select> -->
+                                <select name="po"
+                                        class="form-control update-form selectpicker populateJSON selectpickerPo"
+                                        data-live-search="true"
+                                        data-live-search-placeholder="Search..."
+                                        id="po-update{{transaction.id}}"
+                                >
+                                        <option value="{{transaction.purchase_order.id}}" selected="true">{{transaction.purchase_order.name}}</option>
+                                    
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            {{transaction.station}}
+                        </td>
+                        <td>
+                            <div class="transaction-info{{transaction.id}}" id="event-info{{transaction.id}}">
+                                {{transaction.purchase_event.name}}
+                            </div>
+                            <div class="hidden" id="event-id{{transaction.id}}">
+                                {{transaction.purchase_event.id}}
+                            </div>
+                            <div class="transaction-info{{transaction.id}} hidden">
+                                <!-- <select class="update-form selectpicker" name="event" id="event-update{{transaction.id}}" data-live-search="true">
+                                    {% for event in event_list %}
+                                        <option value={{event.id}} {% if event.id == transaction.purchase_event.id %}selected{% endif %}>{{event.name}}</option>
+                                    {% endfor %}
+                                </select> -->
+
+                                <select name="event"
+                                        class="form-control update-form selectpicker populateJSON selectpickerPurchaseEvent"
+                                        data-live-search="true"
+                                        data-live-search-placeholder="Search..."
+                                        id="event-update{{transaction.id}}"
+                                >
+                                        <option value="{{transaction.purchase_event.id}}" selected="true">{{transaction.purchase_event.name}}</option>
+                                    
+                                </select>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="transaction-info{{transaction.id}}" id="farmer-info{{transaction.id}}">
+                                {{transaction.farmer.farmer_name}}
+                            </div>
+                            <div class="hidden" id="farmer-id{{transaction.id}}">
+                                {{transaction.farmer.id}}
+                            </div>
+                            <div class="transaction-info{{transaction.id}} hidden">
+                                <!-- <select class="update-form selectpicker" name="farmer" id="farmer-update{{transaction.id}}" data-live-search="true">
+                                    {% for farmer in farmer_list %}
+                                        <option value={{farmer.id}} {% if farmer.id == transaction.farmer.id %}selected{% endif %}>{{farmer.farmer_name}}</option>
+                                    {% endfor %}
+                                </select> -->
+                                <select name="farmer"
+                                        class="form-control update-form selectpicker populateJSON selectpickerFarmer"
+                                        data-live-search="true"
+                                        data-live-search-placeholder="Search..."
+                                        id="farmer-update{{transaction.id}}"
+                                >
+                                        <option value="{{transaction.farmer.id}}" selected="true">{{transaction.farmer.farmer_name}}</option>
+                                    
+                                </select>
+                            </div>
+                        </td>
+                        <td class="fund-column">
+                            <div class="transaction-info{{transaction.id}}" id="price-info{{transaction.id}}">
+                                {{'%.2f' | format(transaction.price_unit)}}
+                            </div>
+                            <div class="update-form transaction-info{{transaction.id}} hidden">
+                                <input type="number" id="price-update{{transaction.id}}" name="price-unit" value="{{'%.2f' | format(transaction.price_unit)}}"  step="any">
+                            </div>
+                        </td>
+                        <td class="fund-column">
+                            <div class="transaction-info{{transaction.id}}" id="qty-info{{transaction.id}}">
+                                {{'%.0f' | format(transaction.qty)}}
+                            </div>
+                            <div class="update-form transaction-info{{transaction.id}} hidden">
+                                <input type="number" id="qty-update{{transaction.id}}" name="qty" value="{{'%.0f' | format(transaction.qty)}}">
+                            </div>
+                        </td>
+                        <td>
+                            <div id="subtotal-info{{transaction.id}}">
+                                {{'%.2f' | format(transaction.subtotal)}}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="event-id" style="display: none;">{{transaction.id}}</span>
+                            <button onclick="editTransaction('{{transaction.id }}')" type="button" class="btn btn-secondary transaction-info{{transaction.id}}" id="test1-btn">
+                                <span><i class='bx bxs-pencil'></i></span>
+                            </button>
+                            <button onclick="updateTransaction('{{ transaction.id }}')" type="button" class="btn btn-success transaction-info{{transaction.id}} hidden">
+                                <span><i class='bx bx-check' ></i></span>
+                            </button>
+                            <button onclick="cancelUpdateTransaction('{{ transaction.id }}')" type="button" class="btn btn-danger transaction-info{{transaction.id}} hidden">
+                                <span><i class='bx bx-x'></i></span>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+        
+        
+
+    
+</div>
+
+
+{% endblock %}
+{% block script_plugin %}
+
+{% endblock %}

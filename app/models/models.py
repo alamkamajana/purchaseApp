@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from . import db
+from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
 
 
 session = db.session
@@ -99,7 +100,31 @@ class DeliveryOrder(db.Model):
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='delivery_order', lazy='dynamic')
 
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    purchase_order_id = db.Column(db.Integer, db.ForeignKey('purchase_order_odoo.id'))
+    purchase_order = db.relationship('PurchaseOrderOdoo', foreign_keys=[purchase_order_id], backref=db.backref('transactions', lazy=True))
+    station = db.Column(db.String, default="default")
+    purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
+    purchase_event = db.relationship('PurchaseEvent', foreign_keys=[purchase_event_id], backref=db.backref('transactions', lazy=True))
+    farmer_id = db.Column(db.Integer, db.ForeignKey('nfcapp_farmer_odoo.id'))
+    farmer = db.relationship('NfcappFarmerOdoo', foreign_keys=[farmer_id], backref=db.backref('transactions', lazy=True))
+    # item_code_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
+    # item_code = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
+    price_unit = db.Column(db.Float, default=100000)
+    qty = db.Column(db.Float, default=100)
+    subtotal = db.Column(db.Float)
 
+    def __init__(self, purchase_order_id, purchase_event_id, farmer_id, price_unit, qty):
+        self.purchase_order_id = purchase_order_id
+        self.purchase_event_id = purchase_event_id
+        self.farmer_id = farmer_id
+        self.price_unit = price_unit
+        self.qty =  qty
+        self.subtotal = price_unit * qty
+
+    def __repr__(self):
+        return f'<Transaction {self.id}>'
 
 
 

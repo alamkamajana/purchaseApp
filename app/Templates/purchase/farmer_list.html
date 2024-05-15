@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}
+    Farmer List
+{% endblock %}
+{% block plugin %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+<!-- Include jQuery (required by Select2) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Include Select2 JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+{% endblock %}
+
+{% block header %}
+    <b>Farmer List</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">farmer-list</span>
+<div class="card">
+    <form onsubmit="" class="form-floating">
+        <div class="container">
+            <div class="row" style="width:100%">
+                <div class="form-floating col-11">
+                    <input  class="form-control" id="area" name="area" placeholder="Area">
+                    <label class="control-label" for="area">Area/Village</label>
+                </div>
+                <div class="col-1" style="display: flex; justify-content: center; align-items: center; margin-top:10px;">
+                    <button class="round-btn" type="button" id="input-filter" style="display: flex; justify-content: center; align-items: center; aspect-ratio: 1 / 1;"><i class='bx bx-filter bx-md'></i></button>
+                </div>
+                
+            </div>
+            <div class="row" style="width:100%">
+                <div class="form-floating toggle-input hidden" style="width:100%">
+                    <input  class="form-control" id="farmerCode" name="farmerCode" placeholder="Farmer Code">
+                    <label class="control-label" for="farmerCode">Farmer Code</label>
+                </div>
+            </div>
+            
+            <div class="row" style="width:100%">
+                <div class="form-floating toggle-input hidden" style="width:100%">
+                    <input type="text" class="form-control" id="farmerName" placeholder="Farmer Name">
+                    <label class="control-label" for="farmerName">Farmer Name</label>
+                </div>
+            </div>
+            
+            <div class="row" style="width:100%">
+                <div class="toggle-input hidden">
+                    <div class="d-flex justify-content-end" style="padding:10px">
+                        <button class="btn btn-primary">SEARCH</button>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            
+            
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table>
+            {% for farmer in farmers %}
+                <tr>
+                    <td>
+                        {{farmer.farmer_name}}
+                    </td>
+                    <td>
+                        {{farmer.no_ktp}}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+</div>
+
+{% endblock %}
