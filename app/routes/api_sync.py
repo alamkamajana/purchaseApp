@@ -13,7 +13,7 @@ odoo_base_url = os.getenv('BASE_URL_ODOO')
 token = os.getenv('TOKEN')
 
 @bp.route('/get-product-odoo')
-def sync_get_product():
+def sync_get_product_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-product"
         data = {'token': token}
