@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+@media screen and (min-width: 768px){
+    :root{
+        --header-height: 2rem;
+        --nav-width: 0px;
+        --first-color: #e27f34;
+        --first-color-focus: #a75314;
+        --first-color-light: #f1c9ab;
+        --white-color: #ffffff;
+        --body-font: 'Nunito', sans-serif;
+        --normal-font-size: 1rem;--z-fixed: 100;
+    }
+}
+
+@media screen and (max-width: 768px){
+    :root{
+        --header-height: 50px;
+        --nav-width: 0px;
+        --first-color: #e27f34;
+        --first-color-focus: #a75314;
+        --first-color-light: #f1c9ab;
+        --white-color: #ffffff;
+        --body-font: 'Nunito', sans-serif;
+        --normal-font-size: 1rem;--z-fixed: 100;
+    }
+}
+
+body{
+    position: relative;
+    margin: 0 0 0 0;
+    padding: 0;
+    font-family: var(--body-font);
+    font-size: var(--normal-font-size);
+    background-color: var(--white-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+.card{
+    width: 400px;
+    height: 560px;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+.login-form{
+    padding : 0 5%;
+}
+
+.form-floating{
+    width:100%;
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+#login-btn{
+    margin:20px;
+}
+
+.login-header{
+    height:30%;
+}
+
+.login-footer{
+    height:20%;
+}
