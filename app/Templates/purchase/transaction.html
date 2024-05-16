@@ -21,71 +21,71 @@
         <form action="/purchase/transaction/add" method="post">
                 <div class="row">
                         <div class="form-floating col-sm-12 col-lg">
-                            <select name="purchase-order"
-                                    class="form-control selectpicker populateJSON selectpickerPo"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="purchase-order"
-                            >   
-                                <option value="" selected="true">Select Purchase Order...</option>  
-                            </select>
-                            <label class="control-label" for="purchase-order">Purchase Order</label>
-                        </div>
-                       
-                        <div class="form-floating col-sm-12 col-lg">
-                            <select name="purchase-event"
-                                    class="form-control selectpicker populateJSON selectpickerPurchaseEvent"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="purchase-event"
-                            >
-                                <option value="" selected="true">Select Purchase Event...</option>
-                                    
-                            </select>
+                            <input name="" class="form-control" id="" value="{{event.name}}" disabled>
                             <label class="control-label" for="purchase-event">Purchase Event</label>
+                            <input name="purchase-event" class="form-control" id="purchase-event" value="{{event.id}}" hidden>
+
                         </div>
 
                         <div class="form-floating col-sm-12 col-lg">
-                            <select name="farmer"
-                                    class="form-control selectpicker populateJSON selectpickerFarmer"
+                            <input name="" class="form-control" id="" value="{{event.purchase_order_odoo.name}}" disabled>
+                            <label class="control-label" for="purchase-order">Purchase Order</label>
+                            <input name="purchase-order-odoo" class="form-control" id="purchase-order-odoo" value="{{event.purchase_order_odoo.id}}" hidden>
+                            <input name="purchase-order" class="form-control" id="purchase-order" value="{{po.id}}" hidden>
+                        </div>
+
+                        <div class="form-floating col-sm-12 col-lg">
+                            <input name="" class="form-control" id="" value="{{farmer.farmer_name}}" disabled>
+                            <label class="control-label" for="farmer">Farmer</label>
+                            <input name="farmer" class="form-control" id="farmer" value="{{farmer.id}}" hidden>
+
+                        </div>
+                        <div class="form-floating col-sm-12 col-lg">
+                            <input name="" class="form-control" id="" value="{{po.status}}" disabled>
+                            <label class="control-label" for="status">Status</label>
+                        </div>
+                </div>
+                <div class="row">
+                        <div class="form-floating col-sm-12 col-lg">
+                            <select name="product"
+                                    class="form-control selectpicker populateJSON selectpickerProduct"
                                     data-live-search="true"
                                     data-live-search-placeholder="Search..."
-                                    id="farmer"
+                                    id="product"
                             >
-                                <option value="" selected="true">Select Farmer...</option>
+                                <option value="" selected="true">Search Product...</option>
                             </select>
-                            <label class="control-label" for="purchase-event">Farmer</label>
+                            <label class="control-label" for="product">Product</label>
                         </div>
-                        <div class="form-floating col-6 col-sm-6 col-lg-2">
+
+                        <div class="form-floating col-6 col-sm-6 col-lg-3">
                             <input class="form-control" type="number" id="price-unit" name="price-unit" value="0" step="any">
                             <label class="control-label" for="price-unit">Price Unit</label>
                         </div>
-                        <div class="form-floating col-6 col-sm-6 col-lg-2">
+                        <div class="form-floating col-6 col-sm-6 col-lg-3">
                             <input class="form-control" type="number" id="qty" name="qty" value="0">
                             <label class="control-label" for="qty">Quantity</label>
                         </div>
-                        
-                        <div class="col col-sm-6 col-lg-1" style="display: flex; align-items: center;">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                </tr>
+                </div>
+                <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
+                    <div style="display: flex; align-items: center;">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
         </form>
 
+
         <div class="event-container" >
+
             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                 <tr>
-                    <th style="width: 15%;">
-                        Purchase Order
+                    <th style="width: 5%;">
+                        No
                     </th>
                     <th style="width: 12%;">
-                        Station
+                        Product
                     </th>
-                    <th style="width: 15%;">
-                        Purchase Event
-                    </th>
-                    <th style="width: 12%;">
-                        Farmer
-                    </th>
+
                     <th style="width: 12%;">
                         Price Unit
                     </th>
@@ -99,74 +99,23 @@
                         Edit
                     </th>
                 </tr>
+                {% set total_value = 0 %}
+
                 {% for transaction in transaction_list %}
+
                     <tr class="event-row">
                         <td>
-                            <div class="transaction-info{{transaction.id}}" id="po-info{{transaction.id}}">
-                                {{transaction.purchase_order.name}}
-                            </div>
-                            <div class="hidden" id="po-id{{transaction.id}}">
-                                {{transaction.purchase_order.id}}
-                            </div>
-                            <div class="transaction-info{{transaction.id}} hidden">
-                                <select name="po"
-                                        class="form-control update-form selectpicker populateJSON selectpickerPo"
-                                        data-live-search="true"
-                                        data-live-search-placeholder="Search..."
-                                        id="po-update{{transaction.id}}"
-                                >
-                                        <option value="{{transaction.purchase_order.id}}" selected="true">{{transaction.purchase_order.name}}</option>
-                                    
-                                </select>
-                            </div>
+                            {{loop.index}}
                         </td>
                         <td>
-                            {{transaction.station}}
-                        </td>
-                        <td>
-                            <div class="transaction-info{{transaction.id}}" id="event-info{{transaction.id}}">
-                                {{transaction.purchase_event.name}}
-                            </div>
-                            <div class="hidden" id="event-id{{transaction.id}}">
-                                {{transaction.purchase_event.id}}
-                            </div>
-                            <div class="transaction-info{{transaction.id}} hidden">
-                                <select name="event"
-                                        class="form-control update-form selectpicker populateJSON selectpickerPurchaseEvent"
-                                        data-live-search="true"
-                                        data-live-search-placeholder="Search..."
-                                        id="event-update{{transaction.id}}"
-                                >
-                                        <option value="{{transaction.purchase_event.id}}" selected="true">{{transaction.purchase_event.name}}</option>
-                                    
-                                </select>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="transaction-info{{transaction.id}}" id="farmer-info{{transaction.id}}">
-                                {{transaction.farmer.farmer_name}}
-                            </div>
-                            <div class="hidden" id="farmer-id{{transaction.id}}">
-                                {{transaction.farmer.id}}
-                            </div>
-                            <div class="transaction-info{{transaction.id}} hidden">
-                                <select name="farmer"
-                                        class="form-control update-form selectpicker populateJSON selectpickerFarmer"
-                                        data-live-search="true"
-                                        data-live-search-placeholder="Search..."
-                                        id="farmer-update{{transaction.id}}"
-                                >
-                                        <option value="{{transaction.farmer.id}}" selected="true">{{transaction.farmer.farmer_name}}</option>
-                                    
-                                </select>
-                            </div>
+                            {{transaction.product_odoo.name}}
                         </td>
                         <td class="fund-column">
                             <div class="transaction-info{{transaction.id}}" id="price-info{{transaction.id}}">
-                                {{ '{:,.2f}'.format(transaction.price_unit) }}
+                                {{ '{:,.2f}'.format(transaction.unit_price) }}
                             </div>
                             <div class="update-form transaction-info{{transaction.id}} hidden">
-                                <input type="number" id="price-update{{transaction.id}}" name="price-unit" value="{{'%.2f' | format(transaction.price_unit)}}"  step="any">
+                                <input type="number" id="price-update{{transaction.id}}" name="price-unit" value="{{'%.2f' | format(transaction.unit_price)}}"  step="any">
                             </div>
                         </td>
                         <td class="fund-column">
@@ -179,7 +128,9 @@
                         </td>
                         <td>
                             <div id="subtotal-info{{transaction.id}}">
+
                                 {{ '{:,.2f}'.format(transaction.subtotal) }}
+
                             </div>
                         </td>
                         <td>
@@ -195,12 +146,28 @@
                             </button>
                         </td>
                     </tr>
+
                 {% endfor %}
+
+
+                <tr>
+                    <td colspan="4">
+                        <b>Total Price</b>
+                    </td>
+                    <td>
+                        {{total_price}}
+                    </td>
+                </tr>
             </table>
             <span id="pagination-link" class="hidden">/purchase/transaction?page=</span>
             <span id="current-page" class="hidden">{{page}}</span>
             <span id="total-page" class="hidden">{{total_pages}}</span>
             <div id="pagination"  style="width:100%; display:flex; justify-content: center;"></div>
+        </div>
+        <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
+            <div style="display: flex; align-items: center;">
+                <button type="button" class="btn btn-primary" onclick="">Confirm</button>
+            </div>
         </div>
     </div>
  

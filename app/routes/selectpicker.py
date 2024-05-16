@@ -1,4 +1,8 @@
 import functools
+import os
+import click
+import json
+
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -8,7 +12,7 @@ from flask import jsonify
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
-from app.models.models import PurchaseEvent, Transaction
+from app.models.models import PurchaseEvent, Transaction, Farmer
 
 bp = Blueprint('select', __name__, url_prefix='/select')
 
@@ -21,7 +25,7 @@ def selectpickerUser():
 
     res_user = [{
         "id": user.id,
-        "text": user.login,
+        "text": user.name,
     } for user in user_list]
 
     # res_users.append({
@@ -76,18 +80,28 @@ def selectpickerPurchaseEvent():
 def selectpickerFarmer():
     query = request.args.get('q')
 
-    farmer_list = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).order_by(
-        NfcappFarmerOdoo.farmer_name).all()
+    farmer_list = Farmer.query.filter(Farmer.farmer_name.ilike(f'%{query}%')).order_by(
+        Farmer.farmer_name).all()
 
     res_farmer = [{
         "id": farmer.id,
         "text": farmer.farmer_name,
     } for farmer in farmer_list]
 
-    # res_users.append({
-    #     "id": "all",
-    #     "text": "All",
-    # })
-
     return json.dumps(res_farmer)
+
+
+@bp.route('/selectpickerProduct', methods=["GET"])
+def selectpickerProduct():
+    query = request.args.get('q')
+
+    product_list = ProductOdoo.query.filter(ProductOdoo.name.ilike(f'%{query}%')).order_by(
+        ProductOdoo.name).all()
+
+    res_product = [{
+        "id": product.id,
+        "text": product.name,
+    } for product in product_list]
+
+    return json.dumps(res_product)
 

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}
+    Transaction
+{% endblock %}
+{% block plugin %}
+
+
+{% endblock %}
+
+{% block header %}
+    <b>Transaction</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">transaction</span>
+
+<div class="card">
+    
+    <div class="card-body">
+
+        <form action="/purchase/transaction" method="get">
+                <div class="row">
+                        <div class="form-floating col-sm-12 col-lg">
+                            <select name="purchase-event"
+                                    class="form-control selectpicker populateJSON selectpickerPurchaseEvent"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="purchase-event"
+                                    onchange="selectPurchaseOrder()"
+                            >
+                                <option value="" selected="true">Select Purchase Event...</option>
+
+                            </select>
+                            <label class="control-label" for="purchase-event">Purchase Event</label>
+                        </div>
+
+                        <div class="form-floating col-sm-12 col-lg">
+                            <select name="purchase-order"
+                                    class="form-control selectpicker populateJSON selectpickerPo"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="purchase-order"
+                            >   
+                                <option value="" selected="true">Select Purchase Order...</option>  
+                            </select>
+                            <label class="control-label" for="purchase-order">Purchase Order</label>
+                        </div>
+
+                        <div class="form-floating col-sm-12 col-lg">
+                            <select name="farmer"
+                                    class="form-control selectpicker populateJSON selectpickerFarmer"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="farmer"
+                            >
+                                <option value="" selected="true">Select Farmer...</option>
+                            </select>
+                            <label class="control-label" for="purchase-event">Farmer</label>
+                        </div>
+                        
+                        <div class="col col-sm-6 col-lg-1" style="display: flex; align-items: center;">
+                            <button type="submit" class="btn btn-primary">Select</button>
+                        </div>
+                </tr>
+        </form>
+    </div>
+ 
+</div>
+
+{% endblock %}
+
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}

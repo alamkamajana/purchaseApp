@@ -4,7 +4,30 @@
     <option name="enabled" value="true" />
   </component>
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip-23.0.1.dist-info" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_internal/metadata/importlib" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/colorama/tests" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/distro" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/platformdirs" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/pygments" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/pyparsing" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/pyproject_hooks" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pip/_vendor/rich" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pkg_resources/_vendor/importlib_resources" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pkg_resources/_vendor/jaraco" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pkg_resources/_vendor/more_itertools" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/pkg_resources/_vendor/pyparsing" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/psycopg2/.dylibs" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/psycopg2_binary-2.9.9.dist-info" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools-65.5.0.dist-info" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools/_vendor/importlib_metadata" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools/_vendor/importlib_resources" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools/_vendor/jaraco" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools/_vendor/pyparsing" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools/_vendor/tomli" />
+      <excludeFolder url="file://$MODULE_DIR$/venv/lib/python3.10/site-packages/setuptools/config" />
+    </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (purchaseApp) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

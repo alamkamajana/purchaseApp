@@ -44,15 +44,37 @@ class PurchaseEvent(db.Model):
     name = db.Column(db.String)
     fund = db.Column(db.Float, default=100000)
     ics = db.Column(db.String)
-    purchaser = db.Column(db.Integer, db.ForeignKey('res_user_odoo.id'))
-    cashier = db.Column(db.Integer, db.ForeignKey('res_user_odoo.id'))
+    purchaser_id = db.Column(db.Integer, db.ForeignKey('res_user_odoo.id'))
+    purchaser = db.relationship('ResUserOdoo', foreign_keys=[purchaser_id], backref=db.backref('purchaser_events', lazy=True))
+    cashier_id = db.Column(db.Integer, db.ForeignKey('res_user_odoo.id'))
+    cashier = db.relationship('ResUserOdoo', foreign_keys=[cashier_id], backref=db.backref('cashier_events', lazy=True))
     ap_name = db.Column(db.String)
     ip_address = db.Column(db.String)
     created_at = db.Column(db.DateTime, nullable=False)
     purchase_order_odoo_id = db.Column(db.Integer, db.ForeignKey('purchase_order_odoo.id'))
+    purchase_order_odoo = db.relationship('PurchaseOrderOdoo', foreign_keys=[purchase_order_odoo_id], backref=db.backref('purchase_events', lazy=True))
     purchase_orders = db.relationship('PurchaseOrder', back_populates='purchase_event', lazy='dynamic')
     payments = db.relationship('Payment', back_populates='purchase_event', lazy='dynamic')
 
+    def __init__(self, fund, ics, purchaser_id, cashier_id, purchase_order_odoo_id, ap_name):
+        self.fund = fund
+        self.ics = ics
+        self.purchaser_id = purchaser_id
+        self.cashier_id = cashier_id
+        self.purchase_order_odoo_id = purchase_order_odoo_id
+        self.ip_address = request.remote_addr
+        self.ap_name = ap_name
+        self.created_at = datetime.utcnow()
+        self.generate_name()
+
+    def generate_name(self):
+        # Get current date in the format YYYYMMDD
+        date_str = self.created_at.strftime('%Y%m%d')
+        # Count existing posts for the current date
+        post_count = PurchaseEvent.query.filter(
+            PurchaseEvent.created_at >= datetime.combine(self.created_at.date(), datetime.min.time())).count()
+        # Set the name using the format PE-date-index
+        self.name = f"PE{date_str}-{post_count + 1}"
 
 class PurchaseOrder(db.Model):
     __tablename__ = 'purchase_order'
@@ -71,6 +93,7 @@ class PurchaseOrderLine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
+    product_odoo = db.relationship('ProductOdoo', foreign_keys=[product_odoo_id], backref=db.backref('purchase_order_line', lazy=True))
     qty = db.Column(db.Float)
     unit_price = db.Column(db.Float)
     barcode = db.Column(db.String)

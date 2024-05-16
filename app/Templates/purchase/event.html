@@ -21,6 +21,17 @@
 
                 <div class="row">
                         <div class="form-floating col-sm-12 col-lg">
+                            <select name="purchase-order"
+                                    class="form-control selectpicker populateJSON selectpickerPo"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="purchase-order"
+                            >
+                                <option value="" selected="true">Select Purchase Order...</option>
+                            </select>
+                            <label class="control-label" for="purchase-order">Purchase Order</label>
+                        </div>
+                        <div class="form-floating col-sm-12 col-lg">
                             <select name="cashier"
                                     class="form-control selectpicker populateJSON selectpickerUser"
                                     data-live-search="true"
@@ -43,35 +54,54 @@
                             </select>
                             <label class="control-label" for="purchaser">Purchaser</label>
                         </div>
+                </div>
+                <div class="row">
+
+                        <div class="form-floating col-sm-12 col-lg">
+                            <input class="form-control" type="text" id="ics" name="ics" placeholder="ICS...">
+                            <label class="control-label" for="ics">ICS</label>
+                        </div>
+                        <div class="form-floating col-sm-12 col-lg">
+                            <input class="form-control" type="text" id="ap-name" name="ap-name" placeholder="AP...">
+                            <label class="control-label" for="ap-name">Ap Name</label>
+                        </div>
                         <div class="form-floating col-sm-12 col-lg">
                             <input class="form-control" type="number" id="fund" name="fund" value="0" step="any">
                             <label class="control-label" for="fund">Fund</label>
                         </div>
-
-                        <div class="col col-sm-6 col-lg-1" style="display: flex; align-items: center;">
+                </div>
+                <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
+                        <div style="display: flex; align-items: center;">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
+                </div>
 
-                </tr>
+
         </form>
 
         <div class="event-container">
             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                 <tr>
-                    <th style="width: 20%;">
+                    <th style="width: 15%;">
                         Purchase Event
                     </th>
-                    <th style="width: 20%;">
+                    <th style="width: 12%;">
+                        Purchase Order
+                    </th>
+                    <th style="width: 12%;">
                         Cashier
                     </th>
-                    <th style="width: 20%;">
+                    <th style="width: 15%;">
                         Purchaser
                     </th>
-                    <th style="width: 15%;">
-                        Fund
+                    <th style="width: 10%;">
+                        ICS
                     </th>
-                    <th style="width: 15%;">
-                        IP Address
+                    <th style="width: 10%;">
+                        AP Name
+                    </th>
+                    <th style="width: 16%;">
+                        Fund
                     </th>
                     <th style="width: 10%;">
                         Edit
@@ -83,8 +113,26 @@
                             {{event.name}}
                         </td>
                         <td>
+                            <div class="event-info{{event.id}}" id="po-info{{event.id}}">
+                                {{event.purchase_order_odoo.name}}
+                            </div>
+                            <div class="hidden" id="po-id{{event.id}}">
+                                {{event.purchase_order_odoo.id}}
+                            </div>
+                            <div class="event-info{{event.id}} hidden">
+                                <select name="po"
+                                        class="form-control update-form selectpicker populateJSON selectpickerPo"
+                                        data-live-search="true"
+                                        data-live-search-placeholder="Search..."
+                                        id="po-update{{event.id}}"
+                                >
+                                    <option value="{{event.purchase_order_odoo.id}}" selected="true">{{event.purchase_order_odoo.name}}</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td>
                             <div class="event-info{{event.id}}" id="cashier-info{{event.id}}">
-                                {{event.cashier.username}}
+                                {{event.cashier.name}}
                             </div>
                             <div class="hidden" id="cashier-id{{event.id}}">
                                 {{event.cashier.id}}
@@ -96,13 +144,13 @@
                                         data-live-search-placeholder="Search..."
                                         id="cashier-update{{event.id}}"
                                 >   
-                                    <option value="{{event.cashier.id}}" selected="true">{{event.cashier.username}}</option>  
+                                    <option value="{{event.cashier.id}}" selected="true">{{event.cashier.name}}</option>
                                 </select>
                             </div>
                         </td>
                         <td>
                             <div class="event-info{{event.id}}" id="purchaser-info{{event.id}}">
-                                {{event.purchaser.username}}
+                                {{event.purchaser.name}}
                             </div>
                             <div class="hidden" id="purchaser-id{{event.id}}">
                                 {{event.purchaser.id}}
@@ -114,10 +162,26 @@
                                         data-live-search-placeholder="Search..."
                                         id="purchaser-update{{event.id}}"
                                 >   
-                                    <option value="{{event.purchaser.id}}" selected="true">{{event.purchaser.username}}</option>  
+                                    <option value="{{event.purchaser.id}}" selected="true">{{event.purchaser.name}}</option>
                                 </select>
                             </div>
                             
+                        </td>
+                        <td class="ics-column">
+                            <div class="event-info{{event.id}}" id="ics-info{{event.id}}">
+                                {{ event.ics }}
+                            </div>
+                            <div class="update-form event-info{{event.id}} hidden">
+                                <input type="text" id="ics-update{{event.id}}" name="ics" value="{{event.ics}}">
+                            </div>
+                        </td>
+                        <td class="ap-column">
+                            <div class="event-info{{event.id}}" id="ap-info{{event.id}}">
+                                {{ event.ap_name }}
+                            </div>
+                            <div class="update-form event-info{{event.id}} hidden">
+                                <input type="text" id="ap-update{{event.id}}" name="ap" value="{{event.ap_name}}">
+                            </div>
                         </td>
                         <td class="fund-column">
                             <div class="event-info{{event.id}}" id="fund-info{{event.id}}">
@@ -126,9 +190,6 @@
                             <div class="update-form event-info{{event.id}} hidden">
                                 <input type="number" id="fund-update{{event.id}}" name="fund" value="{{'%.2f' | format(event.fund)}}">
                             </div>
-                        </td>
-                        <td>
-                            {{event.ip_address}}
                         </td>
                         <td>
                             <span class="event-id" style="display: none;">{{event.id}}</span>
