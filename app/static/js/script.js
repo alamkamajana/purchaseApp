@@ -173,6 +173,7 @@ function updateTransaction(transactionId){
             document.getElementById("price-info"+transactionId).innerHTML = formatOutput(response.price_unit,2)//.toFixed(2)
             document.getElementById("qty-info"+transactionId).innerHTML = formatOutput(response.qty,0)//.toFixed(0)
             document.getElementById("subtotal-info"+transactionId).innerHTML = formatOutput(response.subtotal,2)//.toFixed(2)
+            document.getElementById("total-price").innerHTML = formatOutput(response.total_price,2)
             console.log(response.message);
         },
         error: function(xhr, status, error) {

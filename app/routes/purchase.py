@@ -109,7 +109,7 @@ def transaction_list():
         pagination = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).order_by(PurchaseOrderLine.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
         transaction_list = pagination.items
         total_pages = pagination.pages
-        po_lines = PurchaseOrderLine.query.all()
+        po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
         total_price = 0
         for po_line in po_lines:
             total_price += po_line.subtotal
@@ -159,10 +159,16 @@ def transaction_update():
         transaction.qty = updated_data.get('qty', transaction.qty)
         transaction.subtotal = float(updated_data.get('qty', transaction.qty)) * float(updated_data.get('price_unit', transaction.unit_price))
         db.session.commit()
+        po_id = transaction.purchase_order_id
+        po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po_id).all()
+        total_price = 0
+        for po_line in po_lines:
+            total_price += po_line.subtotal
         return jsonify({'message': 'Data updated successfully',
                         'price_unit': transaction.unit_price,
                         'qty': transaction.qty,
-                        'subtotal': transaction.subtotal
+                        'subtotal': transaction.subtotal,
+                        'total_price': total_price
                         })
     else:
         return jsonify({'message': 'Transaction not found'}), 404

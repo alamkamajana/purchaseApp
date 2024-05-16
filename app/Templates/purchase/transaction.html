@@ -155,7 +155,9 @@
                         <b>Total Price</b>
                     </td>
                     <td>
-                        {{total_price}}
+                        <div id="total-price">
+                            {{'{:,.2f}'.format(total_price)}}
+                        </div>
                     </td>
                 </tr>
             </table>
