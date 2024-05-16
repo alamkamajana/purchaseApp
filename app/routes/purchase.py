@@ -13,6 +13,10 @@ from app.models.models import PurchaseEvent, Transaction, User, Product, Purchas
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
+@bp.route("/") 
+def index(): 
+    return render_template('main_menu.html')
+
 @bp.route('/report', methods=["GET"])
 def purchase_report():
     return render_template('purchase/report.html')
@@ -154,7 +158,7 @@ def transaction_update():
     # Update the data dictionary
     transaction = PurchaseOrderLine.query.filter_by(id=updated_data.get('id')).first()  # Example: Update the user with ID 1
     if transaction:
-        
+
         transaction.unit_price = updated_data.get('price_unit', transaction.unit_price)
         transaction.qty = updated_data.get('qty', transaction.qty)
         transaction.subtotal = float(updated_data.get('qty', transaction.qty)) * float(updated_data.get('price_unit', transaction.unit_price))

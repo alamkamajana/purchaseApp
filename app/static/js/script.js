@@ -466,11 +466,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
             });
         
         const linkColor = document.querySelectorAll('.nav_link')
-        
+
         var selectedMenu = document.getElementById('selected-menu').innerText
-        
+
         if(selectedMenu){
-            if(selectedMenu=="home"){
+            if(selectedMenu=="sync_data"){
+                linkColor.forEach(l=> l.classList.remove('active'))
+                var selectedNav = document.getElementById('nav_sync')
+                selectedNav.classList.add('active');
+            }else if(selectedMenu=="master_data"){
+                linkColor.forEach(l=> l.classList.remove('active'))
+                var selectedNav = document.getElementById('nav_master_data')
+                selectedNav.classList.add('active');
+            }else if(selectedMenu=="home"){
                 linkColor.forEach(l=> l.classList.remove('active'))
                 var selectedNav = document.getElementById('nav_home')
                 selectedNav.classList.add('active');

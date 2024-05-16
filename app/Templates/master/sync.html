@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}
+    Sync
+{% endblock %}
+{% block plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sync.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Sync Server Data</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">sync_data</span>
+<div class="container">
+
+    <button class="sync-button">
+        <div style="color: blue">
+            <i class='bx bx-sync bx-lg' ></i>
+        </div>
+        <div>
+            Sync Data
+        </div>
+        
+    </button>
+
+</div>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}

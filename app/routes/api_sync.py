@@ -12,6 +12,16 @@ bp = Blueprint('api_sync', __name__, url_prefix='/sync')
 odoo_base_url = os.getenv('BASE_URL_ODOO')
 token = os.getenv('TOKEN')
 
+
+@bp.route('/', methods=["GET"])
+def sync_menu():
+    return render_template('master/sync.html')
+
+@bp.route('/master_data', methods=["GET"])
+def sync_master_data():
+    return render_template('master/data.html')
+
+
 @bp.route('/get-product-odoo')
 def sync_get_product_odoo():
     try :
