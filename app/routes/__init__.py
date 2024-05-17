@@ -5,6 +5,8 @@ bp = Blueprint('routes', __name__)
 
 from .api import bp as api_bp
 from .api_sync import bp as api_sync_bp
+from .auth import bp as auth
 
 bp.register_blueprint(api_bp)
 bp.register_blueprint(api_sync_bp)
+bp.register_blueprint(auth)

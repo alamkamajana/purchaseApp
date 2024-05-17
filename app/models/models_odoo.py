@@ -2,6 +2,8 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from . import db
+from .models import user_purchase_order_association
+from.models import User
 
 
 session = db.session
@@ -19,7 +21,7 @@ class ProductOdoo(db.Model):
     type = db.Column(db.String)
     item_code = db.Column(db.String)
     commodity = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
     def __repr__(self):
         return f'<ProductOdoo {self.default_code}>'
@@ -42,7 +44,7 @@ class NfcappFarmerOdoo(db.Model):
     bank_akun = db.Column(db.String)
     bank_holder = db.Column(db.String)
     bank_name_name = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
 
     def __repr__(self):
@@ -66,7 +68,8 @@ class PurchaseOrderOdoo(db.Model):
     incoterm_name = db.Column(db.String)
     user_name = db.Column(db.String)
     payment_term_name = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
+    users = db.relationship('User', secondary=user_purchase_order_association, back_populates='purchase_orders')
 
     def __repr__(self):
         return f'<PurchaseOrderOdoo {self.name}>'
@@ -83,7 +86,7 @@ class PurchaseOrderLineOdoo(db.Model):
     date_planned = db.Column(db.Date)
     order_id = db.Column(db.Integer)
     order_name = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
 
     def __repr__(self):
@@ -101,7 +104,7 @@ class ResUserOdoo(db.Model):
     email = db.Column(db.Text)
     employee_id = db.Column(db.Integer)
     employee_name = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
 class NfcappCommodityOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_odoo'
@@ -109,7 +112,7 @@ class NfcappCommodityOdoo(db.Model):
     name = db.Column(db.String)
     station_id = db.Column(db.Integer)
     station_name = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
 
 class NfcappCommodityItemOdoo(db.Model):
@@ -123,7 +126,8 @@ class NfcappCommodityItemOdoo(db.Model):
     packing = db.Column(db.String)
     product_id = db.Column(db.Integer)
     product_name = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    price = db.Column(db.Float)
+    odoo_id = db.Column(db.Integer)
 
 class NfcappStationOdoo(db.Model):
     __tablename__ = 'nfcapp_station_odoo'
@@ -133,7 +137,7 @@ class NfcappStationOdoo(db.Model):
     gps_latitude = db.Column(db.Float)
     gps_longitude = db.Column(db.Float)
     is_testing = db.Column(db.Boolean)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
 class NfcappClusterOdoo(db.Model):
     __tablename__ = 'nfcapp_cluster_odoo'
@@ -143,5 +147,5 @@ class NfcappClusterOdoo(db.Model):
     station_name = db.Column(db.String)
     coordinator = db.Column(db.String)
     code = db.Column(db.String)
-    puid = db.Column(db.Integer)
+    odoo_id = db.Column(db.Integer)
 
