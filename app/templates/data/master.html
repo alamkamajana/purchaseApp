@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}
+    Master Data
+{% endblock %}
+{% block plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Master Data</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">master_data</span>
+
+<div class="card">
+
+    <div class="card-body">
+        <div class="event-container" >
+
+            <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                <tr>
+                    <th >
+                        Farmer
+                    </th>
+                    <th >
+                        Item Codes
+                    </th>
+                    <th >
+                        Item Codes Odoo
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}

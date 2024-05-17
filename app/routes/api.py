@@ -21,3 +21,11 @@ def main_page():
     except Exception as e:
         print(e)
         return {"message": str(e), "status":400}
+
+@bp.route('/sync', methods=["GET"])
+def sync_menu():
+    return render_template('data/sync.html')
+
+@bp.route('/master', methods=["GET"])
+def master_data():
+    return render_template('data/master.html')

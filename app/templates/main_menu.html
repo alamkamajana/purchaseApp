@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block header %}
+    <b>Main Menu</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">home</span>
+<div class="card main-menu-card">
+    <div class="main-menu-container">
+    <div class="row">
+        <div class="col">
+            <div class="menu-container">
+                <a href="/purchase/farmer-list" class="main-menu-btn">
+                    <img src="/static/img/scanqr.svg" alt="Scan QR">
+                </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="menu-container">
+                <a href="#" class="main-menu-btn">
+                    <img src="/static/img/listfarmer.svg" alt="List Farmer">
+                </a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="menu-container">
+                <a href="#" class="main-menu-btn">
+                    <img src="/static/img/unregfarmer.svg" alt="Transaction">
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- <div class="menu-container">
+        <button>
+            Haha
+        </button>
+    </div>
+    <div class="menu-container">
+        <button>
+            Haha2
+        </button>
+    </div>
+    <div class="menu-container">
+        <button>
+            Haha3
+        </button>
+    </div> -->
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+.report-card {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.report-card table{
+    margin-bottom: 0;
+    min-width:567px;
+}
+
+.report-card th,
+.report-card td{
+    height: 12px;
+}
+
+.report-card .first-column{
+    width:55%;
+}
+
+.report-card .qty,
+.report-card .amount,
+.report-card .paid{
+    width:15%;
+}

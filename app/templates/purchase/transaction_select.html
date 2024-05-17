@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}
+    Transaction
+{% endblock %}
+{% block plugin %}
+
+
+{% endblock %}
+
+{% block header %}
+    <b>Transaction</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">transaction</span>
+
+<div class="card">
+    
+    <div class="card-body">
+
+        <form action="/purchase/transaction" method="get">
+                        <div class="form-floating">
+                            <select name="purchase-event"
+                                    class="form-control selectpicker"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="purchase-event"
+                            >
+                                {% for event in event_list %}
+                                    <option value={{event.id}}>{{event.name}}</option>
+                                {% endfor %}
+
+                            </select>
+                            <label class="control-label" for="purchase-event">Purchase Event</label>
+                        </div>
+
+                        <div class="form-floating">
+                            <select name="farmer"
+                                    class="form-control selectpicker populateJSON selectpickerFarmer"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..."
+                                    id="farmer"
+                            >
+                                {% for farmer in farmer_list %}
+                                    <option value={{farmer.id}}>{{farmer.farmer_name}}</option>
+                                {% endfor %}
+                            </select>
+                            <label class="control-label" for="purchase-event">Farmer</label>
+                        </div>
+                        
+                        <div style="margin-top: 32px;">
+                            <button type="submit" class="btn btn-primary">Select</button>
+                        </div>
+        </form>
+    </div>
+ 
+</div>
+
+{% endblock %}
+
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}

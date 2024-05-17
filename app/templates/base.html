@@ -1,0 +1,117 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - Tripper</title>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.0/css/boxicons.min.css" integrity="sha512-pVCM5+SN2+qwj36KonHToF2p1oIvoU3bsqxphdOIWMYmgr4ZqD3t5DjKvvetKhXGc/ZG5REYTT6ltKfExEei/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"/>
+<!-- Bootstrap Select CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+<script type="text/javascript"  src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block plugin %}{% endblock %}
+
+<body id="body-pd">
+    <header class="header" id="header">
+        <div class="header_toggle"><span><i class='bx bx-menu' id="header-toggle"></i>{% block header %}{% endblock %}</span></div>
+
+        <div class="dropdown">
+            <button class="btn dropdown-toggle menu-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                <span style="font-size: 28px;"><i class='bx bx-dots-vertical-rounded'></i></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="#" id="fullscreenButton">Full Screen</a>
+              <a class="dropdown-item" href="#">My Station</a>
+              <a class="dropdown-item" href="#">Dark Theme</a>
+              <a class="dropdown-item" href="/">Show Main Menu</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" id="reloadButton">Reload</a>
+              <a class="dropdown-item" href="#">Setting</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Log Out</a>
+            </div>
+          </div>
+    </header>
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div> 
+                <a href="#" class="nav_logo"> 
+                    <i class='bx bx-layer nav_logo-icon'></i> 
+                    <span class="nav_logo-name">Username</span> 
+                </a>
+                <div class="nav_list">
+                    <a href="/data/sync" class="nav_link" id="nav_sync_data">
+                        <i class='bx bx-sync nav_icon' ></i>
+                        <span class="nav_name">Sync Server Data</span>
+                    </a>
+                    <a href="/data/master" class="nav_link" id="nav_master_data">
+                        <i class='bx bxs-data nav_icon'></i>
+                        <span class="nav_name">Master Data</span>
+                    </a>
+                    <a href="/purchase/" class="nav_link" id="nav_home"> 
+                        <i class='bx bx-grid-alt nav_icon'></i>
+                        <span class="nav_name">Home</span> 
+                    </a> 
+                    <a href="/purchase/farmer-list" class="nav_link" id="nav_farmer_list"> 
+                        <i class='bx bxs-group nav_icon'></i> 
+                        <span class="nav_name">Farmer List</span> 
+                    </a> 
+                    <a href="/purchase/report" class="nav_link" id="nav_purchase_report"> 
+                        <i class='bx bxs-detail nav_icon'></i> 
+                        <span class="nav_name">Purchase Report</span> 
+                    </a> 
+                    <a href="/purchase/list" class="nav_link" id="nav_purchase_list"> 
+                        <i class='bx bx-list-ul nav_icon'></i> 
+                        <span class="nav_name">Purchase List</span> 
+                    </a> 
+                    <a href="/purchase/event" class="nav_link" id="nav_purchase_event"> 
+                        <i class='bx bxs-calendar-event nav_icon'></i>
+                        <span class="nav_name">Purchase Event</span> 
+                    </a> 
+                    <a href="/purchase/transaction" class="nav_link" id="nav_transaction"> 
+                        <i class='bx bxs-credit-card nav_icon'></i>
+                        <span class="nav_name">Transaction</span> 
+                    </a> 
+                    <a href="#" class="nav_link" id="nav_purchase_double"> 
+                        <i class='bx bx-list-ul nav_icon'></i>
+                        <span class="nav_name">Purchase Double</span> 
+                    </a>
+
+                </div>
+            </div> 
+            <a href="#" class="nav_link"> 
+                <i class='bx bx-log-out nav_icon'></i> 
+                <span class="nav_name">Log Out</span> 
+            </a>
+        </nav>
+    </div>
+    <div class="content-container">
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+    <!-- Bootstrap Select JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    {% block script_plugin %}{% endblock %}
+    
+
+    
+    <script type="text/javascript"  src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
