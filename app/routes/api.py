@@ -17,7 +17,7 @@ token = os.getenv('TOKEN')
 @login_required
 def main_page():
     try :
-        return {}
+        return render_template('index.html')
     except Exception as e:
         print(e)
         return {"message": str(e), "status":400}
