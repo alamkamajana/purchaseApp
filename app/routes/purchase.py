@@ -62,28 +62,29 @@ def event_add():
 @bp.route('/event/update', methods=["POST"])
 def event_update():
     # Retrieve updated data from the POST request
-    updated_data = request.json
+    id = request.form['event']
+    po_id = request.form['purchase-order']
+    purchaser_id = request.form['purchaser']
+    cashier_id = request.form['cashier']
+    ics = request.form['ics']
+    ap_name = request.form['ap-name']
+    fund = request.form['fund']
+    
     
     # Update the data dictionary
-    event = PurchaseEvent.query.filter_by(id=updated_data.get('id')).first()  # Example: Update the user with ID 1
+    event = PurchaseEvent.query.filter_by(id=id).first()
     if event:
-        event.fund = updated_data.get('fund', event.fund)
-        event.ics = updated_data.get('ics', event.ics)
-        event.ap_name = updated_data.get('ap_name', event.ap_name)
-        event.purchase_order_odoo_id = updated_data.get('po_id', event.purchase_order_odoo_id)
-        event.purchaser_id = updated_data.get('purchaser_id', event.purchaser_id)
-        event.cashier_id = updated_data.get('cashier_id', event.cashier_id)
+        event.purchase_order_odoo_id = po_id
+        event.cashier_id = cashier_id
+        event.purchaser_id = purchaser_id
+        event.ics = ics
+        event.ap_name = ap_name
+        event.fund = fund
+        
         db.session.commit()
-        return jsonify({'message': 'Data updated successfully',
-                        'fund': event.fund,
-                        'ics': event.ics,
-                        'ap_name': event.ap_name,
-                        'po': event.purchase_order_odoo.name,
-                        'purchaser': event.purchaser.name,
-                        'cashier': event.cashier.name
-                        })
+        return redirect(request.referrer)
     else:
-        return jsonify({'message': 'User not found'}), 404
+        return redirect(request.referrer)
 
 
 @bp.route('/transaction', methods=["GET"])
