@@ -53,6 +53,7 @@ def sync_get_product_odoo():
 
 
 @bp.route('/get-purchase-order-odoo')
+@login_required
 def sync_get_purchase_order():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-purchase-order"
@@ -110,6 +111,7 @@ def sync_get_purchase_order():
 
 
 @bp.route('/get-farmer-odoo')
+@login_required
 def sync_get_farmer_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-nfcapp-farmer"
@@ -137,6 +139,7 @@ def sync_get_farmer_odoo():
         return {"message": str(e), "status":400}
 
 @bp.route('/get-user-odoo')
+@login_required
 def sync_user_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-res-user"
@@ -165,6 +168,7 @@ def sync_user_odoo():
 
 
 @bp.route('/get-commodity-odoo')
+@login_required
 def sync_commodity_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-commodity"
@@ -193,6 +197,7 @@ def sync_commodity_odoo():
 
 
 @bp.route('/get-commodityitem-odoo')
+@login_required
 def sync_commodityitem_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-commodityitem"
@@ -221,6 +226,7 @@ def sync_commodityitem_odoo():
 
 
 @bp.route('/get-station-odoo')
+@login_required
 def sync_station_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-station"
@@ -248,6 +254,7 @@ def sync_station_odoo():
         return {"message": str(e), "status":400}
 
 @bp.route('/get-cluster-odoo')
+@login_required
 def sync_cluster_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-cluster"
@@ -320,6 +327,7 @@ def sync_cluster_odoo():
 
 
 @bp.route('/sync-with-odoo')
+@login_required
 def sync_with_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/sync-with-odoo"
