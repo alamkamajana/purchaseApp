@@ -9,7 +9,7 @@ from flask import jsonify
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
-from app.models.models import PurchaseEvent, User, Product, PurchaseOrder, PurchaseOrderLine, Farmer
+from app.models.models import PurchaseEvent, Transaction, User, Product, PurchaseOrder, PurchaseOrderLine, Farmer
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
