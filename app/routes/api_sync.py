@@ -333,11 +333,12 @@ def sync_with_odoo():
             check_data = Farmer.query.filter_by(odoo_id=farmer['odoo_id']).first()
             if not check_data :
                 farmer_json = {}
+                farmer_json['odoo_id'] = farmer['odoo_id']
                 farmer_json['farmer_name'] = farmer['farmer_name']
                 farmer_json['farmer_code'] = farmer['farmer_name']
                 farmer_json['farmer_name'] = farmer['farmer_name']
                 farmer_json['item_code_list'] = farmer['item_code_list']
-                new_data = NfcappClusterOdoo(**farmer_json)
+                new_data = Farmer(**farmer_json)
                 db.session.add(new_data)
 
         db.session.commit()
