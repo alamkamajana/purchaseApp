@@ -19,7 +19,7 @@ token = os.getenv('TOKEN')
 def sync_get_product_odoo():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-product"
-        data = {'token': token}
+        data = {'token': token, 'odoo_user_id' : session['user_odoo_id']}
 
         # GET Request
         response = requests.get(url, data=data)
@@ -82,32 +82,32 @@ def sync_get_purchase_order():
         print(e)
         return {"message": str(e), "status":400}
 
-# @bp.route('/get-purchase-order-line-odoo')
-# def sync_get_purchase_order_line():
-#     try :
-#         url = f"{odoo_base_url}/nfcapp-purchase/get-purchase-order-line"
-#         data = {'token': token}
-#
-#         # GET Request
-#         response = requests.get(url, data=data)
-#         response_json = response.json()
-#         for po_line in response_json :
-#             oid = po_line['odoo_id']
-#             po_line_json = {k: v for k, v in po_line.items() if k != 'id'}
-#             check_data = PurchaseOrderLineOdoo.query.filter_by(odoo_id=oid).first()
-#             if not check_data :
-#                 new_data = PurchaseOrderLineOdoo(**po_line_json)
-#                 db.session.add(new_data)
-#
-#         db.session.commit()
-#
-#         return {
-#             "message" : "Success",
-#             "status" : 200
-#         }
-#     except Exception as e:
-#         print(e)
-#         return {"message": str(e), "status":400}
+@bp.route('/get-purchase-order-line-odoo')
+def sync_get_purchase_order_line():
+    try :
+        url = f"{odoo_base_url}/nfcapp-purchase/get-purchase-order-line"
+        data = {'token': token, 'odoo_user_id' : session['user_odoo_id']}
+
+        # GET Request
+        response = requests.get(url, data=data)
+        response_json = response.json()
+        for po_line in response_json :
+            oid = po_line['odoo_id']
+            po_line_json = {k: v for k, v in po_line.items() if k != 'id'}
+            check_data = PurchaseOrderLineOdoo.query.filter_by(odoo_id=oid).first()
+            if not check_data :
+                new_data = PurchaseOrderLineOdoo(**po_line_json)
+                db.session.add(new_data)
+
+        db.session.commit()
+
+        return {
+            "message" : "Success",
+            "status" : 200
+        }
+    except Exception as e:
+        print(e)
+        return {"message": str(e), "status":400}
 
 
 @bp.route('/get-farmer-odoo')

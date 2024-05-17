@@ -24,7 +24,7 @@ def sync_menu():
 @bp.route('/master', methods=["GET"])
 @login_required
 def master_data():
-    farmers = Farmer.query.all()
+    farmers = Farmer.query.limit(100).all()
     data = []
     for farmer in farmers :
         farmer_json = {}
@@ -51,3 +51,26 @@ def master_data():
         data.append(farmer_json)
 
     return render_template('data/master.html',farmer_data=data)
+
+
+@bp.route('/purchase-order', methods=["GET"])
+@login_required
+def show_purchase_order():
+    purchase_orders = PurchaseOrderOdoo.query.all()
+    data = []
+    for po in purchase_orders :
+        po_json = {}
+        po_json['id'] = po.id
+        po_json['name'] = po.name
+        data.append(po_json)
+        po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(po.odoo_id)).all()
+        po_order_line_arr = []
+        for order_line in po_order_line :
+            order_line_json = {}
+            order_line_json['product_name'] = order_line.product_name
+            order_line_json['price_unit'] = order_line.price_unit
+            order_line_json['product_qty'] = order_line.product_qty
+            po_order_line_arr.append(order_line_json)
+        po_json['order_line'] = po_order_line_arr
+
+    return render_template('data/purchase.html',purchase_data=data)
