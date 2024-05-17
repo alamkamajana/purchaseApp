@@ -9,15 +9,17 @@ from app.models.db import db
 from .auth import login_required
 
 load_dotenv()
-bp = Blueprint('api', __name__,)
+bp = Blueprint('data', __name__, url_prefix='/data')
 odoo_base_url = os.getenv('BASE_URL_ODOO')
 token = os.getenv('TOKEN')
 
-@bp.route('/')
+
+@bp.route('/sync', methods=["GET"])
 @login_required
-def main_page():
-    try :
-        return {}
-    except Exception as e:
-        print(e)
-        return {"message": str(e), "status":400}
+def sync_menu():
+    return render_template('data/sync.html')
+
+@bp.route('/master', methods=["GET"])
+@login_required
+def master_data():
+    return render_template('data/master.html')
