@@ -83,6 +83,7 @@ def sync_get_purchase_order():
         return {"message": str(e), "status":400}
 
 @bp.route('/get-purchase-order-line-odoo')
+@login_required
 def sync_get_purchase_order_line():
     try :
         url = f"{odoo_base_url}/nfcapp-purchase/get-purchase-order-line"

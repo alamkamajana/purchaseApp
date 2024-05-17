@@ -18,32 +18,38 @@ from datetime import datetime
 import os
 import uuid
 import re
+from .auth import login_required
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
 
 @bp.route("/")
+@login_required
 def index():
     return render_template('main_menu.html')
 
 
 @bp.route('/report', methods=["GET"])
+@login_required
 def purchase_report():
     return render_template('purchase/report.html')
 
 
 @bp.route('/list', methods=["GET"])
+@login_required
 def purchase_list():
     return render_template('purchase/list.html')
 
 
 @bp.route('/farmer-list', methods=["GET"])
+@login_required
 def farmer_list():
     farmers = Farmer.query.all()
     return render_template('purchase/farmer_list.html', farmers=farmers)
 
 
 @bp.route('/event', methods=["GET"])
+@login_required
 def event_list():
     device_name = os.environ.get('USER')
     mac_addr = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
@@ -64,6 +70,7 @@ def event_list():
 
 
 @bp.route('/event/add', methods=["POST"])
+@login_required
 def event_add():
     fund = request.form['fund']
     ics = request.form['ics']
@@ -81,6 +88,7 @@ def event_add():
 
 
 @bp.route('/event/update', methods=["POST"])
+@login_required
 def event_update():
     # Retrieve updated data from the POST request
     id = request.form['event']
@@ -108,6 +116,7 @@ def event_update():
 
 
 @bp.route('/transaction', methods=["GET"])
+@login_required
 def transaction_list():
     device_name = os.environ.get('USER')
     mac_addr = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
@@ -158,6 +167,7 @@ def transaction_list():
 
 
 @bp.route('/transaction/add', methods=["POST"])
+@login_required
 def transaction_add():
     print(request.form)
 
@@ -185,6 +195,7 @@ def transaction_add():
 
 
 @bp.route('/transaction/update', methods=["POST"])
+@login_required
 def transaction_update():
     transaction_id = request.form['transaction']
     product = request.form['product']
@@ -207,6 +218,7 @@ def transaction_update():
 
 
 @bp.route('/receipt', methods=["GET"])
+@login_required
 def receipt_form():
     po_id = request.args.get('po', 1, type=int)
     purchase_order = PurchaseOrder.query.get(po_id)
@@ -217,6 +229,7 @@ def receipt_form():
 
 
 @bp.route('/cashier', methods=["GET"])
+@login_required
 def cashier_form():
     po_id = request.args.get('po', 1, type=int)
     purchase_order = PurchaseOrder.query.get(po_id)
