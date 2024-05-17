@@ -13,11 +13,13 @@ from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
 from app.models.models import PurchaseEvent, Transaction, Farmer
+from .auth import login_required
 
 bp = Blueprint('select', __name__, url_prefix='/select')
 
 
 @bp.route('/selectpickerUser', methods=["GET"])
+@login_required
 def selectpickerUser():
     query = request.args.get('q')
 
@@ -37,6 +39,7 @@ def selectpickerUser():
 
 
 @bp.route('/selectpickerPo', methods=["GET"])
+@login_required
 def selectpickerPo():
     query = request.args.get('q')
 
@@ -57,6 +60,7 @@ def selectpickerPo():
 
 
 @bp.route('/selectpickerPurchaseEvent', methods=["GET"])
+@login_required
 def selectpickerPurchaseEvent():
     query = request.args.get('q')
 
@@ -77,6 +81,7 @@ def selectpickerPurchaseEvent():
 
 
 @bp.route('/selectpickerFarmer', methods=["GET"])
+@login_required
 def selectpickerFarmer():
     query = request.args.get('q')
 
@@ -92,6 +97,7 @@ def selectpickerFarmer():
 
 
 @bp.route('/selectpickerProduct', methods=["GET"])
+@login_required
 def selectpickerProduct():
     query = request.args.get('q')
 
