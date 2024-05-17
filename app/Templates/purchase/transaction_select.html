@@ -19,49 +19,38 @@
     <div class="card-body">
 
         <form action="/purchase/transaction" method="get">
-                <div class="row">
-                        <div class="form-floating col-sm-12 col-lg">
+                        <div class="form-floating">
                             <select name="purchase-event"
-                                    class="form-control selectpicker populateJSON selectpickerPurchaseEvent"
+                                    class="form-control selectpicker"
                                     data-live-search="true"
                                     data-live-search-placeholder="Search..."
                                     id="purchase-event"
-                                    onchange="selectPurchaseOrder()"
                             >
-                                <option value="" selected="true">Select Purchase Event...</option>
+                                {% for event in event_list %}
+                                    <option value={{event.id}}>{{event.name}}</option>
+                                {% endfor %}
 
                             </select>
                             <label class="control-label" for="purchase-event">Purchase Event</label>
                         </div>
 
-                        <div class="form-floating col-sm-12 col-lg">
-                            <select name="purchase-order"
-                                    class="form-control selectpicker populateJSON selectpickerPo"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="purchase-order"
-                            >   
-                                <option value="" selected="true">Select Purchase Order...</option>  
-                            </select>
-                            <label class="control-label" for="purchase-order">Purchase Order</label>
-                        </div>
-
-                        <div class="form-floating col-sm-12 col-lg">
+                        <div class="form-floating">
                             <select name="farmer"
                                     class="form-control selectpicker populateJSON selectpickerFarmer"
                                     data-live-search="true"
                                     data-live-search-placeholder="Search..."
                                     id="farmer"
                             >
-                                <option value="" selected="true">Select Farmer...</option>
+                                {% for farmer in farmer_list %}
+                                    <option value={{farmer.id}}>{{farmer.farmer_name}}</option>
+                                {% endfor %}
                             </select>
                             <label class="control-label" for="purchase-event">Farmer</label>
                         </div>
                         
-                        <div class="col col-sm-6 col-lg-1" style="display: flex; align-items: center;">
+                        <div style="margin-top: 32px;">
                             <button type="submit" class="btn btn-primary">Select</button>
                         </div>
-                </tr>
         </form>
     </div>
  

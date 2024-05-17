@@ -32,6 +32,8 @@ def farmer_list():
 
 @bp.route('/event', methods=["GET"])
 def event_list():
+    po_list = PurchaseOrderOdoo.query.all()
+    user_list = ResUserOdoo.query.all()
     page = request.args.get('page', 1, type=int)
     per_page = 10
     pagination = PurchaseEvent.query.order_by(PurchaseEvent.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
@@ -39,7 +41,7 @@ def event_list():
     total_pages = pagination.pages
     users = User.query.all()
     # events = PurchaseEvent.query.order_by(PurchaseEvent.id).all()
-    return render_template('purchase/event.html', events=events, users=users, page=page, total_pages=total_pages)
+    return render_template('purchase/event.html', events=events, users=users, page=page, total_pages=total_pages, po_list=po_list, user_list=user_list)
 
 @bp.route('/event/add', methods=["POST"])
 def event_add():
@@ -115,13 +117,16 @@ def transaction_list():
         total_pages = pagination.pages
         po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
         total_price = 0
+        product_list = ProductOdoo.query.all()
         for po_line in po_lines:
             total_price += po_line.subtotal
 
 
-        return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer, transaction_list=transaction_list, page=page, total_pages=total_pages, total_price=total_price)
+        return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer, product_list=product_list, transaction_list=transaction_list, page=page, total_pages=total_pages, total_price=total_price)
     else:
-        return render_template('purchase/transaction_select.html')
+        event_list = PurchaseEvent.query.all()
+        farmer_list = Farmer.query.all()
+        return render_template('purchase/transaction_select.html', event_list=event_list, farmer_list=farmer_list)
 
 
 @bp.route('/transaction/add', methods=["POST"])
@@ -152,28 +157,23 @@ def transaction_add():
 
 @bp.route('/transaction/update', methods=["POST"])
 def transaction_update():
-    # Retrieve updated data from the POST request
-    updated_data = request.json
+    
+    transaction_id= request.form['transaction']
+    product= request.form['product']
+    price_unit= request.form['price-unit']
+    qty= request.form['qty']
+    print(transaction_id)
     
     # Update the data dictionary
-    transaction = PurchaseOrderLine.query.filter_by(id=updated_data.get('id')).first()  # Example: Update the user with ID 1
+    transaction = PurchaseOrderLine.query.filter_by(id=transaction_id).first()  # Example: Update the user with ID 1
     if transaction:
 
-        transaction.unit_price = updated_data.get('price_unit', transaction.unit_price)
-        transaction.qty = updated_data.get('qty', transaction.qty)
-        transaction.subtotal = float(updated_data.get('qty', transaction.qty)) * float(updated_data.get('price_unit', transaction.unit_price))
+        transaction.unit_price = price_unit
+        transaction.qty = qty
+        transaction.product_odoo_id = product
+        transaction.subtotal = float(qty) * float(price_unit)
         db.session.commit()
-        po_id = transaction.purchase_order_id
-        po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po_id).all()
-        total_price = 0
-        for po_line in po_lines:
-            total_price += po_line.subtotal
-        return jsonify({'message': 'Data updated successfully',
-                        'price_unit': transaction.unit_price,
-                        'qty': transaction.qty,
-                        'subtotal': transaction.subtotal,
-                        'total_price': total_price
-                        })
+        return redirect(request.referrer)
     else:
         return jsonify({'message': 'Transaction not found'}), 404
 

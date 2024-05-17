@@ -18,7 +18,6 @@
     
     <div class="card-body">
 
-        <form action="/purchase/transaction/add" method="post">
                 <div class="row">
                         <div class="form-floating col-sm-12 col-lg">
                             <input name="" class="form-control" id="" value="{{event.name}}" disabled>
@@ -45,34 +44,62 @@
                             <label class="control-label" for="status">Status</label>
                         </div>
                 </div>
-                <div class="row">
-                        <div class="form-floating col-sm-12 col-lg">
-                            <select name="product"
-                                    class="form-control selectpicker populateJSON selectpickerProduct"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="product"
-                            >
-                                <option value="" selected="true">Search Product...</option>
-                            </select>
-                            <label class="control-label" for="product">Product</label>
-                        </div>
-
-                        <div class="form-floating col-6 col-sm-6 col-lg-3">
-                            <input class="form-control" type="number" id="price-unit" name="price-unit" value="0" step="any">
-                            <label class="control-label" for="price-unit">Price Unit</label>
-                        </div>
-                        <div class="form-floating col-6 col-sm-6 col-lg-3">
-                            <input class="form-control" type="number" id="qty" name="qty" value="0">
-                            <label class="control-label" for="qty">Quantity</label>
-                        </div>
-                </div>
-                <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
+                <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
                     <div style="display: flex; align-items: center;">
-                        <button type="submit" class="btn btn-primary">Add</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTransactionModal">
+                            Add
+                        </button>
                     </div>
                 </div>
-        </form>
+
+                <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document" >
+                        <form action="/purchase/transaction/add" method="post">
+                        <div class="modal-content">
+                            <div class="modal-header" style="justify-content: space-between;">
+                                <h5 class="modal-title" id="exampleModalLabel">Add Purchase Order Line</h5>
+                                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close" >
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:5%">
+                                <input name="purchase-event" class="form-control" id="purchase-event" value="{{event.id}}" hidden>
+                                <input name="farmer" class="form-control" id="farmer" value="{{farmer.id}}" hidden>
+                                <input name="purchase-order" class="form-control" id="purchase-order" value="{{po.id}}" hidden>
+                                <div class="form-floating">
+                                    <select name="product"
+                                            class="form-control selectpicker"
+                                            data-live-search="true"
+                                            data-live-search-placeholder="Search..."
+                                            id="product"
+                                    >
+                                        <!-- <option value="" selected="true">Search Product...</option> -->
+                                        {% for product in product_list %}
+                                            <option value={{product.id}}>[{{product.default_code}}] {{product.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label class="control-label" for="product">Product</label>
+                                </div>
+        
+                                <div class="form-floating">
+                                    <input class="form-control" type="number" id="price-unit" name="price-unit" value="0" step="any">
+                                    <label class="control-label" for="price-unit">Price Unit</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" type="number" id="qty" name="qty" value="0">
+                                    <label class="control-label" for="qty">Quantity</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                  </div>
+
 
 
         <div class="event-container" >
@@ -108,22 +135,19 @@
                             {{loop.index}}
                         </td>
                         <td>
+                            <div class="update-form" id="product-id-{{transaction.id}}" hidden>
+                                {{transaction.product_odoo.id}}
+                            </div>
                             {{transaction.product_odoo.name}}
                         </td>
-                        <td class="fund-column">
+                        <td class="price-column">
                             <div class="transaction-info{{transaction.id}}" id="price-info{{transaction.id}}">
                                 {{ '{:,.2f}'.format(transaction.unit_price) }}
                             </div>
-                            <div class="update-form transaction-info{{transaction.id}} hidden">
-                                <input type="number" id="price-update{{transaction.id}}" name="price-unit" value="{{'%.2f' | format(transaction.unit_price)}}"  step="any">
-                            </div>
                         </td>
-                        <td class="fund-column">
+                        <td class="qty-column">
                             <div class="transaction-info{{transaction.id}}" id="qty-info{{transaction.id}}">
                                 {{ '{:,.0f}'.format(transaction.qty) }}
-                            </div>
-                            <div class="update-form transaction-info{{transaction.id}} hidden">
-                                <input type="number" id="qty-update{{transaction.id}}" name="qty" value="{{'%.0f' | format(transaction.qty)}}">
                             </div>
                         </td>
                         <td>
@@ -135,14 +159,8 @@
                         </td>
                         <td>
                             <span class="event-id" style="display: none;">{{transaction.id}}</span>
-                            <button onclick="editTransaction('{{transaction.id }}')" type="button" class="btn btn-secondary transaction-info{{transaction.id}}" id="test1-btn">
+                            <button type="button" class="btn btn-secondary transaction-info{{transaction.id}}" id="edit-{{transaction.id}}-btn" data-toggle="modal" data-target="#editTransactionModal" data-transaction-id="{{transaction.id}}">
                                 <span><i class='bx bxs-pencil'></i></span>
-                            </button>
-                            <button onclick="updateTransaction('{{ transaction.id }}')" type="button" class="btn btn-success transaction-info{{transaction.id}} hidden">
-                                <span><i class='bx bx-check' ></i></span>
-                            </button>
-                            <button onclick="cancelUpdateTransaction('{{ transaction.id }}')" type="button" class="btn btn-danger transaction-info{{transaction.id}} hidden">
-                                <span><i class='bx bx-x'></i></span>
                             </button>
                         </td>
                     </tr>
@@ -173,6 +191,48 @@
         </div>
     </div>
  
+</div>
+
+<div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form action="/purchase/transaction/update" method="post">
+            <div class="modal-content">
+                <div class="modal-header" style="justify-content: space-between;">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Purchase Order Line</h5>
+                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding:5%">
+                    <input name="transaction" type="number" class="form-control transaction-form" id="transaction" value="0" hidden>
+                    <div class="form-floating">
+                        <select name="product" class="form-control selectpicker product-form" data-live-search="true"
+                            data-live-search-placeholder="Search..." id="product">
+                            <!-- <option value="" selected="true">Search Product...</option> -->
+                            {% for product in product_list %}
+                            <option value={{product.id}}>[{{product.default_code}}] {{product.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <label class="control-label" for="product">Product</label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input class="form-control price-unit-form" type="number" id="price-unit" name="price-unit" value="0"
+                            step="any">
+                        <label class="control-label" for="price-unit">Price Unit</label>
+                    </div>
+                    <div class="form-floating">
+                        <input class="form-control qty-form" type="number" id="qty" name="qty" value="0">
+                        <label class="control-label" for="qty">Quantity</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Edit</button>
+                </div>
+        </form>
+    </div>
 </div>
 
 {% endblock %}

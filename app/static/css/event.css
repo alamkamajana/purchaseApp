@@ -85,6 +85,17 @@
     border-bottom: none !important;
 }
 
-.form-floating>.form-control:disabled~label::after, .form-floating>:disabled~label::after {
-    background-color: inherit;
+.form-floating{
+    padding-left: 0;
+    >.form-control:disabled~label::after, .form-floating>:disabled~label::after {
+        background-color: inherit;
+    }
+    > label {
+        padding-left: 0;
+      }
 }
+
+.input{
+    background-color: inherit !important;
+}
+

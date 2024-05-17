@@ -23,6 +23,32 @@ if(isNavbarExpanded && window.innerWidth >= 768){
     showNavbar('header-toggle','nav-bar','body-pd','header')
 }
 
+$('#editTransactionModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var id = button.data('transaction-id') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    modal.find('.transaction-form').val(parseInt(id))
+    modal.find('.product-form').val(parseInt($('#product-id-'+id).text().trim()))
+    modal.find('.product-form').selectpicker("refresh")
+    modal.find('.price-unit-form').val(parseInt($('#price-info'+id).text().trim().replace(/,/g, '')).toFixed(2))
+    modal.find('.qty-form').val(parseInt($('#qty-info'+id).text().trim().replace(/,/g, '')).toFixed(0))
+  })
+
+$('#editEventModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var id = button.data('event-id') // Extract info from data-* attributes
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    modal.find('.id-form').val(parseInt(id))
+    modal.find('.purchase-order-form').val(parseInt($('#product-id-'+id).text().trim()))
+    modal.find('.product-form').selectpicker("refresh")
+    modal.find('.price-unit-form').val(parseInt($('#price-info'+id).text().trim().replace(/,/g, '')).toFixed(2))
+    modal.find('.qty-form').val(parseInt($('#qty-info'+id).text().trim().replace(/,/g, '')).toFixed(0))
+  })
+
 function testFunction(eventId){
 
         const testCol = document.querySelectorAll('.event-info'+eventId)
@@ -101,100 +127,6 @@ function cancelUpdateEvent(eventId){
     $(po_select).selectpicker('refresh')
     
     testFunction(eventId)
-}
-
-function updateTransaction(transactionId){
-    var purchase_event_id = document.getElementById("purchase-event").value
-
-    var data = {
-        id: purchase_event_id
-    };
-
-    // Send POST request to update data
-    $.ajax({
-        url: '/purchase/transaction/getOrder',
-        method: 'GET',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(response) {
-            // Request was successful, handle response here
-            document.getElementById("po-info"+transactionId).innerHTML = response.po
-            document.getElementById("event-info"+transactionId).innerHTML = response.event
-            document.getElementById("farmer-info"+transactionId).innerHTML = response.farmer
-            document.getElementById("po-id"+transactionId).innerHTML = purchase_order_id
-            document.getElementById("event-id"+transactionId).innerHTML = purchase_event_id
-            document.getElementById("farmer-id"+transactionId).innerHTML = farmer_id
-            document.getElementById("price-info"+transactionId).innerHTML = formatOutput(response.price_unit,2)//.toFixed(2)
-            document.getElementById("qty-info"+transactionId).innerHTML = formatOutput(response.qty,0)//.toFixed(0)
-            document.getElementById("subtotal-info"+transactionId).innerHTML = formatOutput(response.subtotal,2)//.toFixed(2)
-            console.log(response.message);
-        },
-        error: function(xhr, status, error) {
-            // Request failed
-            console.error('Request failed: ' + error);
-        }
-    });
-
-    editTransaction(transactionId)
-
-
-    // console.log(fund)
-
-}
-
-function editTransaction(transactionId){
-
-    const tCol = document.querySelectorAll('.transaction-info'+transactionId)
-    
-    if(tCol){
-        tCol.forEach(l=> l.classList.toggle('hidden'))
-    }
-        // add padding to body
-}
-
-function updateTransaction(transactionId){
-    var price_unit = document.getElementById("price-update"+transactionId).value
-    var qty = document.getElementById("qty-update"+transactionId).value
-
-    var updatedData = {
-        id: transactionId, 
-        price_unit: price_unit,
-        qty: qty
-    };
-    
-    // Send POST request to update data
-    $.ajax({
-        url: '/purchase/transaction/update',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(updatedData),
-        success: function(response) {
-            // Request was successful, handle response here
-            document.getElementById("price-info"+transactionId).innerHTML = formatOutput(response.price_unit,2)//.toFixed(2)
-            document.getElementById("qty-info"+transactionId).innerHTML = formatOutput(response.qty,0)//.toFixed(0)
-            document.getElementById("subtotal-info"+transactionId).innerHTML = formatOutput(response.subtotal,2)//.toFixed(2)
-            document.getElementById("total-price").innerHTML = formatOutput(response.total_price,2)
-            console.log(response.message);
-        },
-        error: function(xhr, status, error) {
-            // Request failed
-            console.error('Request failed: ' + error);
-        }
-    });
-
-    editTransaction(transactionId)
-
-
-    // console.log(fund)
-
-}
-
-function cancelUpdateTransaction(transactionId){
-
-    document.getElementById("price-update"+transactionId).value = parseFloat(document.getElementById("price-info"+transactionId).innerHTML.trim().replace(/,/g, '')).toFixed(2)
-    document.getElementById("qty-update"+transactionId).value = parseFloat(document.getElementById("qty-info"+transactionId).innerHTML.trim().replace(/,/g, '')).toFixed(0)
-    
-    editTransaction(transactionId)
 }
 
 function getPO(){
