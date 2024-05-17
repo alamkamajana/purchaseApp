@@ -217,13 +217,18 @@ function formatOutput(number, digit) {
     return formattedNumber;
 }
 
-
-
-
-
+var navLink = document.querySelectorAll('.nav_link')
 var selectedMenu = document.getElementById('selected-menu').innerText
 
-if(selectedMenu=="farmer-list"){
+if(selectedMenu){
+    console.log("test")
+    navLink.forEach(l=> l.classList.remove('active'))
+    navClass= "nav_"+selectedMenu
+    var selectedNav = document.getElementById(navClass)
+    selectedNav.classList.add('active');
+}
+
+if(selectedMenu=="farmer_list"){
     const filterBtn = document.getElementById("input-filter")
 
     if(filterBtn){
@@ -469,41 +474,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         var selectedMenu = document.getElementById('selected-menu').innerText
 
-        if(selectedMenu){
-            if(selectedMenu=="sync_data"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_sync')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="master_data"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_master_data')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="home"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_home')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="farmer-list"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_farmer_list')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="list"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_purchase_list')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="report"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_purchase_report')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="event"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_purchase_event')
-                selectedNav.classList.add('active');
-            }else if(selectedMenu=="transaction"){
-                linkColor.forEach(l=> l.classList.remove('active'))
-                var selectedNav = document.getElementById('nav_transaction')
-                selectedNav.classList.add('active');
-            }
-        }
+        // if(selectedMenu){
+        //     linkColor.forEach(l=> l.classList.remove('active'))
+        //     navClass= "nav_"+selectedMenu
+        //     var selectedNav = document.getElementById(navClass)
+        //     selectedNav.classList.add('active');
+            
+        // }
+
         // $('#purchase-status').select2();
 
         var today = new Date();
