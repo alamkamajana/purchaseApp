@@ -30,7 +30,7 @@
                 <form action="/purchase/event/add" method="post">
                     <div class="modal-content">
                         <div class="modal-header" style="justify-content: space-between;">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Purchase Order Line</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Add Purchase Event</h5>
                             <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -205,7 +205,7 @@
                         </td>
                         <td>
                             <span class="event-id" style="display: none;">{{event.id}}</span>
-                            <button type="button" class="btn btn-secondary event-info{{event.id}}" id="edit-{{event.id}}-btn" data-toggle="modal" data-target="#editTransactionModal" data-event-id="{{event.id}}">
+                            <button type="button" class="btn btn-secondary event-info{{event.id}}" id="edit-{{event.id}}-btn" data-toggle="modal" data-target="#editEventModal" data-event-id="{{event.id}}">
                                 <span><i class='bx bxs-pencil'></i></span>
                             </button>
                             <button onclick="updateEvent('{{ event.id }}')" type="button" class="btn btn-success event-info{{event.id}} hidden">
@@ -236,13 +236,13 @@
         <form action="/purchase/event/update" method="post">
             <div class="modal-content">
                 <div class="modal-header" style="justify-content: space-between;">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Purchase Order Line</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Add Purchase Event</h5>
                     <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body" style="padding:5%">
-                    <input class="form-control id-form" type="number" id="event" name="event" value="0">
+                    <input class="form-control id-form" type="number" id="event" name="event" value="0" hidden>
 
                     <div class="form-floating">
                         <select name="purchase-order" class="form-control selectpicker purchase-order-form" data-live-search="true"

@@ -32,7 +32,7 @@ $('#editTransactionModal').on('show.bs.modal', function (event) {
     modal.find('.transaction-form').val(parseInt(id))
     modal.find('.product-form').val(parseInt($('#product-id-'+id).text().trim()))
     modal.find('.product-form').selectpicker("refresh")
-    modal.find('.price-unit-form').val(parseInt($('#price-info'+id).text().trim().replace(/,/g, '')).toFixed(2))
+    modal.find('.price-unit-form').val(parseFloat($('#price-info'+id).text().trim().replace(/,/g, '')).toFixed(2))
     modal.find('.qty-form').val(parseInt($('#qty-info'+id).text().trim().replace(/,/g, '')).toFixed(0))
   })
 
@@ -43,10 +43,15 @@ $('#editEventModal').on('show.bs.modal', function (event) {
     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
     var modal = $(this)
     modal.find('.id-form').val(parseInt(id))
-    modal.find('.purchase-order-form').val(parseInt($('#product-id-'+id).text().trim()))
-    modal.find('.product-form').selectpicker("refresh")
-    modal.find('.price-unit-form').val(parseInt($('#price-info'+id).text().trim().replace(/,/g, '')).toFixed(2))
-    modal.find('.qty-form').val(parseInt($('#qty-info'+id).text().trim().replace(/,/g, '')).toFixed(0))
+    modal.find('.purchase-order-form').val(parseInt($('#po-id'+id).text().trim()))
+    modal.find('.cashier-form').val(parseInt($('#cashier-id'+id).text().trim()))
+    modal.find('.purchaser-form').val(parseInt($('#purchaser-id'+id).text().trim()))
+    modal.find('.purchase-order-form').selectpicker("refresh")
+    modal.find('.cashier-form').selectpicker("refresh")
+    modal.find('.purchaser-form').selectpicker("refresh")
+    modal.find('.ics-form').val($('#ics-info'+id).text().trim())
+    modal.find('.ap-name-form').val($('#ap-info'+id).text().trim())
+    modal.find('.fund-form').val(parseFloat($('#fund-info'+id).text().trim().replace(/,/g, '')).toFixed(2))
   })
 
 function testFunction(eventId){

@@ -2,20 +2,49 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from . import db
-from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
-
 
 session = db.session
 
+user_purchase_order_association = db.Table('user_purchase_order_association',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('purchase_order_odoo_id', db.Integer, db.ForeignKey('purchase_order_odoo.id'), primary_key=True)
+)
+
+farmer_product_association = db.Table('farmer_product_association',
+    db.Column('farmer_id', db.Integer, db.ForeignKey('farmer.id'), primary_key=True),
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
+)
 
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120))
+    session = db.Column(db.String(120))
+    is_active = db.Column(db.Boolean)
+    station = db.Column(db.String)
+    user_odoo_id = db.Column(db.Integer)
+    purchase_orders = db.relationship('PurchaseOrderOdoo', secondary=user_purchase_order_association,
+                                      back_populates='users')
+
+
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+class UserSession(db.Model):
+    __tablename__ = 'user_session'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    email = db.Column(db.String(120))
+    session = db.Column(db.String(120))
+    action = db.Column(db.String(120))
+    device = db.Column(db.String)
+    mac_address = db.Column(db.String)
+    ip_address_local = db.Column(db.String)
+    ip_address_external = db.Column(db.String)
+    date = db.Column(db.DateTime)
+
 
 
 class Farmer(db.Model):
@@ -24,6 +53,8 @@ class Farmer(db.Model):
     farmer_name = db.Column(db.String(128))
     farmer_code = db.Column(db.String(64))
     products = db.relationship('Product', back_populates='farmer', lazy='dynamic')
+    item_code_list = db.Column(db.Text)
+    odoo_id = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Farmer %r>' % self.farmer_name
@@ -35,7 +66,7 @@ class Product(db.Model):
     product_name = db.Column(db.String(128))
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'))
     farmer = db.relationship('Farmer', back_populates='products')
-    product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
+    item_code_odoo_id = db.Column(db.Integer)
 
 
 class PurchaseEvent(db.Model):

@@ -23,6 +23,12 @@
 {% block plugin %}{% endblock %}
 
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% set category, message = messages[-1] %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endif %}
+    {% endwith %}
     <div class="card">
         <div class="card-body">
             <div class="login-header">
@@ -31,11 +37,11 @@
             <form method="post">
                 <div class="login-form">
                     <div class="form-floating">
-                        <input name="username" class="form-control" type="username" id="username" placeholder="Username...">
+                        <input name="username" class="form-control" type="username" id="username" placeholder="Username..." required>
                         <label class="control-label" for="username">Username</label>
                     </div>
                     <div class="form-floating">
-                        <input name="password" class="form-control" type="password" id="password" placeholder="Password...">
+                        <input name="password" class="form-control" type="password" id="password" placeholder="Password..." required>
                         <label class="control-label" for="password">Password</label>
                     </div>
                     <div class="form-floating">

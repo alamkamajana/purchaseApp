@@ -10,6 +10,7 @@
         --white-color: #ffffff;
         --body-font: 'Nunito', sans-serif;
         --normal-font-size: 1rem;--z-fixed: 100;
+        --bs-dropdown-link-active-bg: var(--first-color)
     }
 }
 
@@ -23,6 +24,7 @@
         --white-color: #ffffff;
         --body-font: 'Nunito', sans-serif;
         --normal-font-size: 1rem;--z-fixed: 100;
+        --bs-dropdown-link-active-bg: var(--first-color) !important;
     }
 }
 
@@ -332,3 +334,42 @@ textarea:focus,
       vertical-align: middle;
       height: 60px;
   }
+
+.form-floating>.form-control-plaintext~label::after,
+.form-floating>.form-control:focus~label::after, 
+.form-floating>.form-control:not(:placeholder-shown)~label::after, 
+.form-floating>.form-select~label::after {
+    background-color: inherit;
+}
+
+.form-floating{
+    padding-left: 0;
+    >.form-control:disabled~label::after, .form-floating>:disabled~label::after {
+        background-color: inherit;
+    }
+    > label {
+        padding-left: 0;
+      }
+}
+
+.bootstrap-select .btn {
+    width :100%;
+    font-size: 16px;
+    background-color : inherit;
+    border: none !important; 
+    border-radius: 0 !important;
+    border-bottom: 1px solid #666666 !important;
+    box-shadow: none !important;
+    padding-left: 0;
+    outline: 0 !important;
+}
+
+.bootstrap-select .btn:focus,
+.bootstrap-select .btn:focus-visible,
+.bootstrap-select .btn:active{
+    outline: none ;
+    border: none ; 
+    box-shadow: none !important;
+    border-bottom: 2px solid #e27f34 !important;
+    outline: 0 !important;
+}
