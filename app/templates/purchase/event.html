@@ -72,7 +72,7 @@
                                 <label class="control-label" for="ics">ICS</label>
                             </div>
                             <div class="form-floating">
-                                <input class="form-control" type="text" id="ap-name" name="ap-name" placeholder="AP...">
+                                <input class="form-control" type="text" id="ap-name" name="ap-name" value="{{ device_name }}" placeholder="AP..." readonly>
                                 <label class="control-label" for="ap-name">Ap Name</label>
                             </div>
                             <div class="form-floating">
@@ -205,7 +205,7 @@
                         </td>
                         <td>
                             <span class="event-id" style="display: none;">{{event.id}}</span>
-                            <button type="button" class="btn btn-secondary event-info{{event.id}}" id="edit-{{event.id}}-btn" data-toggle="modal" data-target="#editTransactionModal" data-event-id="{{event.id}}">
+                            <button type="button" class="btn btn-secondary event-info{{event.id}}" id="edit-{{event.id}}-btn" data-toggle="modal" data-target="#editEventModal" data-event-id="{{event.id}}">
                                 <span><i class='bx bxs-pencil'></i></span>
                             </button>
                             <button onclick="updateEvent('{{ event.id }}')" type="button" class="btn btn-success event-info{{event.id}} hidden">
@@ -242,7 +242,7 @@
                     </button>
                 </div>
                 <div class="modal-body" style="padding:5%">
-                    <input class="form-control id-form" type="number" id="event" name="event" value="0">
+                    <input class="form-control id-form" type="hidden" id="event" name="event"  value="0">
 
                     <div class="form-floating">
                         <select name="purchase-order" class="form-control selectpicker purchase-order-form" data-live-search="true"

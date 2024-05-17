@@ -3,7 +3,7 @@
     Sync
 {% endblock %}
 {% block plugin %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/sync.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sync.css') }}">
 
 {% endblock %}
 
@@ -12,68 +12,72 @@
 {% endblock %}
 
 {% block content %}
-<span id="selected-menu" style="display: none;">sync_data</span>
-<div class="container">
-    <button class="sync-button">
-        <div style="color: blue">
-            <i class='bx bx-sync bx-lg'></i>
-        </div>
-        <div>
-            Sync Data
-        </div>
-    </button>
-    <div id="progress-bar" class="progress" style="display: none;">
-        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    <span id="selected-menu" style="display: none;">sync_data</span>
+    <div class="container">
+        <button class="sync-button">
+            <div style="color: blue">
+                <i class='bx bx-sync bx-lg'></i>
+            </div>
+            <div>
+                Sync Data
+            </div>
+        </button>
+
     </div>
-</div>
+    <div class="container">
+        <div id="progress-bar" class="progress" style="display: none;">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
 
-<script>
-const syncButton = document.querySelector('.sync-button');
-const progressBar = document.getElementById('progress-bar');
-const progressValue = progressBar.querySelector('.progress-bar');
+    <script>
+        const syncButton = document.querySelector('.sync-button');
+        const progressBar = document.getElementById('progress-bar');
+        const progressValue = progressBar.querySelector('.progress-bar');
 
-const apiUrls = [
-    '/sync/get-product-odoo',
-    '/sync/get-purchase-order-odoo',
-    '/sync/get-farmer-odoo',
-    '/sync/get-user-odoo',
-    '/sync/get-commodity-odoo',
-    '/sync/get-commodityitem-odoo',
-    '/sync/get-station-odoo',
-    '/sync/get-cluster-odoo',
-    '/sync/sync-with-odoo',
-    '/sync/get-purchase-order-line-odoo'
-];
+        const apiUrls = [
+            '/sync/get-product-odoo',
+            '/sync/get-purchase-order-odoo',
+            '/sync/get-farmer-odoo',
+            '/sync/get-user-odoo',
+            '/sync/get-commodity-odoo',
+            '/sync/get-commodityitem-odoo',
+            '/sync/get-station-odoo',
+            '/sync/get-cluster-odoo',
+            '/sync/sync-with-odoo',
+            '/sync/get-purchase-order-line-odoo'
+        ];
 
-syncButton.addEventListener('click', () => {
-    progressBar.style.display = 'block'; // Show progress bar
-    callApiSequence(apiUrls, 0); // Start calling APIs
-});
+        syncButton.addEventListener('click', () => {
+            progressBar.style.display = 'block'; // Show progress bar
+            callApiSequence(apiUrls, 0); // Start calling APIs
+        });
 
-async function callApiSequence(urls, index) {
-    if (index >= urls.length) {
-        progressBar.style.display = 'none'; // Hide progress bar
-        alert('Synchronization completed!');
-        return;
-    }
+        async function callApiSequence(urls, index) {
+            if (index >= urls.length) {
+                progressBar.style.display = 'none'; // Hide progress bar
+                alert('Synchronization completed!');
+                return;
+            }
 
-    const percentage = Math.round((index / urls.length) * 100);
-    progressValue.style.width = `${percentage}%`;
-    progressValue.ariaValueNow = percentage;
+            const percentage = Math.round((index / urls.length) * 100);
+            console.log(percentage)
+            progressValue.style.width = `${percentage}%`;
+            progressValue.ariaValueNow = percentage;
 
-    try {
-        const response = await fetch(urls[index]);
-        if (response.status === 200) {
-            callApiSequence(urls, index + 1); // Call next API
-        } else {
-            throw new Error(`Error calling ${urls[index]}: ${response.status}`);
+            try {
+                const response = await fetch(urls[index]);
+                if (response.status === 200) {
+                    callApiSequence(urls, index + 1); // Call next API
+                } else {
+                    throw new Error(`Error calling ${urls[index]}: ${response.status}`);
+                }
+            } catch (error) {
+                progressBar.style.display = 'none'; // Hide progress bar on error
+                alert(`Synchronization failed: ${error.message}`);
+            }
         }
-    } catch (error) {
-        progressBar.style.display = 'none'; // Hide progress bar on error
-        alert(`Synchronization failed: ${error.message}`);
-    }
-}
-</script>
+    </script>
 
 {% endblock %}
 
