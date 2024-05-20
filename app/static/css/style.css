@@ -1,5 +1,4 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
 @media screen and (min-width: 768px){
     :root{
         --header-height: 2rem;
@@ -8,7 +7,7 @@
         --first-color-focus: #a75314;
         --first-color-light: #f1c9ab;
         --white-color: #ffffff;
-        --body-font: 'Nunito', sans-serif;
+        --body-font: Arial, Helvetica, sans-serif;
         --normal-font-size: 1rem;--z-fixed: 100;
         --bs-dropdown-link-active-bg: var(--first-color)
     }
@@ -22,7 +21,7 @@
         --first-color-focus: #a75314;
         --first-color-light: #f1c9ab;
         --white-color: #ffffff;
-        --body-font: 'Nunito', sans-serif;
+        --body-font: Arial, Helvetica, sans-serif;
         --normal-font-size: 1rem;--z-fixed: 100;
         --bs-dropdown-link-active-bg: var(--first-color) !important;
     }
