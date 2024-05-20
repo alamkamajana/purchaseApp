@@ -181,6 +181,20 @@ class Transaction(db.Model):
         return f'<Transaction {self.id}>'
 
 
+class UserLogging(db.Model):
+    __tablename__ = 'user_logging'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80))
+    email = db.Column(db.String(120))
+    session = db.Column(db.String(120))
+    message = db.Column(db.String)
+    device = db.Column(db.String)
+    mac_address = db.Column(db.String)
+    ip_address_local = db.Column(db.String)
+    ip_address_external = db.Column(db.String)
+    date = db.Column(db.DateTime)
+
+
 
 
 
