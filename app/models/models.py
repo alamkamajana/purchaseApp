@@ -62,11 +62,15 @@ class Farmer(db.Model):
 class Product(db.Model):
     __tablename__ = 'product'
     id = db.Column(db.Integer, primary_key=True)
-    product_code = db.Column(db.String(64))
-    product_name = db.Column(db.String(128))
+    product_code = db.Column(db.String)
+    product_name = db.Column(db.String)
+    itemcode_code = db.Column(db.String)
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'))
     farmer = db.relationship('Farmer', back_populates='products')
     item_code_odoo_id = db.Column(db.Integer)
+    product_odoo_id = db.Column(db.Integer)
+    product_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
+    itemcode_id = db.Column(db.Integer, db.ForeignKey('nfcapp_commodity_item_odoo.id'))
 
 
 class PurchaseEvent(db.Model):

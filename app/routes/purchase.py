@@ -160,17 +160,35 @@ def transaction_list():
             po_line_product_arr.append(product.product_id)
 
         farmer_itemcodelist = list(ast.literal_eval(farmer.item_code_list)) if farmer.item_code_list else None
+        commodity_item_product_arr = []
         for item in farmer_itemcodelist :
             commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+            if commodityitem.product_id :
+                # commodity_item_product_arr.append(commodityitem.product_id)
+                commodityitem_json = {}
+                commodityitem_json['commodityitem_id'] = commodityitem.id
+                commodityitem_json['commodityitem_name'] = commodityitem.code
+                commodityitem_json['commodityitem_price'] = commodityitem.price
+                commodityitem_json['product_id'] = commodityitem.product_id
+                commodityitem_json['product_name'] = commodityitem.product_name
+                commodityitem_json['commodity_id'] = commodityitem.commodity_id
+                commodity_item_product_arr.append(commodityitem_json)
 
 
+        product_can_purchase_arr= []
+        for commodity_data in commodity_item_product_arr:
+            if commodity_data['product_id'] in po_line_product_arr:
+                product_can_purchase_arr.append(commodity_data)
+        product_ids = [p['product_id']for p in commodity_item_product_arr]
+        products_list = ProductOdoo.query.filter(ProductOdoo.odoo_id.in_(product_ids)).all()
+        products_list_arr = []
 
         for po_line in po_lines:
             total_price += po_line.subtotal
 
         return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,
-                               product_list=product_list, transaction_list=transaction_list, page=page,
-                               total_pages=total_pages, total_price=total_price)
+                               product_list=product_can_purchase_arr, transaction_list=transaction_list, page=page,
+                               total_pages=total_pages, total_price=total_price, ProductOdoo=ProductOdoo)
     else:
         event_list = PurchaseEvent.query.all()
         farmer_list = Farmer.query.all()
@@ -180,7 +198,7 @@ def transaction_list():
 @bp.route('/transaction/add', methods=["POST"])
 @login_required
 def transaction_add():
-    print(request.form)
+
 
     purchase_order_id = request.form['purchase-order']
     purchase_event_id = request.form['purchase-event']
@@ -188,11 +206,11 @@ def transaction_add():
     product_id = request.form['product']
     price_unit = request.form['price-unit']
     qty = request.form['qty']
-
+    product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product_id)).first()
     new_transaction = PurchaseOrderLine(
         purchase_order_id=purchase_order_id,
 
-        product_odoo_id=product_id,
+        product_odoo_id=product_odoo.id,
         unit_price=float(price_unit),
         qty=float(qty),
         subtotal=float(price_unit) * float(qty)
@@ -212,7 +230,8 @@ def transaction_update():
     product = request.form['product']
     price_unit = request.form['price-unit']
     qty = request.form['qty']
-    print(transaction_id)
+    product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product)).first()
+
 
     # Update the data dictionary
     transaction = PurchaseOrderLine.query.filter_by(id=transaction_id).first()  # Example: Update the user with ID 1
@@ -220,12 +239,24 @@ def transaction_update():
 
         transaction.unit_price = price_unit
         transaction.qty = qty
-        transaction.product_odoo_id = product
+        transaction.product_odoo_id = product_odoo.id
         transaction.subtotal = float(qty) * float(price_unit)
         db.session.commit()
         return redirect(request.referrer)
     else:
         return jsonify({'message': 'Transaction not found'}), 404
+
+
+@bp.route('/transaction/confirm', methods=["POST"])
+@login_required
+def transaction_confirm():
+    purchase_order = request.form['purchase_order']
+    po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
+    po.status = 'confirm'
+    db.session.commit()
+    return jsonify({'status': 'success', 'message': 'Purchase order confirmed!'})
+
+
 
 
 @bp.route('/receipt', methods=["GET"])
