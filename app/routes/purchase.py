@@ -8,7 +8,7 @@ from sqlalchemy import and_, create_engine
 from flask import jsonify
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
-from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo
+from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo
 from app.models.models import PurchaseEvent, Transaction, User, Product, PurchaseOrder, PurchaseOrderLine, Farmer
 
 from functools import wraps
@@ -19,6 +19,7 @@ import os
 import uuid
 import re
 from .auth import login_required
+import ast
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
@@ -118,10 +119,6 @@ def event_update():
 @bp.route('/transaction', methods=["GET"])
 @login_required
 def transaction_list():
-    device_name = os.environ.get('USER')
-    mac_addr = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
-    local_ip_address = socket.gethostbyname(socket.gethostname())
-    external_ip_address = requests.get('https://api.ipify.org').text
 
     event_id = request.args.get('purchase-event', 0, type=int)
     farmer_id = request.args.get('farmer', 0, type=int)
@@ -154,6 +151,20 @@ def transaction_list():
         po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
         total_price = 0
         product_list = ProductOdoo.query.all()
+
+
+        purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
+        purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
+        po_line_product_arr = []
+        for product in purchase_order_line_odoo :
+            po_line_product_arr.append(product.product_id)
+
+        farmer_itemcodelist = list(ast.literal_eval(farmer.item_code_list)) if farmer.item_code_list else None
+        for item in farmer_itemcodelist :
+            commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+
+
+
         for po_line in po_lines:
             total_price += po_line.subtotal
 
