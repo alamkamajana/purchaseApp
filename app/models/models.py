@@ -114,6 +114,7 @@ class PurchaseEvent(db.Model):
 class PurchaseOrder(db.Model):
     __tablename__ = 'purchase_order'
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
     receipt_number = db.Column(db.String(64))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='purchase_order', lazy='dynamic')
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'))

@@ -47,7 +47,7 @@
             </div>
             <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
                 <div style="display: flex; align-items: center;">
-                    {% if po_status == 'draft' %}
+                    {% if po_status.lower() == 'draft' %}
                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                 data-target="#addTransactionModal">
                             Add
@@ -194,14 +194,14 @@
                     </td>
                 </tr>
             </table>
-            <span id="pagination-link" class="hidden">/purchase/transaction?page=</span>
+            <span id="pagination-link" class="hidden">/purchase/order?page=</span>
             <span id="current-page" class="hidden">{{ page }}</span>
             <span id="total-page" class="hidden">{{ total_pages }}</span>
             <div id="pagination" style="width:100%; display:flex; justify-content: center;"></div>
         </div>
         <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
             <div style="display: flex; align-items: center;">
-                {% if po_status == 'draft' %}
+                {% if po_status.lower() == 'draft' %}
                     <button type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</button>
                 {% endif %}
 
