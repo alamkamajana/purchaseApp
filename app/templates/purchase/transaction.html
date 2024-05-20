@@ -47,10 +47,12 @@
             </div>
             <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
                 <div style="display: flex; align-items: center;">
-                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                            data-target="#addTransactionModal">
-                        Add
-                    </button>
+                    {% if po_status == 'draft' %}
+                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                data-target="#addTransactionModal">
+                            Add
+                        </button>
+                    {% endif %}
                 </div>
             </div>
 
@@ -199,7 +201,10 @@
         </div>
         <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
             <div style="display: flex; align-items: center;">
-                <button type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</button>
+                {% if po_status == 'draft' %}
+                    <button type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</button>
+                {% endif %}
+
             </div>
         </div>
     </div>

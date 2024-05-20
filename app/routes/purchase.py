@@ -186,9 +186,10 @@ def transaction_list():
         for po_line in po_lines:
             total_price += po_line.subtotal
 
+        po_status = po.status if po else None
         return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,
                                product_list=product_can_purchase_arr, transaction_list=transaction_list, page=page,
-                               total_pages=total_pages, total_price=total_price, ProductOdoo=ProductOdoo)
+                               total_pages=total_pages, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status)
     else:
         event_list = PurchaseEvent.query.all()
         farmer_list = Farmer.query.all()
