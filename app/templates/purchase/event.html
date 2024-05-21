@@ -94,16 +94,16 @@
         <div class="event-container">
             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                 <tr>
-                    <th style="width: 15%;">
+                    <th style="width: 12%;">
                         Purchase Event
                     </th>
                     <th style="width: 12%;">
                         Purchase Order
                     </th>
-                    <th style="width: 12%;">
+                    <th style="width: 10%;">
                         Cashier
                     </th>
-                    <th style="width: 15%;">
+                    <th style="width: 10%;">
                         Purchaser
                     </th>
                     <th style="width: 10%;">
@@ -116,7 +116,10 @@
                         Fund
                     </th>
                     <th style="width: 10%;">
-                        Edit
+                        Total PO
+                    </th>
+                    <th style="width: 10%;">
+                        Action
                     </th>
                 </tr>
                 {% for event in events %}
@@ -203,17 +206,19 @@
                                 <input type="number" id="fund-update{{event.id}}" name="fund" value="{{'%.2f' | format(event.fund)}}">
                             </div>
                         </td>
+                        <td class="fund-column">
+                            <div class="event-info{{event.id}}" id="pos-info{{event.id}}">
+                                {{ event.purchase_orders.all()|length }}
+                            </div>
+                        </td>
                         <td>
                             <span class="event-id" style="display: none;">{{event.id}}</span>
                             <button type="button" class="btn btn-secondary event-info{{event.id}}" id="edit-{{event.id}}-btn" data-toggle="modal" data-target="#editEventModal" data-event-id="{{event.id}}">
                                 <span><i class='bx bxs-pencil'></i></span>
                             </button>
-                            <button onclick="updateEvent('{{ event.id }}')" type="button" class="btn btn-success event-info{{event.id}} hidden">
-                                <span><i class='bx bx-check' ></i></span>
-                            </button>
-                            <button onclick="cancelUpdateEvent('{{ event.id }}')" type="button" class="btn btn-danger event-info{{event.id}} hidden">
-                                <span><i class='bx bx-x'></i></span>
-                            </button>
+                            <a href="/purchase/transaction?pe={{event.id}}" type="button" class="btn btn-success event-info{{event.id}}">
+                                <span><i class='bx bx-list-check'></i></span>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

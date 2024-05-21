@@ -116,84 +116,193 @@ def event_update():
         return redirect(request.referrer)
 
 
+# @bp.route('/transaction', methods=["GET"])
+# @login_required
+# def transaction_list():
+#
+#     event_id = request.args.get('purchase-event', 0, type=int)
+#     farmer_id = request.args.get('farmer', 0, type=int)
+#     if event_id and farmer_id:
+#         event = PurchaseEvent.query.filter_by(id=event_id).first()
+#         farmer = Farmer.query.filter_by(id=farmer_id).first()
+#         page = request.args.get('page', 1, type=int)
+#
+#         per_page = 10
+#         po = PurchaseOrder.query.filter(
+#             and_(
+#                 PurchaseOrder.purchase_event_id == event_id,
+#                 PurchaseOrder.farmer_id == farmer_id
+#             )
+#         ).first()
+#
+#         if not po:
+#             po = PurchaseOrder(
+#                 purchase_event_id=event_id,
+#                 farmer_id=farmer_id,
+#                 status="Draft",
+#             )
+#             db.session.add(po)
+#             db.session.commit()
+#
+#         pagination = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).order_by(
+#             PurchaseOrderLine.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
+#         transaction_list = pagination.items
+#         total_pages = pagination.pages
+#         po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
+#         total_price = 0
+#         product_list = ProductOdoo.query.all()
+#
+#
+#         purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
+#         purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
+#         po_line_product_arr = []
+#         for product in purchase_order_line_odoo :
+#             po_line_product_arr.append(product.product_id)
+#
+#         farmer_itemcodelist = list(ast.literal_eval(farmer.item_code_list)) if farmer.item_code_list else None
+#         commodity_item_product_arr = []
+#         for item in farmer_itemcodelist :
+#             commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+#             if commodityitem.product_id :
+#                 # commodity_item_product_arr.append(commodityitem.product_id)
+#                 commodityitem_json = {}
+#                 commodityitem_json['commodityitem_id'] = commodityitem.id
+#                 commodityitem_json['commodityitem_name'] = commodityitem.code
+#                 commodityitem_json['commodityitem_price'] = commodityitem.price
+#                 commodityitem_json['product_id'] = commodityitem.product_id
+#                 commodityitem_json['product_name'] = commodityitem.product_name
+#                 commodityitem_json['commodity_id'] = commodityitem.commodity_id
+#                 commodity_item_product_arr.append(commodityitem_json)
+#
+#
+#         product_can_purchase_arr= []
+#         for commodity_data in commodity_item_product_arr:
+#             if commodity_data['product_id'] in po_line_product_arr:
+#                 product_can_purchase_arr.append(commodity_data)
+#         product_ids = [p['product_id']for p in commodity_item_product_arr]
+#         products_list = ProductOdoo.query.filter(ProductOdoo.odoo_id.in_(product_ids)).all()
+#         products_list_arr = []
+#
+#         for po_line in po_lines:
+#             total_price += po_line.subtotal
+#
+#         po_status = po.status if po else None
+#         return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,
+#                                product_list=product_can_purchase_arr, transaction_list=transaction_list, page=page,
+#                                total_pages=total_pages, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status)
+#     else:
+#         event_list = PurchaseEvent.query.all()
+#         farmer_list = Farmer.query.all()
+#         return render_template('purchase/transaction_select.html', event_list=event_list, farmer_list=farmer_list)
+
+
+@bp.route('/order', methods=["GET"])
+@login_required
+def transaction_order():
+    purchase_orders = request.args.get('po', 0, type=int)
+    po = PurchaseOrder.query.filter_by(id=purchase_orders).first()
+    event = PurchaseEvent.query.filter_by(id=po.purchase_event_id).first()
+    farmer = Farmer.query.filter_by(id=po.farmer_id).first()
+
+    pagination = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).order_by(
+        PurchaseOrderLine.id.desc())
+    transaction_list = pagination
+    po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
+    total_price = 0
+    product_list = ProductOdoo.query.all()
+
+
+    purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
+    purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
+    po_line_product_arr = []
+    for product in purchase_order_line_odoo :
+        po_line_product_arr.append(product.product_id)
+
+    farmer_itemcodelist = list(ast.literal_eval(farmer.item_code_list)) if farmer.item_code_list else None
+    commodity_item_product_arr = []
+    for item in farmer_itemcodelist :
+        commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+        if commodityitem.product_id :
+            # commodity_item_product_arr.append(commodityitem.product_id)
+            commodityitem_json = {}
+            commodityitem_json['commodityitem_id'] = commodityitem.id
+            commodityitem_json['commodityitem_name'] = commodityitem.code
+            commodityitem_json['commodityitem_price'] = commodityitem.price
+            commodityitem_json['product_id'] = commodityitem.product_id
+            commodityitem_json['product_name'] = commodityitem.product_name
+            commodityitem_json['commodity_id'] = commodityitem.commodity_id
+            commodity_item_product_arr.append(commodityitem_json)
+
+
+    product_can_purchase_arr= []
+    for commodity_data in commodity_item_product_arr:
+        if commodity_data['product_id'] in po_line_product_arr:
+            product_can_purchase_arr.append(commodity_data)
+    product_ids = [p['product_id']for p in commodity_item_product_arr]
+    products_list = ProductOdoo.query.filter(ProductOdoo.odoo_id.in_(product_ids)).all()
+    products_list_arr = []
+
+    for po_line in po_lines:
+        total_price += po_line.subtotal
+
+    po_status = po.status if po else None
+    print(product_can_purchase_arr)
+    return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,
+                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status)
+
+
+@bp.route('/order/add', methods=["POST"])
+@login_required
+def transaction_order_add():
+    purchase_event = request.form['pe']
+    farmer = request.form['farmer']
+    new_po = PurchaseOrder(
+        purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft'
+    )
+    db.session.add(new_po)
+    db.session.commit()
+    # farmer_id = request.form['farmer']
+    # product_id = request.form['product']
+    # price_unit = request.form['price-unit']
+    # qty = request.form['qty']
+    # product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product_id)).first()
+    # new_transaction = PurchaseOrderLine(
+    #     purchase_order_id=purchase_order_id,
+    #
+    #     product_odoo_id=product_odoo.id,
+    #     unit_price=float(price_unit),
+    #     qty=float(qty),
+    #     subtotal=float(price_unit) * float(qty)
+    # )
+    # db.session.add(new_transaction)
+    # db.session.commit()
+    #
+    url = "/purchase/transaction?pe=" + purchase_event
+    return redirect(url)
+
+@bp.route('/search_farmers', methods=["POST","GET"])
+def transaction_search_farmer():
+    search_term = request.args.get('q')
+    if not search_term:
+        return jsonify(farmers=[])  # Return empty list if no search term is provided
+
+    farmers = Farmer.query.filter(Farmer.farmer_name.ilike(f'%{search_term}%')).all()
+    farmer_data = [{'farmer_name': farmer.farmer_name} for farmer in farmers]
+    print(farmer_data)
+    return jsonify(farmers=farmer_data)
+
+
 @bp.route('/transaction', methods=["GET"])
 @login_required
 def transaction_list():
+    try :
+        event_id = request.args.get('pe', 0, type=int)
+        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
+        event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
+        return render_template('purchase/transaction_po.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=Farmer)
 
-    event_id = request.args.get('purchase-event', 0, type=int)
-    farmer_id = request.args.get('farmer', 0, type=int)
-    if event_id and farmer_id:
-        event = PurchaseEvent.query.filter_by(id=event_id).first()
-        farmer = Farmer.query.filter_by(id=farmer_id).first()
-        page = request.args.get('page', 1, type=int)
-
-        per_page = 10
-        po = PurchaseOrder.query.filter(
-            and_(
-                PurchaseOrder.purchase_event_id == event_id,
-                PurchaseOrder.farmer_id == farmer_id
-            )
-        ).first()
-
-        if not po:
-            po = PurchaseOrder(
-                purchase_event_id=event_id,
-                farmer_id=farmer_id,
-                status="Draft",
-            )
-            db.session.add(po)
-            db.session.commit()
-
-        pagination = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).order_by(
-            PurchaseOrderLine.id.desc()).paginate(page=page, per_page=per_page, error_out=False)
-        transaction_list = pagination.items
-        total_pages = pagination.pages
-        po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
-        total_price = 0
-        product_list = ProductOdoo.query.all()
-
-
-        purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
-        purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
-        po_line_product_arr = []
-        for product in purchase_order_line_odoo :
-            po_line_product_arr.append(product.product_id)
-
-        farmer_itemcodelist = list(ast.literal_eval(farmer.item_code_list)) if farmer.item_code_list else None
-        commodity_item_product_arr = []
-        for item in farmer_itemcodelist :
-            commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
-            if commodityitem.product_id :
-                # commodity_item_product_arr.append(commodityitem.product_id)
-                commodityitem_json = {}
-                commodityitem_json['commodityitem_id'] = commodityitem.id
-                commodityitem_json['commodityitem_name'] = commodityitem.code
-                commodityitem_json['commodityitem_price'] = commodityitem.price
-                commodityitem_json['product_id'] = commodityitem.product_id
-                commodityitem_json['product_name'] = commodityitem.product_name
-                commodityitem_json['commodity_id'] = commodityitem.commodity_id
-                commodity_item_product_arr.append(commodityitem_json)
-
-
-        product_can_purchase_arr= []
-        for commodity_data in commodity_item_product_arr:
-            if commodity_data['product_id'] in po_line_product_arr:
-                product_can_purchase_arr.append(commodity_data)
-        product_ids = [p['product_id']for p in commodity_item_product_arr]
-        products_list = ProductOdoo.query.filter(ProductOdoo.odoo_id.in_(product_ids)).all()
-        products_list_arr = []
-
-        for po_line in po_lines:
-            total_price += po_line.subtotal
-
-        po_status = po.status if po else None
-        return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,
-                               product_list=product_can_purchase_arr, transaction_list=transaction_list, page=page,
-                               total_pages=total_pages, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status)
-    else:
-        event_list = PurchaseEvent.query.all()
-        farmer_list = Farmer.query.all()
-        return render_template('purchase/transaction_select.html', event_list=event_list, farmer_list=farmer_list)
+    except Exception as e :
+        print(e)
 
 
 @bp.route('/transaction/add', methods=["POST"])
@@ -219,7 +328,7 @@ def transaction_add():
     db.session.add(new_transaction)
     db.session.commit()
 
-    url = "/purchase/transaction?purchase-event=" + purchase_event_id + "&purchase-order=" + purchase_order_id + "&farmer=" + farmer_id
+    url = "/purchase/order?purchase-event=" + purchase_event_id + "&po=" + purchase_order_id + "&farmer=" + farmer_id
 
     return redirect(url)
 
