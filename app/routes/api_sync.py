@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
-from app.models.models import Farmer, User, Product
+from app.models.models import Farmer, User, Product, MasterFarmer
 from app.models.db import db
 from .auth import login_required
 
@@ -13,6 +13,36 @@ load_dotenv()
 bp = Blueprint('api_sync', __name__, url_prefix='/sync')
 odoo_base_url = os.getenv('BASE_URL_ODOO')
 token = os.getenv('TOKEN')
+
+
+@bp.route('/get-master-farmer')
+@login_required
+def sync_get_master_farmer_odoo():
+    try :
+        url = f"{odoo_base_url}/nfcapp-purchase/get-nfcapp-farmer"
+        data = {'token': token}
+
+        # GET Request
+        response = requests.get(url, data=data)
+        response_json = response.json()
+        for farmer in response_json :
+            oid = farmer['odoo_id']
+            farmer_json = {k: v for k, v in farmer.items() if k != 'id'}
+            check_data = MasterFarmer.query.filter_by(odoo_id=oid).first()
+            if not check_data :
+                print(farmer_json)
+                new_data = MasterFarmer(**farmer_json)
+                db.session.add(new_data)
+
+        db.session.commit()
+
+        return {
+            "message" : "Success",
+            "status" : 200
+        }
+    except Exception as e:
+        print(e)
+        return {"message": str(e), "status":400}
 
 @bp.route('/get-product-odoo')
 @login_required
@@ -122,12 +152,27 @@ def sync_get_farmer_odoo():
         response = requests.get(url, data=data)
         response_json = response.json()
         for farmer in response_json :
+            print(farmer)
             oid = farmer['odoo_id']
-            farmer_json = {k: v for k, v in farmer.items() if k != 'id'}
+            farmer_json = {k: v for k, v in farmer.items() if not k in ['id','commodity_items']}
+            print(farmer_json)
             check_data = NfcappFarmerOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_data :
+            if not check_data:
                 new_data = NfcappFarmerOdoo(**farmer_json)
+
                 db.session.add(new_data)
+
+                for commodity in farmer['commodity_items']:
+                    print(commodity)
+                    oid = commodity['odoo_id']
+                    commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
+                    print(commodity_json)
+                    check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,farmer_id=farmer['odoo_id']).first()
+                    if not check_data2:
+                        new_data2 = NfcappCommodityItemOdoo(**commodity_json)
+                        db.session.add(new_data2)
+
+
 
         db.session.commit()
 

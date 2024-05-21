@@ -45,10 +45,11 @@ def login():
         login = login_session.post(login_endpoint, json=login_data)
         # Authenticate the user against the external application
         # user_session = login.cookies.get_dict()
-        login_data = login.json()
+        login_data2 = login.json()
         # print(password)
-        if login_data['result']['status'] == 200:
-            data_login = login_data['result']
+        if login_data2['result']['status'] == 200:
+            print(login_data2)
+            data_login = login_data2['result']
             user = User.query.filter_by(username=data_login['name']).first()
             # session['username'] = data_login['name']
 

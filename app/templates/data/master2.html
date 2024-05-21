@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}
+    Master Data
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Master Data</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">master_data</span>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="event-container">
+
+                <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                    <tr>
+                        <th>
+                            Farmer
+                        </th>
+                        <th>
+                            Code
+                        </th>
+                         <th>
+                            Parent
+                        </th>
+                    </tr>
+                    {% for data in datas %}
+                        <tr>
+                            <td>{{ data.farmer.code }}</td>
+                             <td>{{ data.farmer.farmer_name }}</td>
+                                    <td>{{ data.farmer.parent_name }}</td>
+                              <td>{{ data.farmer.certification_status_id }}</td>
+                            <td>
+
+                              {% for commodity_item in data.commodity_items %}
+
+                                      {{ commodity_item.code }} / {{ commodity_item.certStatus }} / {{ commodity_item.product_id }} <br/>
+                                 {% endfor %}
+
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}

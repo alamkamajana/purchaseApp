@@ -15,6 +15,19 @@ farmer_product_association = db.Table('farmer_product_association',
     db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
 )
 
+
+class MasterFarmer(db.Model):
+    __tablename__ = 'master_farmer'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(80), unique=True, nullable=False)
+    farmer_name = db.Column(db.String(120))
+    odoo_id = db.Column(db.Integer)
+    parent_id = db.Column(db.Integer)
+    station_id = db.Column(db.Integer)
+
+
+
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)

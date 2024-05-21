@@ -21,6 +21,30 @@ token = os.getenv('TOKEN')
 def sync_menu():
     return render_template('data/sync.html')
 
+@bp.route('/master2', methods=["GET"])
+@login_required
+def master_data2():
+    parent_id = request.args.get('parent-id', type=int)
+    farmers = NfcappFarmerOdoo.query.filter_by(parent_id=parent_id).all()
+
+    datas = []
+
+
+    for farmer in farmers:
+        data = {}
+        data['farmer']=farmer
+        data2 = []
+        commodity_items = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
+        for commodity_item in commodity_items:
+            data2.append(commodity_item)
+        data['commodity_items'] = data2
+        datas.append(data)
+
+    return render_template('data/master2.html',datas=datas)
+
+
+
+
 @bp.route('/master', methods=["GET"])
 @login_required
 def master_data():
@@ -56,7 +80,7 @@ def master_data():
 @bp.route('/purchase-order', methods=["GET"])
 @login_required
 def show_purchase_order():
-    purchase_orders = PurchaseOrderOdoo.query.all()
+    purchase_orders = PurchaseOrderOdoo.query.order_by(PurchaseOrderOdoo.odoo_id.desc()).all()
     data = []
     for po in purchase_orders :
         po_json = {}
