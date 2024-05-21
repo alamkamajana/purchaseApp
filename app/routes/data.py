@@ -6,7 +6,7 @@ import os
 import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.db import db
-from app.models.models import Farmer
+from app.models.models import Farmer, User
 from .auth import login_required
 import ast
 
@@ -80,9 +80,15 @@ def master_data():
 @bp.route('/purchase-order', methods=["GET"])
 @login_required
 def show_purchase_order():
+    user = session['user_odoo_id']
+    user_odoo = User.query.filter_by(user_odoo_id=int(user)).first()
+    print(user_odoo)
     purchase_orders = PurchaseOrderOdoo.query.order_by(PurchaseOrderOdoo.odoo_id.desc()).all()
+    purchase_orders2 = user_odoo.purchase_orders if user else []
+    print(purchase_orders2)
+
     data = []
-    for po in purchase_orders :
+    for po in purchase_orders2 :
         po_json = {}
         po_json['id'] = po.id
         po_json['name'] = po.name

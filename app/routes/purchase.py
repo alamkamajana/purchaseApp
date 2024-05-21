@@ -20,9 +20,23 @@ import uuid
 import re
 from .auth import login_required
 import ast
+import random
+import string
+
+import socket
+
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
+def generate_unique_sequence_number(model, column, length=8, prefix=""):
+    sequence_number = prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+    if not model.query.filter(column == sequence_number).first():
+        return sequence_number
+
+def get_current_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 
 @bp.route("/")
 @login_required
@@ -65,9 +79,14 @@ def event_list():
     events = pagination.items
     total_pages = pagination.pages
     users = User.query.all()
+    user = session['user_odoo_id']
+    user_odoo = User.query.filter_by(user_odoo_id=int(user)).first()
+    # purchase_orders = PurchaseOrderOdoo.query.order_by(PurchaseOrderOdoo.odoo_id.desc()).all()
+    purchase_orders = user_odoo.purchase_orders if user else []
     # events = PurchaseEvent.query.order_by(PurchaseEvent.id).all()
+    base_url = request.url_root
     return render_template('purchase/event.html', events=events, users=users, page=page, total_pages=total_pages,
-                           po_list=po_list, user_list=user_list, device_name=device_name)
+                           po_list=purchase_orders, user_list=user_list, device_name=device_name, base_url=base_url)
 
 
 @bp.route('/event/add', methods=["POST"])
@@ -79,8 +98,9 @@ def event_add():
     purchaser_id = request.form['purchaser']
     cashier_id = request.form['cashier']
     purchase_order_odoo_id = request.form['purchase-order']
+    pe_name = generate_unique_sequence_number(PurchaseEvent, PurchaseEvent.name, length=8, prefix="")
 
-    purchase_event = PurchaseEvent(fund=fund, ics=ics, purchaser_id=purchaser_id, cashier_id=cashier_id,
+    purchase_event = PurchaseEvent(name=pe_name,fund=fund, ics=ics, purchaser_id=purchaser_id, cashier_id=cashier_id,
                                    purchase_order_odoo_id=purchase_order_odoo_id, ap_name=ap_name)
     db.session.add(purchase_event)
     db.session.commit()
@@ -211,16 +231,22 @@ def transaction_order():
     total_price = 0
     product_list = ProductOdoo.query.all()
 
-
     purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
     purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
     po_line_product_arr = []
     for product in purchase_order_line_odoo :
         po_line_product_arr.append(product.product_id)
 
-    farmer_itemcodelist = list(ast.literal_eval(farmer.item_code_list)) if farmer.item_code_list else None
+    farmer_itemcodelist = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
+
+    item_odoo_arr = []
+    for i in farmer_itemcodelist :
+        if i.odoo_id not in item_odoo_arr :
+            item_odoo_arr.append(i.odoo_id)
+    # print(farmer.id)
+    # print(NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all())
     commodity_item_product_arr = []
-    for item in farmer_itemcodelist :
+    for item in item_odoo_arr :
         commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
         if commodityitem.product_id :
             # commodity_item_product_arr.append(commodityitem.product_id)
@@ -231,6 +257,7 @@ def transaction_order():
             commodityitem_json['product_id'] = commodityitem.product_id
             commodityitem_json['product_name'] = commodityitem.product_name
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
+            commodityitem_json['certStatus'] = commodityitem.certStatus
             commodity_item_product_arr.append(commodityitem_json)
 
 
@@ -246,18 +273,25 @@ def transaction_order():
         total_price += po_line.subtotal
 
     po_status = po.status if po else None
-    print(product_can_purchase_arr)
-    return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,
-                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status)
+    # print(po_line_product_arr)
+    # print(commodity_item_product_arr)
+    farmer_odoo = NfcappFarmerOdoo.query.filter_by(odoo_id=farmer.odoo_id).first()
+    return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
+                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,po_line_product_arr=po_line_product_arr)
 
 
-@bp.route('/order/add', methods=["POST"])
+@bp.route('/order/add', methods=["POST","GET"])
 @login_required
 def transaction_order_add():
-    purchase_event = request.form['pe']
-    farmer = request.form['farmer']
+    if request.method.lower() == 'post' :
+        purchase_event = request.form['pe']
+        farmer = request.form['farmer']
+    else :
+        purchase_event = request.args.get('pe')
+        farmer = request.args.get('farmer')
+    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="")
     new_po = PurchaseOrder(
-        purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft'
+        name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft'
     )
     db.session.add(new_po)
     db.session.commit()
@@ -277,7 +311,7 @@ def transaction_order_add():
     # db.session.add(new_transaction)
     # db.session.commit()
     #
-    url = "/purchase/transaction?pe=" + purchase_event
+    url = f"/purchase/order?po={new_po.id}&farmer={farmer}"
     return redirect(url)
 
 @bp.route('/search_farmers', methods=["POST","GET"])
@@ -314,6 +348,7 @@ def transaction_add():
     farmer_id = request.form['farmer']
     product_id = request.form['product']
     price_unit = request.form['price-unit']
+    barcode = request.form['barcode']
     qty = request.form['qty']
     product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product_id)).first()
     new_transaction = PurchaseOrderLine(
@@ -322,7 +357,8 @@ def transaction_add():
         product_odoo_id=product_odoo.id,
         unit_price=float(price_unit),
         qty=float(qty),
-        subtotal=float(price_unit) * float(qty)
+        subtotal=float(price_unit) * float(qty),
+        barcode=barcode
     )
     db.session.add(new_transaction)
     db.session.commit()
@@ -394,6 +430,24 @@ def cashier_form():
     # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
     return render_template('purchase/cashier_form.html', purchase_order=purchase_order,
                            transaction_list=transaction_list, total_payment=total_payment, status=status)
+
+@bp.route('/search/farmer', methods=["GET"])
+@login_required
+def purchase_search_farmer_bycode():
+    pe = request.args.get('pe', 1, type=int)
+    # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
+    return render_template('purchase/search_farmer.html', pe=pe)
+
+
+@bp.route('/farmer/detail', methods=["GET"])
+@login_required
+def purchase_farmer_detail():
+    pe = request.args.get('pe', 1, type=int)
+    farmer_code = request.args.get('farmer_code')
+    farmer = NfcappFarmerOdoo.query.filter_by(code=farmer_code).first()
+
+    # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
+    return render_template('purchase/farmer_detail.html', pe=pe, farmer=farmer)
 
 
 

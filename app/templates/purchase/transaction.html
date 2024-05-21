@@ -3,7 +3,7 @@
     Transaction
 {% endblock %}
 {% block plugin %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+
 
 {% endblock %}
 
@@ -41,8 +41,18 @@
 
                 </div>
                 <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ po.name }}"
+                           disabled>
+                    <label class="control-label" for="order">Order</label>
+                </div>
+                <div class="form-floating col-sm-12 col-lg">
                     <input name="" class="form-control" id="" value="{{ po.status }}" disabled>
                     <label class="control-label" for="status">Status</label>
+                </div>
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ farmer_odoo.certification_status_id }}"
+                           disabled>
+                    <label class="control-label" for="status">Certification Status ID</label>
                 </div>
             </div>
             <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
@@ -84,23 +94,24 @@
                                         </tr>
 
                                         {% for product in product_list %}
-                                        <tr>
-                                            <td>
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="radio" name="product"
-                                                           id="product-{{ product.product_id }}"
-                                                           value="{{ product.product_id }}"
-                                                           data-price="{{ product.commodityitem_price }}"
-                                                           onchange="updatePrice(this)"
-                                                           >
-                                                    <label class="form-check-label" for="product-{{ product.product_id }}" style="width:80%">
-                                                        {{ product.product_name }}
-                                                    </label>
-                                                    <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
-                                                         width="50"/>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="product"
+                                                               id="product-{{ product.product_id }}"
+                                                               value="{{ product.product_id }}"
+                                                               data-price="{{ product.commodityitem_price }}"
+                                                               onchange="updatePrice(this)"
+                                                        >
+                                                        <label class="form-check-label"
+                                                               for="product-{{ product.product_id }}" style="width:80%">
+                                                            {{ product.product_name }}
+                                                        </label>
+                                                        <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
+                                                             width="50"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
 
                                         {% endfor %}
 
@@ -115,6 +126,10 @@
                                 <div class="form-floating">
                                     <input class="form-control" type="number" id="qty" name="qty" value="0">
                                     <label class="control-label" for="qty">Quantity</label>
+                                </div>
+                            <div class="form-floating">
+                                    <input class="form-control" type="text" id="barcode" name="barcode">
+                                    <label class="control-label" for="barcode">Barcode</label>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -146,6 +161,9 @@
                     </th>
                     <th style="width: 16%;">
                         Subtotal
+                    </th>
+                    <th style="width: 16%;">
+                        Barcode
                     </th>
                     <th style="width: 10%;">
                         Edit
@@ -184,6 +202,13 @@
                             </div>
                         </td>
                         <td>
+                            <div id="subtotal-info{{ transaction.id }}">
+
+                                {{ transaction.barcode }}
+
+                            </div>
+                        </td>
+                        <td>
                             <span class="event-id" style="display: none;">{{ transaction.id }}</span>
                             <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"
                                     id="edit-{{ transaction.id }}-btn" data-toggle="modal"
@@ -207,6 +232,27 @@
                     </td>
                 </tr>
             </table>
+
+            <table>
+                <tr>
+                    <td>PO</td>
+                    <td>Commodity</td>
+                </tr>
+                <tr>
+                    <td>
+                        {% for po_line in po_line_product_arr %}
+                            <p>{{ ProductOdoo.query.filter_by(odoo_id=po_line).first().name }} </p>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for cmd in commodity_item_product_arr %}
+                            <p> {{ cmd['commodityitem_name'] }} / {{ cmd['product_name'] }}
+                                / {{ cmd['certStatus'] }} </p>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+
             <span id="pagination-link" class="hidden">/purchase/order?page=</span>
             <span id="current-page" class="hidden">{{ page }}</span>
             <span id="total-page" class="hidden">{{ total_pages }}</span>
