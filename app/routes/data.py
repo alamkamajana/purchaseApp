@@ -17,10 +17,12 @@ token = os.getenv('TOKEN')
 
 
 @bp.route('/sync', methods=["GET"])
+@login_required
 def sync_menu():
     return render_template('data/sync.html')
 
 @bp.route('/master', methods=["GET"])
+@login_required
 def master_data():
     farmers = Farmer.query.limit(100).all()
     data = []
