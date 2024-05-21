@@ -19,7 +19,7 @@
     outline: 0 !important;
 }
 
-.bootstrap-select.update-form .btn, .update-form input{
+.bootstrap-select.update-form .btn, .update-form input:not([type="radio"]){
     padding: 0;
     
 }

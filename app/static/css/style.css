@@ -196,7 +196,7 @@ a{
 
 }
 
-select, input, .floating-form {
+select, input:not([type="radio"]) , .floating-form {
     width :100%;
     font-size: 16px;
     background-color : inherit;
@@ -209,7 +209,7 @@ select, input, .floating-form {
     
 }
 
-input:focus,
+input:not([type="radio"]) :focus,
 select:focus,
 textarea:focus,
 .floating-form:focus {
@@ -227,7 +227,7 @@ textarea:focus,
 } 
 
 .form-control{
-    padding-left: 0 !important;
+    padding-left: 4px !important;
 }
 
 .dropdown{

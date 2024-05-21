@@ -49,7 +49,7 @@ def login():
         # print(password)
         if login_data['result']['status'] == 200:
             data_login = login_data['result']
-            user = User.query.filter_by(username=data_login['name']).first()
+            user = User.query.filter_by(username=data_login['name'] if data_login['name'] else None).first()
             # session['username'] = data_login['name']
 
             device_name = os.environ.get('USER')
@@ -58,7 +58,7 @@ def login():
             external_ip_address = requests.get('https://api.ipify.org').text
             datetime_now = datetime.today()
 
-            user_session_data = UserSession(username=data_login['name'],email=data_login['email'], session=data_login['token'],action='login',device=device_name,ip_address_local=local_ip_address,ip_address_external=external_ip_address,date=datetime_now,mac_address=mac_addr)
+            user_session_data = UserSession(username=data_login['name'] if data_login['name'] else None,email=data_login['email'], session=data_login['token'],action='login',device=device_name,ip_address_local=local_ip_address,ip_address_external=external_ip_address,date=datetime_now,mac_address=mac_addr)
             db.session.add(user_session_data)
             db.session.commit()
 

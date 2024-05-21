@@ -45,6 +45,7 @@ class NfcappFarmerOdoo(db.Model):
     bank_holder = db.Column(db.String)
     bank_name_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    certification_status_id = db.Column(db.Integer)
 
 
     def __repr__(self):
@@ -117,9 +118,12 @@ class NfcappCommodityOdoo(db.Model):
 
 class NfcappCommodityItemOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_item_odoo'
+
+    farmer_id = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String)
     desc = db.Column(db.String)
+    certStatus = db.Column(db.String)
     commodity_id = db.Column(db.Integer)
     commodity_name = db.Column(db.String)
     variant = db.Column(db.String)

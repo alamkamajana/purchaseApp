@@ -288,7 +288,6 @@ def transaction_search_farmer():
 
     farmers = Farmer.query.filter(Farmer.farmer_name.ilike(f'%{search_term}%')).all()
     farmer_data = [{'farmer_name': farmer.farmer_name} for farmer in farmers]
-    print(farmer_data)
     return jsonify(farmers=farmer_data)
 
 

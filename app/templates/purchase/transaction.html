@@ -3,7 +3,7 @@
     Transaction
 {% endblock %}
 {% block plugin %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
 
 {% endblock %}
 
@@ -74,24 +74,37 @@
                                 <input name="farmer" class="form-control" id="farmer" value="{{ farmer.id }}" hidden>
                                 <input name="purchase-order" class="form-control" id="purchase-order"
                                        value="{{ po.id }}" hidden>
-                                <div class="form-floating">
-                                    <label class="control-label">Product</label>
-                                    <div id="product-options">
+                                <div>
+
+                                    <table id="product-options" class="table">
+                                        <tr>
+                                            <td>
+                                                <div class="control-label">Product</div>
+                                            </td>
+                                        </tr>
+
                                         {% for product in product_list %}
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="product"
-                                                       id="product-{{ product.product_id }}"
-                                                       value="{{ product.product_id }}"
-                                                       data-price="{{ product.commodityitem_price }}"
-                                                       onchange="updatePrice(this)">
-                                                <label class="form-check-label" for="product-{{ product.product_id }}">
-                                                    {{ product.product_name }}
-                                                </label>
-                                                <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
-                                                     width="50"/>
-                                            </div>
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="product"
+                                                           id="product-{{ product.product_id }}"
+                                                           value="{{ product.product_id }}"
+                                                           data-price="{{ product.commodityitem_price }}"
+                                                           onchange="updatePrice(this)"
+                                                           >
+                                                    <label class="form-check-label" for="product-{{ product.product_id }}" style="width:80%">
+                                                        {{ product.product_name }}
+                                                    </label>
+                                                    <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
+                                                         width="50"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+
                                         {% endfor %}
-                                    </div>
+
+                                    </table>
                                 </div>
 
                                 <div class="form-floating">
