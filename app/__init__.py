@@ -10,8 +10,6 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 
 
-
-
 load_dotenv()
 postgresql_url = os.getenv('POSTGRESQL_URL')
 secret_key = os.getenv('SECRET_KEY')
