@@ -6,7 +6,7 @@ import os
 import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.db import db
-from app.models.models import User, PurchaseOrder, PurchaseEvent, DeliveryOrder
+from app.models.models import User, PurchaseOrder, PurchaseEvent, DeliveryOrder, PurchaseOrderLine
 from .auth import login_required
 import ast
 from flask import jsonify
@@ -26,31 +26,58 @@ def generate_unique_sequence_number(model, column, length=8, prefix=""):
 @bp.route('/index', methods=["GET"])
 @login_required
 def delivery_index():
+    pe = request.args.get("pe")
+    purchase_event = PurchaseEvent.query.filter_by(id=int(pe)).first()
+
     pe_list = PurchaseEvent.query.all()
     do_list = DeliveryOrder.query.all()
-    return render_template('delivery/delivery.html', pe_list=pe_list, do_list=do_list)
+    return render_template('delivery/delivery.html', pe_list=pe_list, do_list=do_list, pe=purchase_event)
 
 @bp.route('/create', methods=["POST","GET"])
 @login_required
 def delivery_create():
     try :
-        data = request.get_json()
-
-        driver = data['driver']
-        vehicle = data['vehicle_number']
-        pe = data['pe']
+        pe = request.args.get('pe')
+        driver = request.args.get('driver')
+        vehicle_number = request.args.get('vehicle_number')
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
         today_datetime = datetime.now()
-
+        #
         current_user_session = session['user_odoo_id']
         current_user = User.query.filter_by(user_odoo_id=int(current_user_session) if current_user_session else None).first()
-        current_user_odoo_id = current_user.user_odoo_id if current_user else None
-        new_do = DeliveryOrder(name=do_name,driver=driver,vehicle_number=vehicle,purchase_event_id=int(pe), created=today_datetime, create_odoo_id=current_user_odoo_id)
+        new_do = DeliveryOrder(name=do_name,driver=driver,vehicle_number=vehicle_number,purchase_event_id=int(pe), created=today_datetime, create_uid=current_user.id if current_user else None)
         db.session.add(new_do)
         db.session.commit()
-        return jsonify(do=new_do.id,status=200)
+        return jsonify(status=200, text="Success")
     except Exception as e :
         print(e)
+        return jsonify(status=400, text=5555555)
+
+
+@bp.route('/detail', methods=["GET"])
+@login_required
+def delivery_detail():
+    do = request.args.get("do")
+    order_line = PurchaseOrderLine.query.filter_by(delivery_order_id=int(do)).all()
+    print(order_line)
+    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo)
+
+@bp.route('/detail/add', methods=["GET","POST"])
+@login_required
+def delivery_detail_add():
+    do = request.form['do']
+    barcode = request.form['barcode']
+
+    delivery_order = DeliveryOrder.query.filter_by(id=int(do)).first()
+    order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).first()
+
+    if order_line :
+        order_line.delivery_order_id = delivery_order.id
+        db.session.commit()
+
+    return redirect(f"/delivery/detail?do={delivery_order.id}")
+
+
 
 
 

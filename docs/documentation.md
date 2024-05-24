@@ -16,4 +16,6 @@ Purchase App Rules
 4. satu purchase order (purchase app) satu petani
 5. Tabel logging digunakan untuk mengecek apakah user terhubung ke server (user menginputkan sesuatu ke tabel logging)
 
+Standard Controller tridir dari list view, create, edit, form view, Delete
+
 

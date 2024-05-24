@@ -18,54 +18,57 @@
 <div class="container">
     <div class="row text-center">
         <div class="col">
-            <h1>Delivery Order ( Surat Jalan ) </h1>
+            <h1>Add Goods </h1>
         </div>
     </div>
 </div>
 <div class="container">
-    <div class="row menu-container text-center">
-        <div class="col">
-            <button class="btn btn-success btn-custom create-delivery-order-btn" id="create-delivery-order-btn" type="button">
-                Create Delivery Order
-            </button>
+    <form action="/delivery/detail/add" method="post">
+        <input type="hidden" name="do" value="{{ do }}"/>
+        <div class="row menu-container text-center">
+            <div class="col">
+                <label>Scan Barcode</label>
+                <input type="text" class="form-control" name="barcode"/>
+            </div>
         </div>
-    </div>
+        <div class="row mt-2">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </div>
+    </form>
     <div class="row mt-5">
-        <input type="hidden" id="purchase_event_name" value="{{ pe.name }}">
-         <input type="hidden" id="purchase_event_id" value="{{ pe.id }}">
+        <input type="hidden" id="do" value="{{ do }}">
         <table class="table table-hover">
             <thead>
             <tr>
                 <td>
-                    DO Name
+                    DO
                 </td>
-                <td> Driver</td>
-                <td> Vehicle</td>
-                <td> Purchase Event</td>
-                <td> Action</td>
+                <td> Product</td>
+                <td> Barcode</td>
+                <td> Action </td>
             </tr>
             </thead>
             <tbody id="do-list">
-            {% for do in do_list %}
-                <tr>
-
-                    <td>{{ do.name }}</td>
-                    <td>{{ do.driver }}</td>
-                    <td>{{ do.vehicle_number }}</td>
-                    <td> {{ do.purchase_event_id }} </td>
-                    <td>
-                        <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}" class="btn btn-sm btn-success btn-add-goods">
-                            Add Goods
-                        </a>
-                    </td>
-                </tr>
+            {% for order in order_line %}
+            <tr>
+                <td>{{ DeliveryOrder.query.filter_by(id=do).first().name }}</td>
+<!--                <td>{{ order.product }}</td>-->
+<!--                <td>{{ do.vehicle_number }}</td>-->
+<!--                <td> {{ do.purchase_event_id }}</td>-->
+                <td>
+                    {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
+                </td>
+                <td> {{  order.barcode }} </td>
+                <td> <button class="btn-sm btn-danger">Delete</button> </td>
+            </tr>
             {% endfor %}
+
             </tbody>
         </table>
     </div>
 </div>
 
-
-<script src="{{ url_for('static', filename='/js/delivery/delivery.js') }}"></script>
 </body>
 </html>

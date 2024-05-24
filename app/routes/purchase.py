@@ -22,7 +22,6 @@ from .auth import login_required
 import ast
 import random
 import string
-
 import socket
 
 
@@ -162,8 +161,6 @@ def transaction_order_add():
 @bp.route('/transaction/add', methods=["POST"])
 @login_required
 def transaction_add():
-
-
     purchase_order_id = request.form['purchase-order']
     purchase_event_id = request.form['purchase-event']
     farmer_id = request.form['farmer']
@@ -183,9 +180,7 @@ def transaction_add():
     )
     db.session.add(new_transaction)
     db.session.commit()
-
     url = "/purchase/order?purchase-event=" + purchase_event_id + "&po=" + purchase_order_id + "&farmer=" + farmer_id
-
     return redirect(url)
 
 
