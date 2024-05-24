@@ -74,11 +74,11 @@ def login():
             # print(session['user_odoo_id'])
             # login_user(user)
             flash('Login successful!', 'success')
-            return redirect(url_for('routes.api.main_page'))
+            return redirect(url_for('routes.auth.main_page'))
         else:
             flash('Invalid username or password', 'danger')
 
-    return render_template('login.html')
+    return render_template('/auth/login.html')
 
 
 @bp.route('/logout', methods=['GET', 'POST'])
@@ -101,3 +101,13 @@ def logout():
     session.pop('user_odoo_id', None)
     flash('You Are Logged Out !', 'info')
     return redirect(url_for('routes.auth.login'))
+
+
+@bp.route('/')
+@login_required
+def main_page():
+    try :
+        return render_template('/server/main_menu.html')
+    except Exception as e:
+        print(e)
+        return {"message": str(e), "status":400}

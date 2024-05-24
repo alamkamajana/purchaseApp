@@ -1,0 +1,348 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Transaction
+{% endblock %}
+{% block plugin %}
+
+
+{% endblock %}
+
+{% block header %}
+    <b>Transaction</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">transaction</span>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="row">
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ event.name }}" disabled>
+                    <label class="control-label" for="purchase-event">Purchase Event</label>
+                    <input name="purchase-event" class="form-control" id="purchase-event" value="{{ event.id }}" hidden>
+
+                </div>
+
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ event.purchase_order_odoo.name }}" disabled>
+                    <label class="control-label" for="purchase-order">Purchase Order</label>
+                    <input name="purchase-order-odoo" class="form-control" id="purchase-order-odoo"
+                           value="{{ event.purchase_order_odoo.id }}" hidden>
+                    <input name="purchase-order" class="form-control" id="purchase-order" value="{{ po.id }}" hidden>
+                </div>
+
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ farmer.farmer_name }}" disabled>
+                    <label class="control-label" for="farmer">Farmer</label>
+                    <input name="farmer" class="form-control" id="farmer" value="{{ farmer.id }}" hidden>
+
+                </div>
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ po.name }}"
+                           disabled>
+                    <label class="control-label" for="order">Order</label>
+                </div>
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ po.status }}" disabled>
+                    <label class="control-label" for="status">Status</label>
+                </div>
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ farmer_odoo.certification_status_id }}"
+                           disabled>
+                    <label class="control-label" for="status">Certification Status ID</label>
+                </div>
+            </div>
+            <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
+                <div style="display: flex; align-items: center;">
+                    {% if po_status.lower() == 'draft' %}
+                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                                data-target="#addTransactionModal">
+                            Add
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="modal fade" id="addTransactionModal" tabindex="-1" role="dialog"
+                 aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form action="/purchase/transaction/add" method="post">
+                        <div class="modal-content">
+                            <div class="modal-header" style="justify-content: space-between;">
+                                <h5 class="modal-title" id="exampleModalLabel">Add Purchase Order Line</h5>
+                                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:5%">
+                                <input name="purchase-event" class="form-control" id="purchase-event"
+                                       value="{{ event.id }}" hidden>
+                                <input name="farmer" class="form-control" id="farmer" value="{{ farmer.id }}" hidden>
+                                <input name="purchase-order" class="form-control" id="purchase-order"
+                                       value="{{ po.id }}" hidden>
+                                <div>
+
+                                    <table id="product-options" class="table">
+                                        <tr>
+                                            <td>
+                                                <div class="control-label">Product</div>
+                                            </td>
+                                        </tr>
+
+                                        {% for product in product_list %}
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="product"
+                                                               id="product-{{ product.product_id }}"
+                                                               value="{{ product.product_id }}"
+                                                               data-price="{{ product.commodityitem_price }}"
+                                                               onchange="updatePrice(this)"
+                                                        >
+                                                        <label class="form-check-label"
+                                                               for="product-{{ product.product_id }}" style="width:80%">
+                                                            {{ product.product_name }}
+                                                        </label>
+                                                        <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
+                                                             width="50"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        {% endfor %}
+
+                                    </table>
+                                </div>
+
+                                <div class="form-floating">
+                                    <input class="form-control" type="number" id="price-unit" name="price-unit"
+                                           value="0" step="any">
+                                    <label class="control-label" for="price-unit">Price Unit</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" type="number" id="qty" name="qty" value="0">
+                                    <label class="control-label" for="qty">Quantity</label>
+                                </div>
+                            <div class="form-floating">
+                                    <input class="form-control" type="text" id="barcode" name="barcode">
+                                    <label class="control-label" for="barcode">Barcode</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="event-container">
+
+            <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                <tr>
+                    <th style="width: 5%;">
+                        No
+                    </th>
+                    <th style="width: 12%;">
+                        Product
+                    </th>
+
+                    <th style="width: 12%;">
+                        Price Unit
+                    </th>
+                    <th style="width: 8%;">
+                        Qty
+                    </th>
+                    <th style="width: 16%;">
+                        Subtotal
+                    </th>
+                    <th style="width: 16%;">
+                        Barcode
+                    </th>
+                    <th style="width: 10%;">
+                        Edit
+                    </th>
+                </tr>
+                {% set total_value = 0 %}
+
+                {% for transaction in transaction_list %}
+
+                    <tr class="event-row">
+                        <td>
+                            {{ loop.index }}
+                        </td>
+                        <td>
+                            <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
+                                {{ transaction.product_odoo_id.id }}
+                            </div>
+                            {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
+                            {#                            {{transaction.product_odoo_id}}#}
+                        </td>
+                        <td class="price-column">
+                            <div class="transaction-info{{ transaction.id }}" id="price-info{{ transaction.id }}">
+                                {{ '{:,.2f}'.format(transaction.unit_price) }}
+                            </div>
+                        </td>
+                        <td class="qty-column">
+                            <div class="transaction-info{{ transaction.id }}" id="qty-info{{ transaction.id }}">
+                                {{ '{:,.0f}'.format(transaction.qty) }}
+                            </div>
+                        </td>
+                        <td>
+                            <div id="subtotal-info{{ transaction.id }}">
+
+                                {{ '{:,.2f}'.format(transaction.subtotal) }}
+
+                            </div>
+                        </td>
+                        <td>
+                            <div id="subtotal-info{{ transaction.id }}">
+
+                                {{ transaction.barcode }}
+
+                            </div>
+                        </td>
+                        <td>
+                            <span class="event-id" style="display: none;">{{ transaction.id }}</span>
+                            <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"
+                                    id="edit-{{ transaction.id }}-btn" data-toggle="modal"
+                                    data-target="#editTransactionModal" data-transaction-id="{{ transaction.id }}">
+                                <span><i class='bx bxs-pencil'></i></span>
+                            </button>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+
+                <tr>
+                    <td colspan="4">
+                        <b>Total Price</b>
+                    </td>
+                    <td>
+                        <div id="total-price">
+                            {{ '{:,.2f}'.format(total_price) }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <td>PO</td>
+                    <td>Commodity</td>
+                </tr>
+                <tr>
+                    <td>
+                        {% for po_line in po_line_product_arr %}
+                            <p>{{ ProductOdoo.query.filter_by(odoo_id=po_line).first().name }} </p>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for cmd in commodity_item_product_arr %}
+                            <p> {{ cmd['commodityitem_name'] }} / {{ cmd['product_name'] }}
+                                / {{ cmd['certStatus'] }} </p>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+
+            <span id="pagination-link" class="hidden">/purchase/order?page=</span>
+            <span id="current-page" class="hidden">{{ page }}</span>
+            <span id="total-page" class="hidden">{{ total_pages }}</span>
+            <div id="pagination" style="width:100%; display:flex; justify-content: center;"></div>
+        </div>
+        <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
+            <div style="display: flex; align-items: center;">
+                {% if po_status.lower() == 'draft' %}
+                    <button type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</button>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="/purchase/transaction/update" method="post">
+                <div class="modal-content">
+                    <div class="modal-header" style="justify-content: space-between;">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Purchase Order Line</h5>
+                        <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding:5%">
+                        <input name="transaction" type="number" class="form-control transaction-form" id="transaction"
+                               value="0" hidden>
+                        <div class="form-floating">
+                            <select name="product" class="form-control selectpicker product-form"
+                                    data-live-search="true"
+                                    data-live-search-placeholder="Search..." id="product">
+                                <!-- <option value="" selected="true">Search Product...</option> -->
+                                {% for product in product_list %}
+                                    <option value={{ product.product_id }}>
+                                        {{ product.product_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label class="control-label" for="product">Product</label>
+                        </div>
+
+                        <div class="form-floating">
+                            <input class="form-control price-unit-form" type="number" id="price-unit" name="price-unit"
+                                   value="0"
+                                   step="any">
+                            <label class="control-label" for="price-unit">Price Unit</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control qty-form" type="number" id="qty" name="qty" value="0">
+                            <label class="control-label" for="qty">Quantity</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function updatePrice(radio) {
+            var price = radio.getAttribute('data-price');
+            document.getElementById('price-unit').value = price;
+        }
+
+        document.getElementById('confirmButton').addEventListener('click', function () {
+            let purchase_order = document.getElementById('purchase-order').value
+            var myFormData = new FormData();
+            myFormData.append('purchase_order', purchase_order);
+
+            fetch('transaction/confirm', {
+                method: 'POST',
+                body: myFormData
+            }).then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // Handle success response
+                }).catch(error => {
+                console.error('Error:', error);
+                // Handle error response
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block script_plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}

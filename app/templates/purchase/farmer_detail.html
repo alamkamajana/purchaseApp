@@ -1,0 +1,70 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Farmer Detail
+{% endblock %}
+{% block plugin %}
+
+
+{% endblock %}
+
+{% block header %}
+    <b>Farmer Detail</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">Farmer Detail</span>
+
+    <div class="card">
+        {% if farmer %}
+            <div class="row">
+                <div class="col">
+                    Farmer Name
+                </div>
+                <div class="col">
+                    {{ farmer.farmer_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Farmer Code
+                </div>
+                <div class="col">
+                    {{ farmer.code }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Role
+                </div>
+                <div class="col">
+                    {{ farmer.farmer_role }}
+                </div>
+            </div>
+            <div class="row">
+            <div class="col">
+                <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}">Confirm</a>
+            </div>
+            <div class="col">
+                <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
+            </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col">
+                    <p>No Farmer Data</p>
+                    <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
+                </div>
+
+
+            </div>
+        {% endif %}
+
+
+    </div>
+
+
+{% endblock %}
+
+{% block script_plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}

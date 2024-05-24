@@ -1,0 +1,67 @@
+{% extends 'server/base.html' %}
+{% block title %}
+PO Details
+{% endblock %}
+{% block plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}
+
+{% block header %}
+<b>PO Details</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">PO Details</span>
+{% if purchase_order %}
+<div class="card">
+    <table>
+        <tr>
+            <td> ORDER</td>
+            <td> TOTAL</td>
+        </tr>
+        <tr>
+            <input type="hidden" id="purchase" value="{{ purchase_order.id }}"/>
+            <td> {{ purchase_order.name }}</td>
+            <td> {{ purchase_order.amount_total }}</td>
+        </tr>
+    </table>
+    <div class="row">
+        <div class="col-3">
+            <button id="confirm-button">CONFIRM</button>
+        </div>
+    </div>
+</div>
+{% else %}
+<p>No Purchase Order</p>
+{% endif %}
+
+
+<script>
+    document.getElementById('confirm-button').addEventListener('click', function () {
+        const purchaseOrderId = document.getElementById('purchase').value;
+
+        fetch('/confirm_purchase_order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({purchase_order_id: purchaseOrderId}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Purchase order confirmed!');
+                    // Optionally, you can redirect or update the page here
+                } else {
+                    alert('Error confirming purchase order.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+
+{% endblock %}
+
+{% block script_plugin %}
+{% endblock %}

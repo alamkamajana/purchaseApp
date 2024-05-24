@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row text-center">
+        <div class="col">
+            <h1>Delivery Order ( Surat Jalan ) </h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row menu-container text-center">
+        <div class="col">
+            <button class="btn btn-success btn-custom" type="button" data-bs-toggle="modal"
+                    data-bs-target="#modalCreateDO">
+                Create Delivery Order
+            </button>
+        </div>
+        {#        <div class="col">#}
+        {#            <button class="btn btn-info btn-custom">List Delivery Order</button>#}
+        {#        </div>#}
+    </div>
+    <div class="row mt-5">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <td>
+                    DO Name
+                </td>
+                <td> Driver</td>
+                <td> Vehicle</td>
+                <td> Purchase Event</td>
+                <td> Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for do in do_list %}
+                <tr>
+
+                    <td>{{ do.name }}</td>
+                    <td>{{ do.driver }}</td>
+                    <td>{{ do.vehicle_number }}</td>
+                    <td> {{ do.purchase_event_id }} </td>
+                    <td>
+                        <button  value="{{ do.id }}" class="btn btn-sm btn-success btn-add-goods">
+                            Add Goods
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCreateDO" tabindex="-1" role="dialog" aria-labelledby="modalCreateDO"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title" id="modalCreateDOLabel" style="margin: 0 auto">Create DO</h5>
+                {#                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">#}
+                {#                    <span aria-hidden="true">&times;</span>#}
+                {#                </button>#}
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h4 class="mb-0">Create Delivery Order</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="create-delivery-order-form">
+                                            <div class="mb-3">
+                                                <label for="driver" class="form-label">Driver</label>
+                                                <input type="text" class="form-control" id="driver" name="driver"
+                                                       required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="vehicle_number" class="form-label">Vehicle Number</label>
+                                                <input type="text" class="form-control" id="vehicle_number"
+                                                       name="vehicle_number" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="purchase_event_id" class="form-label">Purchase Event
+                                                    ID</label>
+                                                <select class="form-select" id="purchase_event_id"
+                                                        name="pe" required>
+                                                    <option value="" selected disabled>Select Purchase Event</option>
+                                                    {% for pe in pe_list %}
+                                                        <option value="{{ pe.id }}">{{ pe.name if pe.name else pe.id }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-success">Create</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                {#                <button type="button" class="btn btn-success">Create</button>#}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='/js/delivery/delivery.js') }}"></script>
+</body>
+</html>
+¬

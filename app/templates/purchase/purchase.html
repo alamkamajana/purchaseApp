@@ -1,0 +1,159 @@
+{% extends 'server/base.html' %}
+{% block title %}
+Transaction
+{% endblock %}
+{% block plugin %}
+
+
+{% endblock %}
+
+{% block header %}
+<b>Transaction</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">transaction</span>
+
+<div class="card">
+
+    <div class="card-body">
+        <div class="row">
+            <div class="form-floating col-sm-12 col-lg">
+                {{ purchase_event.name }}
+            </div>
+        </div>
+        <div class="row col-3">
+            <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary">
+                Add Purchase
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td>
+                            Order
+                        </td>
+                        <td>
+                            Farmer
+                        </td>
+                        <td>
+                            Status
+                        </td>
+                        <td>Action</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for purchase in purchase_lists %}
+                    <tr>
+                        <td>{{ purchase.id }}</td>
+                        <td>
+                            {% if purchase.farmer_id %}
+                            {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
+                            {% else %}
+                            No farmer associated
+                            {% endif %}
+                        </td>
+                        <td>{{ purchase.status }}</td>
+                        <td>
+                            <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}">Add
+                                Product</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addPurchaseModal" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <form action="/purchase/order/add" method="post">
+                    <div class="modal-content">
+                        <div class="modal-header" style="justify-content: space-between;">
+                            <h5 class="modal-title" id="exampleModalLabel">ADD PO</h5>
+                            <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style="padding:5%">
+                            <input name="pe" type="number" class="form-control transaction-form"
+                                   id="pe"
+                                   value="{{ purchase_event.id }}" hidden>
+                            <div class="form-floating">
+                                <select name="farmer"
+                                        class="form-control selectpicker populateJSON selectpickerFarmer"
+                                        data-live-search="true"
+                                        data-live-search-placeholder="Search..."
+                                        id="farmer">
+                                    <option value="">Select Farmer</option>
+                                </select>
+                                <label class="control-label" for="product">Product</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        document.getElementById('farmer').addEventListener('input', function () {
+            const searchTerm = this.value;
+            const selectElement = this;
+
+            // If the search term is empty, clear the options
+            if (!searchTerm) {
+                selectElement.innerHTML = '<option value="">Select Farmer</option>';
+                $('.selectpicker').selectpicker('refresh'); // Refresh selectpicker (if used)
+                return;
+            }
+
+            fetch(`/purchase/search_farmers?q=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => populateSelect(data.farmers));
+        });
+
+        function populateSelect(farmers) {
+            const selectElement = document.getElementById('farmer');
+            selectElement.innerHTML = ''; // Clear existing options
+
+            // Set to track unique farmer IDs
+            const seenFarmers = new Set();
+
+            // Add a default "Select Farmer" option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.textContent = "Select Farmer";
+            selectElement.appendChild(defaultOption);
+
+            farmers.forEach(farmer => {
+                // Check if this farmer's ID has already been seen
+                if (!seenFarmers.has(farmer.id)) {
+                    const option = document.createElement('option');
+                    option.value = farmer.id;
+                    option.textContent = farmer.farmer_name;
+                    selectElement.appendChild(option);
+
+                    // Add farmer's ID to the set
+                    seenFarmers.add(farmer.id);
+                }
+            });
+
+            $('.selectpicker').selectpicker('refresh'); // Refresh selectpicker (if used)
+        }
+    </script>
+
+    {% endblock %}
+
+    {% block script_plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/purchase.css') }}">
+    {% endblock %}

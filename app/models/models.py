@@ -10,10 +10,6 @@ user_purchase_order_association = db.Table('user_purchase_order_association',
     db.Column('purchase_order_odoo_id', db.Integer, db.ForeignKey('purchase_order_odoo.id'), primary_key=True)
 )
 
-farmer_product_association = db.Table('farmer_product_association',
-    db.Column('farmer_id', db.Integer, db.ForeignKey('farmer.id'), primary_key=True),
-    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True)
-)
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -87,7 +83,7 @@ class PurchaseOrder(db.Model):
     name = db.Column(db.String(64))
     receipt_number = db.Column(db.String(64))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='purchase_order', lazy='dynamic')
-    farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'))
+    farmer_id = db.Column(db.Integer, db.ForeignKey('nfcapp_farmer_odoo.id'))
     payment_id = db.Column(db.Integer, db.ForeignKey('payment.id'))
     status = db.Column(db.String(64))
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
@@ -105,7 +101,7 @@ class PurchaseOrder(db.Model):
 class PurchaseOrderLine(db.Model):
     __tablename__ = 'purchase_order_line'
     id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     qty = db.Column(db.Float)
     unit_price = db.Column(db.Float)
