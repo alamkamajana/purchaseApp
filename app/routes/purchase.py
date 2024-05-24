@@ -45,7 +45,7 @@ def transaction_list():
         event_id = request.args.get('pe', 0, type=int)
         purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
         event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
-        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists)
+        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo)
 
     except Exception as e :
         print(e)
