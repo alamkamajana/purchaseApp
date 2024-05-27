@@ -38,14 +38,14 @@ def delivery_index():
 def delivery_create():
     try :
         pe = request.args.get('pe')
-        driver = request.args.get('driver')
-        vehicle_number = request.args.get('vehicle_number')
+        # driver = request.args.get('driver')
+        # vehicle_number = request.args.get('vehicle_number')
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
         today_datetime = datetime.now()
         #
         current_user_session = session['user_odoo_id']
         current_user = User.query.filter_by(user_odoo_id=int(current_user_session) if current_user_session else None).first()
-        new_do = DeliveryOrder(name=do_name,driver=driver,vehicle_number=vehicle_number,purchase_event_id=int(pe), created=today_datetime, create_uid=current_user.id if current_user else None)
+        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe), created=today_datetime, create_uid=current_user.id if current_user else None)
         db.session.add(new_do)
         db.session.commit()
         return redirect(f"/delivery/index?pe={pe}")
@@ -59,8 +59,27 @@ def delivery_create():
 def delivery_detail():
     do = request.args.get("do")
     order_line = PurchaseOrderLine.query.filter_by(delivery_order_id=int(do)).all()
-    print(order_line)
     return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo)
+
+@bp.route('/detail/delete', methods=["GET"])
+@login_required
+def delivery_detail_delete():
+    order_line = request.args.get("order_line")
+    print(order_line)
+    order_line = PurchaseOrderLine.query.get(int(order_line))
+    if order_line:
+        order_line.delivery_order_id = None
+        db.session.commit()
+    return redirect(request.referrer)
+
+@bp.route('/delete', methods=["GET"])
+@login_required
+def delivery_delete():
+    do = request.args.get("do")
+    delivery_order = DeliveryOrder.query.get(int(do))
+    db.session.delete(delivery_order)
+    db.session.commit()
+    return redirect(request.referrer)
 
 @bp.route('/detail/add', methods=["GET","POST"])
 @login_required

@@ -1,24 +1,26 @@
-{% extends 'server/base.html' %}
-{% block title %}
-    Search Farmer
-{% endblock %}
-{% block plugin %}
-
-
-{% endblock %}
-
-{% block header %}
-    <b>Search Farmer</b>
-{% endblock %}
-
-{% block content %}
-    <span id="selected-menu" style="display: none;">Search Farmer</span>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Farmer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
     <div class="card">
         <form action="/purchase/farmer/detail">
             <input type="hidden" name="pe" id="pe" value="{{ pe }}">
             <div class="form-group">
-                <label for="exampleInputEmail1">Farmer Code</label>
+                <label for="farmer_code">Farmer Code</label>
                 <input type="text" class="form-control" name="farmer_code" id="farmer_code" aria-describedby="emailHelp"
                        placeholder="">
                 <small id="emailHelp" class="form-text text-muted">Scan farmer code</small>
@@ -28,11 +30,7 @@
 
     </div>
 
-    </div>
-
-
-{% endblock %}
-
-{% block script_plugin %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
-{% endblock %}
+</div>
+</div>
+</body>
+</html>

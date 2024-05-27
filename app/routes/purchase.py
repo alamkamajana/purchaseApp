@@ -262,11 +262,11 @@ def transaction_detail():
     return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr)
 
 
-@bp.route('/transaction/confirm', methods=["POST"])
+@bp.route('/transaction/confirm', methods=["POST","GET"])
 @login_required
 def transaction_confirm():
-    purchase_order = request.form['purchase_order']
+    purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     po.status = 'confirm'
     db.session.commit()
-    return jsonify({'status': 'success', 'message': 'Purchase order confirmed!'})
+    return redirect(request.referrer)

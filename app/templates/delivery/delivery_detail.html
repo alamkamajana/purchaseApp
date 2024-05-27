@@ -61,7 +61,7 @@
                     {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
                 </td>
                 <td> {{  order.barcode }} </td>
-                <td> <button class="btn-sm btn-danger">Delete</button> </td>
+                <td> <a href="/delivery/detail/delete?order_line={{ order.id }}" class="btn-sm btn-danger">Delete</a> </td>
             </tr>
             {% endfor %}
 

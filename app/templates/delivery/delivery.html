@@ -25,9 +25,9 @@
 <div class="container">
     <div class="row menu-container text-center">
         <div class="col">
-            <button class="btn btn-success btn-custom create-delivery-order-btn" id="create-delivery-order-btn" type="button">
+            <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom" id="" type="button">
                 Create Delivery Order
-            </button>
+            </a>
         </div>
     </div>
     <div class="row mt-5">
@@ -56,6 +56,12 @@
                     <td>
                         <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}" class="btn btn-sm btn-success btn-add-goods">
                             Add Goods
+                        </a>
+                         <a href="/delivery/detail?do={{ do.id }}" class="btn btn-sm btn-success">
+                            Edit
+                        </a>
+                        <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-success">
+                            Delete
                         </a>
                     </td>
                 </tr>
