@@ -114,49 +114,65 @@ def purchase_event_list():
                            po_list=purchase_orders, user_list=user_list, device_name=device_name, base_url=base_url)
 
 
-@bp.route('/purchase-event/add', methods=["POST"])
+@bp.route('/purchase-event/create', methods=["POST","GET"])
 @login_required
-def purchase_event_add():
-    fund = request.form['fund']
-    ics = request.form['ics']
-    ap_name = request.form['ap-name']
-    purchaser_id = request.form['purchaser']
-    cashier_id = request.form['cashier']
-    purchase_order_odoo_id = request.form['purchase-order']
-    pe_name = generate_unique_sequence_number(PurchaseEvent, PurchaseEvent.name, length=8, prefix="")
-
-    purchase_event = PurchaseEvent(name=pe_name,fund=fund, ics=ics, purchaser_id=purchaser_id, cashier_id=cashier_id,
-                                   purchase_order_odoo_id=purchase_order_odoo_id, ap_name=ap_name)
+def purchase_event_create():
+    device_name = os.environ.get('USER')
+    local_ip_address = socket.gethostbyname(socket.gethostname())
+    pe_name = generate_unique_sequence_number(PurchaseEvent, PurchaseEvent.name, length=8, prefix="PE-")
+    today_datetime = datetime.now()
+    purchase_event = PurchaseEvent(name=pe_name, ap_name=device_name, fund=0, ip_address=local_ip_address, created=today_datetime)
     db.session.add(purchase_event)
     db.session.commit()
 
     return redirect(url_for('routes.server.purchase_event_list'))
 
-@bp.route('/purchase-event/update', methods=["POST"])
+
+@bp.route('/purchase-event/details', methods=["POST","GET"])
+@login_required
+def purchase_event_details():
+    purchasers = ResUserOdoo.query.all()
+    purchase_event_id = request.args.get("pe")
+    purchase_event = PurchaseEvent.query.get(purchase_event_id)
+    return render_template('server/purchase_event_details.html', purchase_event=purchase_event, purchasers=purchasers)
+
+@bp.route('/purchase-event/update', methods=["POST","GET"])
 @login_required
 def purchase_event_update():
     # Retrieve updated data from the POST request
-    id = request.form['event']
-    po_id = request.form['purchase-order']
+    id = request.form['event_id']
     purchaser_id = request.form['purchaser']
     cashier_id = request.form['cashier']
     ics = request.form['ics']
-    ap_name = request.form['ap-name']
-    fund = request.form['fund']
 
     # Update the data dictionary
     event = PurchaseEvent.query.filter_by(id=id).first()  # Example: Update the user with ID 1
     if event:
-        event.purchase_order_odoo_id = po_id
         event.cashier_id = cashier_id
         event.purchaser_id = purchaser_id
         event.ics = ics
-        event.ap_name = ap_name
-        event.fund = fund
-
         db.session.commit()
-        return redirect(request.referrer)
+        return redirect("/server/purchase-event")
     else:
-        return redirect(request.referrer)
+        return redirect("/server/purchase-event")
+
+
+@bp.route('/purchase-event/delete', methods=["POST","GET"])
+@login_required
+def purchase_event_delete():
+    purchase_event_id = request.args.get("pe")
+    print(purchase_event_id)
+
+    # Retrieve the object from the database
+    purchase_event = PurchaseEvent.query.get(purchase_event_id)
+
+    if purchase_event:
+        # Mark the object for deletion
+        db.session.delete(purchase_event)
+
+        # Commit the transaction to save the changes
+        db.session.commit()
+
+    return redirect(url_for('routes.server.purchase_event_list'))
 
 

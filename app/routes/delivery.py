@@ -30,7 +30,7 @@ def delivery_index():
     purchase_event = PurchaseEvent.query.filter_by(id=int(pe)).first()
 
     pe_list = PurchaseEvent.query.all()
-    do_list = DeliveryOrder.query.all()
+    do_list = DeliveryOrder.query.filter_by(purchase_event_id=int(pe))
     return render_template('delivery/delivery.html', pe_list=pe_list, do_list=do_list, pe=purchase_event)
 
 @bp.route('/create', methods=["POST","GET"])
@@ -48,7 +48,7 @@ def delivery_create():
         new_do = DeliveryOrder(name=do_name,driver=driver,vehicle_number=vehicle_number,purchase_event_id=int(pe), created=today_datetime, create_uid=current_user.id if current_user else None)
         db.session.add(new_do)
         db.session.commit()
-        return jsonify(status=200, text="Success")
+        return redirect(f"/delivery/index?pe={pe}")
     except Exception as e :
         print(e)
         return jsonify(status=400, text=5555555)

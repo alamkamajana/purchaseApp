@@ -18,81 +18,12 @@ Purchase Event
     <div class="card-body">
         <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
             <div style="display: flex; align-items: center;">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventModal">
+                <a type="button" class="btn btn-primary" href="/server/purchase-event/create">
                     Add
-                </button>
+                </a>
             </div>
         </div>
 
-        <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <form action="/server/purchase-event/add" method="post">
-                    <div class="modal-content">
-                        <div class="modal-header" style="justify-content: space-between;">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Purchase Order Line</h5>
-                            <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body" style="padding:5%">
-
-                            <div class="form-floating">
-                                <select name="purchase-order" class="form-control selectpicker"
-                                        data-live-search="true"
-                                        data-live-search-placeholder="Search..." id="purchase-order">
-                                    {% for po in po_list %}
-                                    <option value={{ po.id }}>{{ po.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label class="control-label" for="purchase-order">Purchase Order</label>
-                            </div>
-                            <div class="form-floating">
-                                <select name="cashier" class="form-control selectpicker" data-live-search="true"
-                                        data-live-search-placeholder="Search..." id="cashier">
-                                    {% for user in user_list %}
-                                    <option value={{ user.id }}>{{ user.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label class="control-label" for="cashier">Cashier</label>
-                            </div>
-
-                            <div class="form-floating">
-                                <select name="purchaser" class="form-control selectpicker" data-live-search="true"
-                                        data-live-search-placeholder="Search..." id="purchaser">
-                                    {% for user in user_list %}
-                                    <option value={{ user.id }}>{{ user.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label class="control-label" for="purchaser">Purchaser</label>
-                            </div>
-
-
-                            <div class="form-floating">
-                                <input class="form-control" type="text" id="ics" name="ics" placeholder="ICS...">
-                                <label class="control-label" for="ics">ICS</label>
-                            </div>
-                            <div class="form-floating">
-                                <input class="form-control" type="text" id="ap-name" name="ap-name"
-                                       value="{{ device_name }}" placeholder="AP..." readonly>
-                                <label class="control-label" for="ap-name">Ap Name</label>
-                            </div>
-                            <div class="form-floating">
-                                <input class="form-control" type="number" id="fund" name="fund" value="0"
-                                       step="any">
-                                <label class="control-label" for="fund">Fund</label>
-                            </div>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </div>
-
-                    </div>
-                </form>
-            </div>
-        </div>
 
         <div class="event-container">
             <table class="table event-table" style="width: 100%; margin-top: 32px;">
@@ -213,20 +144,26 @@ Purchase Event
                     </td>
                     <td class="fund-column">
                         <div class="event-info{{ event.id }}" id="fund-info{{ event.id }}">
-                            {{ '{:,.2f}'.format(event.fund) }}
-                        </div>
-                        <div class="update-form event-info{{ event.id }} hidden">
-                            <input type="number" id="fund-update{{ event.id }}" name="fund"
-                                   value="{{ '%.2f' | format(event.fund) }}">
+                            {{ event.fund }}
                         </div>
                     </td>
                     <td>
                         <span class="event-id" style="display: none;"></span>
+                        <a type="button" class="btn btn-secondary event-info{{ event.id }}"
+                           href="/server/purchase-event/details?pe={{ event.id }}"
+                           id="">
+                            <span><i class='bx bxs-pencil'></i></span>
+                        </a>
+                        <a type="button" class="btn btn-secondary event-info{{ event.id }}"
+                           href="/server/purchase-event/delete?pe={{ event.id }}">
+                            <span><i class='bx bxs-trash'></i></span>
+                        </a>
                         <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">Purchase</a>
-                        <a href="/delivery/index?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">Delivery</a>
+                        <a href="/delivery/index?pe={{ event.id }}" target="_blank"
+                           class="btn-sm btn-success">Delivery</a>
                         <button type="button" class="btn btn-primary" data-toggle="modal"
                                 data-target="#qrModal{{ event.id }}">
-                            Open QR Code
+                            QR
                         </button>
 
                         <div class="modal fade" id="qrModal{{ event.id }}" tabindex="-1" role="dialog"
@@ -254,21 +191,6 @@ Purchase Event
                                 </div>
                             </div>
                         </div>
-                        {# <img
-                            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://127.0.0.1:8069/purchase/transaction?pe={{ event.id }}">#}
-                        <button type="button" class="btn btn-secondary event-info{{ event.id }}"
-                                id="edit-{{ event.id }}-btn" data-toggle="modal" data-target="#editEventModal"
-                                data-event-id="{{ event.id }}">
-                            <span><i class='bx bxs-pencil'></i></span>
-                        </button>
-                        <button onclick="updateEvent('{{ event.id }}')" type="button"
-                                class="btn btn-success event-info{{ event.id }} hidden">
-                            <span><i class='bx bx-check'></i></span>
-                        </button>
-                        <button onclick="cancelUpdateEvent('{{ event.id }}')" type="button"
-                                class="btn btn-danger event-info{{ event.id }} hidden">
-                            <span><i class='bx bx-x'></i></span>
-                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -283,78 +205,6 @@ Purchase Event
 
 </div>
 
-<div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <form action="/purchase/event/update" method="post">
-            <div class="modal-content">
-                <div class="modal-header" style="justify-content: space-between;">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Purchase Order Line</h5>
-                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" style="padding:5%">
-                    <input class="form-control id-form" type="hidden" id="event" name="event" value="0">
-
-                    <div class="form-floating">
-                        <select name="purchase-order" class="form-control selectpicker purchase-order-form"
-                                data-live-search="true"
-                                data-live-search-placeholder="Search..." id="purchase-order">
-                            {% for po in po_list %}
-                            <option value={{ po.id }}>{{ po.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <label class="control-label" for="purchase-order">Purchase Order</label>
-                    </div>
-                    <div class="form-floating">
-                        <select name="cashier" class="form-control selectpicker cashier-form"
-                                data-live-search="true"
-                                data-live-search-placeholder="Search..." id="cashier">
-                            {% for user in user_list %}
-                            <option value={{ user.id }}>{{ user.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <label class="control-label" for="cashier">Cashier</label>
-                    </div>
-
-                    <div class="form-floating">
-                        <select name="purchaser" class="form-control selectpicker purchaser-form"
-                                data-live-search="true"
-                                data-live-search-placeholder="Search..." id="purchaser">
-                            {% for user in user_list %}
-                            <option value={{ user.id }}>{{ user.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <label class="control-label" for="purchaser">Purchaser</label>
-                    </div>
-
-
-                    <div class="form-floating">
-                        <input class="form-control ics-form" type="text" id="ics" name="ics" placeholder="ICS...">
-                        <label class="control-label" for="ics">ICS</label>
-                    </div>
-                    <div class="form-floating">
-                        <input class="form-control ap-name-form" type="text" id="ap-name" name="ap-name"
-                               placeholder="AP...">
-                        <label class="control-label" for="ap-name">Ap Name</label>
-                    </div>
-                    <div class="form-floating">
-                        <input class="form-control fund-form" type="number" id="fund" name="fund" value="0"
-                               step="any">
-                        <label class="control-label" for="fund">Fund</label>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </div>
-
-            </div>
-        </form>
-    </div>
-</div>
 
 
 {% endblock %}

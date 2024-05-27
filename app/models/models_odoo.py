@@ -22,6 +22,8 @@ class ProductOdoo(db.Model):
     item_code = db.Column(db.String)
     commodity = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
     def __repr__(self):
         return f'<ProductOdoo {self.default_code}>'
@@ -46,6 +48,8 @@ class NfcappFarmerOdoo(db.Model):
     bank_name_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
     certification_status_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
 
     def __repr__(self):
@@ -71,6 +75,8 @@ class PurchaseOrderOdoo(db.Model):
     payment_term_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
     users = db.relationship('User', secondary=user_purchase_order_association, back_populates='purchase_orders')
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
     def __repr__(self):
         return f'<PurchaseOrderOdoo {self.name}>'
@@ -88,6 +94,8 @@ class PurchaseOrderLineOdoo(db.Model):
     order_id = db.Column(db.Integer)
     order_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
 
     def __repr__(self):
@@ -106,6 +114,8 @@ class ResUserOdoo(db.Model):
     employee_id = db.Column(db.Integer)
     employee_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
 class NfcappCommodityOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_odoo'
@@ -114,6 +124,8 @@ class NfcappCommodityOdoo(db.Model):
     station_id = db.Column(db.Integer)
     station_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
 class NfcappCommodityItemOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_item_odoo'
@@ -131,6 +143,8 @@ class NfcappCommodityItemOdoo(db.Model):
     product_name = db.Column(db.String)
     price = db.Column(db.Float)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
 class NfcappStationOdoo(db.Model):
     __tablename__ = 'nfcapp_station_odoo'
@@ -151,3 +165,5 @@ class NfcappClusterOdoo(db.Model):
     coordinator = db.Column(db.String)
     code = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)

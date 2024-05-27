@@ -59,7 +59,7 @@ class PurchaseEvent(db.Model):
     __tablename__ = 'purchase_event'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    fund = db.Column(db.Float, default=100000)
+    fund = db.Column(db.Float)
     ics = db.Column(db.String)
     purchaser_id = db.Column(db.Integer, db.ForeignKey('res_user_odoo.id'))
     purchaser = db.relationship('ResUserOdoo', foreign_keys=[purchaser_id], backref=db.backref('purchaser_events', lazy=True))

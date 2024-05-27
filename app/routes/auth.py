@@ -32,6 +32,13 @@ def login_required(f):
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        # Get client IP address
+        client_ip = request.remote_addr or 'Unknown'
+        # Get client device name (if available)
+        client_device_name = request.user_agent.platform or 'Unknown'
+        # Get client MAC address (if available)
+        client_mac_address = request.access_route[0] or 'Unknown'
+
         # Handle login logic here
         username = request.form['username']
         password = request.form['password']
@@ -51,14 +58,9 @@ def login():
             data_login = login_data['result']
             user = User.query.filter_by(username=data_login['name'] if data_login['name'] else None).first()
             # session['username'] = data_login['name']
-
-            device_name = os.environ.get('USER')
-            mac_addr = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
-            local_ip_address = socket.gethostbyname(socket.gethostname())
-            external_ip_address = requests.get('https://api.ipify.org').text
             datetime_now = datetime.today()
 
-            user_session_data = UserSession(username=data_login['name'] if data_login['name'] else None,email=data_login['email'], session=data_login['token'],action='login',device=device_name,ip_address_local=local_ip_address,ip_address_external=external_ip_address,date=datetime_now,mac_address=mac_addr)
+            user_session_data = UserSession(username=data_login['name'] if data_login['name'] else None,email=data_login['email'], session=data_login['token'],action='login',device=client_device_name,ip_address_external=client_ip,date=datetime_now,mac_address=client_mac_address)
             db.session.add(user_session_data)
             db.session.commit()
 
@@ -83,15 +85,17 @@ def login():
 
 @bp.route('/logout', methods=['GET', 'POST'])
 def logout():
-    device_name = os.environ.get('USER')
-    mac_addr = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
-    local_ip_address = socket.gethostbyname(socket.gethostname())
-    external_ip_address = requests.get('https://api.ipify.org').text
+    # Get client IP address
+    client_ip = request.remote_addr or 'Unknown'
+    # Get client device name (if available)
+    client_device_name = request.user_agent.platform or 'Unknown'
+    # Get client MAC address (if available)
+    client_mac_address = request.access_route[0] or 'Unknown'
     datetime_now = datetime.today()
 
     user_session_data = UserSession(username=session['username'], email=session['email'], session=session['token'],
-                                    action='logout', device=device_name, ip_address_local=local_ip_address,
-                                    ip_address_external=external_ip_address, date=datetime_now, mac_address=mac_addr)
+                                    action='logout', device=client_device_name,
+                                    ip_address_external=client_ip, date=datetime_now, mac_address=client_mac_address)
     db.session.add(user_session_data)
     db.session.commit()
 
