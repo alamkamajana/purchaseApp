@@ -101,7 +101,6 @@ class PurchaseOrder(db.Model):
 class PurchaseOrderLine(db.Model):
     __tablename__ = 'purchase_order_line'
     id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     qty = db.Column(db.Float)
     unit_price = db.Column(db.Float)

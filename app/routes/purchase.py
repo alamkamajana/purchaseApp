@@ -37,17 +37,6 @@ def get_current_ip():
     ip_address = socket.gethostbyname(hostname)
     return ip_address
 
-@bp.route('/transaction', methods=["GET"])
-@login_required
-def transaction_list():
-    try :
-        event_id = request.args.get('pe', 0, type=int)
-        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
-        event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
-        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo)
-
-    except Exception as e :
-        print(e)
 
 @bp.route('/search_farmers', methods=["POST","GET"])
 def transaction_search_farmer():
@@ -157,28 +146,45 @@ def transaction_order_add():
     return redirect(url)
 
 
+@bp.route('/transaction', methods=["GET"])
+@login_required
+def transaction_list():
+    try :
+        event_id = request.args.get('pe', 0, type=int)
+        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
+        event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
+        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo)
 
-@bp.route('/transaction/add', methods=["POST"])
+    except Exception as e :
+        print(e)
+
+@bp.route('/transaction/add', methods=["POST","GET"])
 @login_required
 def transaction_add():
-    purchase_order_id = request.form['purchase-order']
-    purchase_event_id = request.form['purchase-event']
-    farmer_id = request.form['farmer']
-    product_id = request.form['product']
-    price_unit = request.form['price-unit']
-    barcode = request.form['barcode']
-    qty = request.form['qty']
-    product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product_id)).first()
+    purchase_order_id = request.args.get("purchase-order")
+    purchase_event_id = request.args.get("purchase-event")
+    farmer_id = request.args.get("farmer_id")
     new_transaction = PurchaseOrderLine(
         purchase_order_id=purchase_order_id,
-
-        product_odoo_id=product_odoo.id,
-        unit_price=float(price_unit),
-        qty=float(qty),
-        subtotal=float(price_unit) * float(qty),
-        barcode=barcode
+        unit_price = 0,
+        qty = 0,
+        subtotal = 0
     )
     db.session.add(new_transaction)
+    db.session.commit()
+    url = "/purchase/order?purchase-event=" + purchase_event_id + "&po=" + purchase_order_id + "&farmer=" + farmer_id
+    return redirect(url)
+
+
+@bp.route('/transaction/delete', methods=["POST","GET"])
+@login_required
+def transaction_delete():
+    transaction = request.args.get("transaction")
+    purchase_order_id = request.args.get("purchase-order")
+    purchase_event_id = request.args.get("purchase-event")
+    farmer_id = request.args.get("farmer_id")
+    po_line = PurchaseOrderLine.query.get(int(transaction))
+    db.session.delete((po_line))
     db.session.commit()
     url = "/purchase/order?purchase-event=" + purchase_event_id + "&po=" + purchase_order_id + "&farmer=" + farmer_id
     return redirect(url)
@@ -191,21 +197,69 @@ def transaction_update():
     product = request.form['product']
     price_unit = request.form['price-unit']
     qty = request.form['qty']
+    barcode = request.form['barcode']
     product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product)).first()
 
 
     # Update the data dictionary
-    transaction = PurchaseOrderLine.query.filter_by(id=transaction_id).first()  # Example: Update the user with ID 1
+    transaction = PurchaseOrderLine.query.filter_by(id=transaction_id).first()
+    po = PurchaseOrder.query.get(transaction.purchase_order_id)
     if transaction:
 
         transaction.unit_price = price_unit
         transaction.qty = qty
         transaction.product_odoo_id = product_odoo.id
+        transaction.barcode = barcode
         transaction.subtotal = float(qty) * float(price_unit)
         db.session.commit()
-        return redirect(request.referrer)
+        return redirect(f"/purchase/order?purchase-event={po.purchase_event_id}&po={po.id}&farmer={po.farmer_id}")
     else:
         return jsonify({'message': 'Transaction not found'}), 404
+
+
+@bp.route('/transaction/detail', methods=["POST","GET"])
+@login_required
+def transaction_detail():
+    transaction = request.args.get("transaction")
+    purchase_event_id = request.args.get("purchase-event")
+    farmer_id = request.args.get("farmer_id")
+    order_line = PurchaseOrderLine.query.get(int(transaction))
+
+    event = PurchaseEvent.query.filter_by(id=int(purchase_event_id)).first()
+    farmer = NfcappFarmerOdoo.query.filter_by(id=int(farmer_id)).first()
+
+    purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
+    purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
+    po_line_product_arr = []
+    for product in purchase_order_line_odoo:
+        po_line_product_arr.append(product.product_id)
+
+    farmer_itemcodelist = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
+
+    item_odoo_arr = []
+    for i in farmer_itemcodelist:
+        if i.odoo_id not in item_odoo_arr:
+            item_odoo_arr.append(i.odoo_id)
+
+    commodity_item_product_arr = []
+    for item in item_odoo_arr:
+        commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+        if commodityitem.product_id:
+            commodityitem_json = {}
+            commodityitem_json['commodityitem_id'] = commodityitem.id
+            commodityitem_json['commodityitem_name'] = commodityitem.code
+            commodityitem_json['commodityitem_price'] = commodityitem.price
+            commodityitem_json['product_id'] = commodityitem.product_id
+            commodityitem_json['product_name'] = commodityitem.product_name
+            commodityitem_json['commodity_id'] = commodityitem.commodity_id
+            commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodity_item_product_arr.append(commodityitem_json)
+
+    product_can_purchase_arr = []
+    for commodity_data in commodity_item_product_arr:
+        if commodity_data['product_id'] in po_line_product_arr:
+            product_can_purchase_arr.append(commodity_data)
+    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr)
 
 
 @bp.route('/transaction/confirm', methods=["POST"])

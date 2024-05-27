@@ -155,6 +155,8 @@ class NfcappStationOdoo(db.Model):
     gps_longitude = db.Column(db.Float)
     is_testing = db.Column(db.Boolean)
     odoo_id = db.Column(db.Integer)
+    create_date = db.Column(db.DateTime)
+    write_date = db.Column(db.DateTime)
 
 class NfcappClusterOdoo(db.Model):
     __tablename__ = 'nfcapp_cluster_odoo'

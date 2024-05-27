@@ -132,9 +132,18 @@ def purchase_event_create():
 @login_required
 def purchase_event_details():
     purchasers = ResUserOdoo.query.all()
+    purchase_order = PurchaseOrderOdoo.query.all()
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
-    return render_template('server/purchase_event_details.html', purchase_event=purchase_event, purchasers=purchasers)
+    return render_template('server/purchase_event_details.html', purchase_event=purchase_event, purchasers=purchasers, purchase_order=purchase_order)
+
+@bp.route('/purchase-event/view', methods=["POST","GET"])
+@login_required
+def purchase_event_view():
+    purchasers = ResUserOdoo.query.all()
+    purchase_event_id = request.args.get("pe")
+    purchase_event = PurchaseEvent.query.get(purchase_event_id)
+    return render_template('server/purchase_event_view.html', purchase_event=purchase_event, purchasers=purchasers)
 
 @bp.route('/purchase-event/update', methods=["POST","GET"])
 @login_required
@@ -144,6 +153,8 @@ def purchase_event_update():
     purchaser_id = request.form['purchaser']
     cashier_id = request.form['cashier']
     ics = request.form['ics']
+    po = request.form['purchase-order']
+    print(po)
 
     # Update the data dictionary
     event = PurchaseEvent.query.filter_by(id=id).first()  # Example: Update the user with ID 1
@@ -151,6 +162,7 @@ def purchase_event_update():
         event.cashier_id = cashier_id
         event.purchaser_id = purchaser_id
         event.ics = ics
+        event.purchase_order_odoo_id = int(po) if po else None
         db.session.commit()
         return redirect("/server/purchase-event")
     else:

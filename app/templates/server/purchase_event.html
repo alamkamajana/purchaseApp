@@ -158,39 +158,40 @@ Purchase Event
                            href="/server/purchase-event/delete?pe={{ event.id }}">
                             <span><i class='bx bxs-trash'></i></span>
                         </a>
+                        <a href="/server/purchase-event/view?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">View</a>
                         <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">Purchase</a>
                         <a href="/delivery/index?pe={{ event.id }}" target="_blank"
                            class="btn-sm btn-success">Delivery</a>
-                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                data-target="#qrModal{{ event.id }}">
-                            QR
-                        </button>
+<!--                        <button type="button" class="btn btn-primary" data-toggle="modal"-->
+<!--                                data-target="#qrModal{{ event.id }}">-->
+<!--                            QR-->
+<!--                        </button>-->
 
-                        <div class="modal fade" id="qrModal{{ event.id }}" tabindex="-1" role="dialog"
-                             aria-labelledby="qrModalLabel{{ event.id }}" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="qrModalLabel{{ event.id }}">QR Code for
-                                            Event {{ event.id }}</h5>
-                                        <button type="button" class="close" data-dismiss="modal"
-                                                aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ current_ip }}
-                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ base_url }}purchase/transaction?pe={{ event.id }}"
-                                             alt="QR Code for Event {{ event.id }}">
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                            Close
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+<!--                        <div class="modal fade" id="qrModal{{ event.id }}" tabindex="-1" role="dialog"-->
+<!--                             aria-labelledby="qrModalLabel{{ event.id }}" aria-hidden="true">-->
+<!--                            <div class="modal-dialog" role="document">-->
+<!--                                <div class="modal-content">-->
+<!--                                    <div class="modal-header">-->
+<!--                                        <h5 class="modal-title" id="qrModalLabel{{ event.id }}">QR Code for-->
+<!--                                            Event {{ event.id }}</h5>-->
+<!--                                        <button type="button" class="close" data-dismiss="modal"-->
+<!--                                                aria-label="Close">-->
+<!--                                            <span aria-hidden="true">&times;</span>-->
+<!--                                        </button>-->
+<!--                                    </div>-->
+<!--                                    <div class="modal-body">-->
+<!--                                        {{ current_ip }}-->
+<!--                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ base_url }}purchase/transaction?pe={{ event.id }}"-->
+<!--                                             alt="QR Code for Event {{ event.id }}">-->
+<!--                                    </div>-->
+<!--                                    <div class="modal-footer">-->
+<!--                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">-->
+<!--                                            Close-->
+<!--                                        </button>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
                     </td>
                 </tr>
                 {% endfor %}

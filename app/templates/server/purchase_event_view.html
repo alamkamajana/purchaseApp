@@ -7,18 +7,18 @@ Purchase Event
 {% endblock %}
 
 {% block header %}
-<b>Purchase Event Details</b>
+<b>Purchase Event View</b>
 {% endblock %}
 
 {% block content %}
-<span id="selected-menu" style="display: none;">purchase_event_details</span>
+<span id="selected-menu" style="display: none;">purchase_event_view</span>
 
 <div class="card">
 
     <div class="card-body">
         <div class="row">
             <div class="col-6">
-                <form action="/server/purchase-event/update" method="POST">
+                <form>
                     <input type="hidden" name="event_id" value="{{ purchase_event.id }}">
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -52,16 +52,6 @@ Purchase Event
                                value="{{ purchase_event.modified }}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="purchase-order">Purchase Order</label>
-                        <select class="form-control" id="purchase-order" name="purchase-order" required>
-                            {% for po in purchase_order %}
-                            <option value="{{ po.id }}" {% if po.id== purchase_event.purchase_order_odoo_id
-                                    %}selected{% endif %}>{{ po.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="ics">ICS</label>
                         <input type="text" class="form-control" id="ics" name="ics" value="{{ purchase_event.ics }}">
                     </div>
@@ -85,7 +75,6 @@ Purchase Event
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>
             </div>
         </div>
