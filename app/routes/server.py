@@ -80,6 +80,7 @@ def master_data_purchase_order():
         po_order_line_arr = []
         for order_line in po_order_line :
             order_line_json = {}
+            order_line_json['product_id'] = order_line.product_id
             order_line_json['product_name'] = order_line.product_name
             order_line_json['price_unit'] = order_line.price_unit
             order_line_json['product_qty'] = order_line.product_qty

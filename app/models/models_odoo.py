@@ -46,6 +46,8 @@ class NfcappFarmerOdoo(db.Model):
     bank_name_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
     certification_status_id = db.Column(db.Integer)
+    write_date = db.Column(db.DateTime)
+
 
 
     def __repr__(self):
@@ -70,6 +72,7 @@ class PurchaseOrderOdoo(db.Model):
     user_name = db.Column(db.String)
     payment_term_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    write_date = db.Column(db.DateTime)
     users = db.relationship('User', secondary=user_purchase_order_association, back_populates='purchase_orders')
 
     def __repr__(self):
@@ -88,6 +91,7 @@ class PurchaseOrderLineOdoo(db.Model):
     order_id = db.Column(db.Integer)
     order_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
+    write_date = db.Column(db.DateTime)
 
 
     def __repr__(self):
@@ -131,6 +135,7 @@ class NfcappCommodityItemOdoo(db.Model):
     product_name = db.Column(db.String)
     price = db.Column(db.Float)
     odoo_id = db.Column(db.Integer)
+    write_date = db.Column(db.DateTime)
 
 class NfcappStationOdoo(db.Model):
     __tablename__ = 'nfcapp_station_odoo'

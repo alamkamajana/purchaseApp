@@ -1,3 +1,6 @@
+
+from datetime import datetime
+
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
@@ -67,11 +70,26 @@ def sync_get_purchase_order():
             oid = po['odoo_id']
             po_json = {k: v for k, v in po.items() if k != 'id'}
             check_po_odoo = PurchaseOrderOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_po_odoo :
+
+
+            if check_po_odoo:
+                check_write_date = check_po_odoo.write_date
+                json_write_date = datetime.fromisoformat(po_json['write_date'])
+                if check_write_date != json_write_date:
+                    print("PO Update")
+                    for key, value in po_json.items():
+                        setattr(check_po_odoo, key, value)
+
+            else:
+                print("PO Add")
                 user = User.query.filter_by(user_odoo_id=session['user_odoo_id']).first()
                 new_po_odoo = PurchaseOrderOdoo(**po_json)
                 db.session.add(new_po_odoo)
                 user.purchase_orders.append(new_po_odoo)
+
+
+
+
 
         db.session.commit()
 
@@ -97,7 +115,16 @@ def sync_get_purchase_order_line():
             oid = po_line['odoo_id']
             po_line_json = {k: v for k, v in po_line.items() if k != 'id'}
             check_data = PurchaseOrderLineOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_data :
+
+            if check_data:
+                check_write_date = check_data.write_date
+                json_write_date = datetime.fromisoformat(po_line_json['write_date'])
+                if check_write_date != json_write_date:
+                    print("Po Line update")
+                    for key, value in po_line_json.items():
+                        setattr(check_data, key, value)
+            else:
+                print("Po Line Add")
                 new_data = PurchaseOrderLineOdoo(**po_line_json)
                 db.session.add(new_data)
 
@@ -123,23 +150,35 @@ def sync_get_farmer_odoo():
         response = requests.get(url, data=data)
         response_json = response.json()
         for farmer in response_json :
-            print(farmer)
+
             oid = farmer['odoo_id']
             farmer_json = {k: v for k, v in farmer.items() if not k in ['id','commodity_items']}
-            print(farmer_json)
+
             check_data = NfcappFarmerOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_data:
+            if check_data:
+                check_write_date = check_data.write_date
+                json_write_date = datetime.fromisoformat(farmer_json['write_date'])
+                if check_write_date != json_write_date:
+                    print("farmer update")
+                    for key, value in farmer_json.items():
+                        setattr(check_data, key, value)
+            else:
+                print("farmer add")
                 new_data = NfcappFarmerOdoo(**farmer_json)
-
                 db.session.add(new_data)
-
                 for commodity in farmer['commodity_items']:
-                    print(commodity)
                     oid = commodity['odoo_id']
                     commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
-                    print(commodity_json)
                     check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,farmer_id=farmer['odoo_id']).first()
-                    if not check_data2:
+                    if check_data2:
+                        check_write_date2 = check_data2.write_date
+                        json_write_date2 = datetime.fromisoformat(commodity_json['write_date'])
+                        if check_write_date2 != json_write_date2:
+                            print("commodity update")
+                            for key, value in commodity_json.items():
+                                setattr(check_data2, key, value)
+                    else:
+                        print("commodity add")
                         new_data2 = NfcappCommodityItemOdoo(**commodity_json)
                         db.session.add(new_data2)
 

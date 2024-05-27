@@ -33,7 +33,7 @@
                             <td>
                                 {% if po.order_line %}
                                     {% for order_line in po.order_line %}
-                                      {{ order_line.product_name }} , {{ order_line.price_unit }} <br/>
+                                   {{ order_line.product_id }} ,  {{ order_line.product_name }} , {{ order_line.price_unit }} <br/>
                                     {% endfor %}
                                 {% else %}
                                     N/A

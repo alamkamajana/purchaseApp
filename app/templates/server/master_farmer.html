@@ -41,8 +41,17 @@
 
                               {% for commodity_item in data.commodity_items %}
 
-                                      {{ commodity_item.code }} / {{ commodity_item.certStatus }} / {{ commodity_item.product_id }} <br/>
+                                      {{ commodity_item.odoo_id }} / {{ commodity_item.code }} / {{ commodity_item.certStatus }} / {{ commodity_item.product_id }} <br/>
                                  {% endfor %}
+
+                            </td>
+                              <td>
+
+                     {% for commodity_item in data.commodity_items %}
+                        {% if commodity_item.product_id %}
+                            {{ commodity_item.odoo_id }} / {{ commodity_item.code }} / {{ commodity_item.certStatus }} / {{ commodity_item.product_id }} <br/>
+                        {% endif %}
+                    {% endfor %}
 
                             </td>
 
