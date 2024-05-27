@@ -30,20 +30,19 @@ def sync_get_product_odoo():
         response_json = response.json()
         for product in response_json :
             product_oid = product['odoo_id']
-            active = product['active']
-            barcode = product['barcode']
-            default_code = product['default_code']
-            product_tmpl_id = product['product_tmpl_id']
-            name = product['name']
-            volume = product['volume']
-            weight = product['weight']
-            type = product['type']
-            item_code = product['item_code']
-            commodity = product['commodity']
+            product_json = {k: v for k, v in product.items() if k != 'id'}
             check_productodoo = ProductOdoo.query.filter_by(odoo_id=product_oid).first()
-            if not check_productodoo :
-                new_productodoo = ProductOdoo(odoo_id=product_oid,active=active,barcode=barcode,default_code=default_code,product_tmpl_id=product_tmpl_id,name=name,volume=volume,weight=weight,type=type,item_code=item_code,commodity=commodity)
-                db.session.add(new_productodoo)
+            if check_productodoo:
+                check_write_date = check_productodoo.write_date
+                json_write_date = datetime.fromisoformat(product_json['write_date'])
+                if check_write_date != json_write_date:
+                    for key, value in product_json.items():
+                        setattr(check_productodoo, key, value)
+
+            else:
+                new_product_odoo = ProductOdoo(**product_json)
+                print(new_product_odoo)
+                db.session.add(new_product_odoo)
 
         db.session.commit()
 
@@ -192,7 +191,15 @@ def sync_user_odoo():
             oid = user['odoo_id']
             user_json = {k: v for k, v in user.items() if k != 'id'}
             check_data = ResUserOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_data :
+
+            if check_data:
+                check_write_date = check_data.write_date
+                json_write_date = datetime.fromisoformat(user_json['write_date'])
+                if check_write_date != json_write_date:
+                    for key, value in user_json.items():
+                        setattr(check_data, key, value)
+
+            else:
                 new_data = ResUserOdoo(**user_json)
                 db.session.add(new_data)
 
@@ -221,7 +228,14 @@ def sync_commodity_odoo():
             oid = commodity['odoo_id']
             commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
             check_data = NfcappCommodityOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_data :
+            if check_data:
+                check_write_date = check_data.write_date
+                json_write_date = datetime.fromisoformat(commodity_json['write_date'])
+                if check_write_date != json_write_date:
+                    for key, value in commodity_json.items():
+                        setattr(check_data, key, value)
+
+            else:
                 new_data = NfcappCommodityOdoo(**commodity_json)
                 db.session.add(new_data)
 
@@ -250,7 +264,15 @@ def sync_commodityitem_odoo():
             oid = commodity['odoo_id']
             commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
             check_data = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid).first()
-            if not check_data :
+
+            if check_data:
+                check_write_date = check_data.write_date
+                json_write_date = datetime.fromisoformat(commodity_json['write_date'])
+                if check_write_date != json_write_date:
+                    for key, value in commodity_json.items():
+                        setattr(check_data, key, value)
+
+            else:
                 new_data = NfcappCommodityItemOdoo(**commodity_json)
                 db.session.add(new_data)
 
