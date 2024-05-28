@@ -5,6 +5,9 @@ from flask import (
 )
 from dotenv import load_dotenv
 import os
+import aiohttp
+import asyncio
+import ssl
 import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, \
     NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
@@ -153,9 +156,11 @@ def sync_get_farmer_odoo():
             else:
                 new_data = NfcappFarmerOdoo(**farmer_json)
                 db.session.add(new_data)
-                for commodity in farmer['commodity_items']:
+
+            for commodity in farmer['commodity_items']:
                     oid = commodity['odoo_id']
                     commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
+                    # print(commodity_json)
                     check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,
                                                                           farmer_id=farmer['odoo_id']).first()
                     if check_data2:
@@ -318,6 +323,7 @@ def sync_station_odoo():
         return {"message": str(e), "status": 400}
 
 
+
 @bp.route('/get-cluster-odoo')
 @login_required
 def sync_cluster_odoo():
@@ -345,3 +351,49 @@ def sync_cluster_odoo():
     except Exception as e:
         print(e)
         return {"message": str(e), "status": 400}
+
+
+#
+# def download_image(url, save_dir):
+#     try:
+#         response = requests.get(url)
+#         response.raise_for_status()  # Raise an exception for HTTP errors
+#         filename = os.path.join(save_dir)
+#         with open(filename, 'wb') as f:
+#             f.write(response.content)
+#         return {"url": url, "status": "success", "filename": filename}
+#     except requests.exceptions.RequestException as e:
+#         return {"url": url, "status": "error", "message": str(e)}
+@bp.route('/get-farmer-photo')
+@login_required
+def sync_farmer_photo():
+    farmers = NfcappFarmerOdoo.query.all()
+    odoo_url = "https://odoo.tripper.com"
+
+    async def download_image(session, url, path):
+        async with session.get(url, ssl=False) as response:
+            if response.status == 200:
+                with open(path, 'wb') as f:
+                    f.write(await response.read())
+            else:
+                print(f"Failed to download image from {url}")
+
+    async def download_all_images():
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for farmer in farmers:
+                url = f"{odoo_url}/nfcapp/web/image?model=nfcapp.farmer&id={farmer.odoo_id}&field=photo"
+                path = os.path.join("./app/static/image", f"{farmer.odoo_id}.png")
+                tasks.append(download_image(session, url, path))
+            await asyncio.gather(*tasks)
+
+    # Run the asynchronous function using asyncio.run
+    asyncio.run(download_all_images())
+    return {
+        "message": "Success",
+        "status": 200
+    }

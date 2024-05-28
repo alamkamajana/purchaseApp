@@ -28,20 +28,27 @@
                             Code
                         </th>
                          <th>
-                            Parent
+                            Farmer Group
+                        </th>
+                           <th>
+                            Station
                         </th>
                     </tr>
                     {% for data in datas %}
                         <tr>
+                            <td>
+                              <img width="100px" height="100px" src="{{ url_for('static', filename='image/' ~ data.farmer.odoo_id ~ '.png') }}" alt="Farmer Photo"/>
+                            </td>
                             <td>{{ data.farmer.code }}</td>
                              <td>{{ data.farmer.farmer_name }}</td>
                                     <td>{{ data.farmer.parent_name }}</td>
+                               <td>{{ data.farmer.station_name }}</td>
                               <td>{{ data.farmer.certification_status_id }}</td>
                             <td>
 
                               {% for commodity_item in data.commodity_items %}
 
-                                      {{ commodity_item.code }} / {{ commodity_item.certStatus }} / {{ commodity_item.product_id }} <br/>
+                                      {{ commodity_item.product_id_code }}  {{ commodity_item.product_id_name }}  <br/>
                                  {% endfor %}
 
                             </td>

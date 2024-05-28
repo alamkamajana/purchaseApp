@@ -47,13 +47,15 @@ def sync_menu():
 def master_data_farmer():
     parent_id = request.args.get('parent_id', type=int)
     farmers = NfcappFarmerOdoo.query.filter_by(parent_id=parent_id).all()
-    print(farmers)
     datas = []
     for farmer in farmers:
         data = {}
         data['farmer']=farmer
         data2 = []
-        commodity_items = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
+        commodity_items = NfcappCommodityItemOdoo.query.filter(
+            NfcappCommodityItemOdoo.farmer_id == farmer.odoo_id,
+            NfcappCommodityItemOdoo.product_id.isnot(None)
+        ).all()
         for commodity_item in commodity_items:
             data2.append(commodity_item)
         data['commodity_items'] = data2
@@ -75,12 +77,13 @@ def master_data_purchase_order():
         po_json = {}
         po_json['id'] = po.id
         po_json['name'] = po.name
+        po_json['partner_name'] = po.partner_name
         data.append(po_json)
         po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(po.odoo_id)).all()
         po_order_line_arr = []
         for order_line in po_order_line :
             order_line_json = {}
-            order_line_json['product_name'] = order_line.product_name
+            order_line_json['product_name'] = order_line.name
             order_line_json['price_unit'] = order_line.price_unit
             order_line_json['product_qty'] = order_line.product_qty
             po_order_line_arr.append(order_line_json)

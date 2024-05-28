@@ -23,6 +23,9 @@
                         <th>
                             PO
                         </th>
+                           <th>
+                            Vendor
+                        </th>
                         <th>
                             Products
                         </th>
@@ -30,14 +33,23 @@
                     {% for po in purchase_data %}
                         <tr>
                             <td>{{ po.name }}</td>
+                             <td>{{ po.partner_name }}</td>
                             <td>
-                                {% if po.order_line %}
-                                    {% for order_line in po.order_line %}
-                                      {{ order_line.product_name }} , {{ order_line.price_unit }} <br/>
-                                    {% endfor %}
+                                <table class="table">
+                                         {% if po.order_line %}
+                                            {% for order_line in po.order_line %}
+                                            <tr>
+                                                <td> {{ order_line.product_name }}</td>
+                                                <td align="right"> {{ "{:,.2f}".format(order_line.product_qty) }}</td>
+                                                <td align="right"> {{ "Rp. {:,.2f}".format(order_line.price_unit) }}</td>
+                                            </tr>
+                                         {% endfor %}
                                 {% else %}
                                     N/A
                                 {% endif %}
+                                </table>
+
+
                             </td>
                         </tr>
                     {% endfor %}
