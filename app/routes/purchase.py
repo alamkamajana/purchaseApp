@@ -129,6 +129,15 @@ def transaction_order():
     return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
                            product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,po_line_product_arr=po_line_product_arr)
 
+@bp.route('/payment-note', methods=["GET"])
+@login_required
+def purchase_payment_note():
+    po = request.args.get('po', 1, type=int)
+    order = PurchaseOrder.query.get(po)
+
+    # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
+    return render_template('purchase/payment_note.html', purchase_order=order)
+
 @bp.route('/order/add', methods=["POST","GET"])
 @login_required
 def transaction_order_add():
@@ -161,19 +170,81 @@ def transaction_list():
 @bp.route('/transaction/add', methods=["POST","GET"])
 @login_required
 def transaction_add():
-    purchase_order_id = request.args.get("purchase-order")
-    purchase_event_id = request.args.get("purchase-event")
-    farmer_id = request.args.get("farmer_id")
+    purchase_order_id = request.form['po']
+    purchase_event_id = request.form['pe']
+    farmer_id = request.form['farmer_id']
+
+    product = request.form['product']
+    price_unit = request.form['price-unit']
+    qty = request.form['qty']
+    barcode = request.form['barcode']
+    subtotal = request.form['subtotal']
+    product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product)).first()
+
+
     new_transaction = PurchaseOrderLine(
         purchase_order_id=purchase_order_id,
-        unit_price = 0,
-        qty = 0,
-        subtotal = 0
+        unit_price = price_unit,
+        qty = qty,
+        barcode = barcode,
+        subtotal = subtotal
     )
+
     db.session.add(new_transaction)
     db.session.commit()
     url = "/purchase/order?purchase-event=" + purchase_event_id + "&po=" + purchase_order_id + "&farmer=" + farmer_id
     return redirect(url)
+
+@bp.route('/transaction/create', methods=["POST","GET"])
+@login_required
+def transaction_create():
+    purchase_event_id = request.args.get("purchase-event")
+    purchase_order_id = request.args.get("purchase-order")
+    farmer_id = request.args.get("farmer_id")
+
+    event = PurchaseEvent.query.filter_by(id=int(purchase_event_id)).first()
+    farmer = NfcappFarmerOdoo.query.filter_by(id=int(farmer_id)).first()
+
+    purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
+    purchase_order_line_odoo = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo).all()
+    po_line_product_arr = []
+    for product in purchase_order_line_odoo:
+        po_line_product_arr.append(product.product_id)
+
+    farmer_itemcodelist = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
+
+    item_odoo_arr = []
+    for i in farmer_itemcodelist:
+        if i.odoo_id not in item_odoo_arr:
+            item_odoo_arr.append(i.odoo_id)
+
+    commodity_item_product_arr = []
+    for item in item_odoo_arr:
+        commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+        if commodityitem.product_id:
+            commodityitem_json = {}
+            commodityitem_json['commodityitem_id'] = commodityitem.id
+            commodityitem_json['commodityitem_name'] = commodityitem.code
+            commodityitem_json['commodityitem_price'] = commodityitem.price
+            commodityitem_json['product_id'] = commodityitem.product_id
+            commodityitem_json['product_name'] = commodityitem.product_name
+            commodityitem_json['commodity_id'] = commodityitem.commodity_id
+            commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodity_item_product_arr.append(commodityitem_json)
+
+    product_can_purchase_arr = []
+    for commodity_data in commodity_item_product_arr:
+        if commodity_data['product_id'] in po_line_product_arr:
+            product_can_purchase_arr.append(commodity_data)
+
+    datas = {
+        "po" : purchase_order_id,
+        "pe" : purchase_event_id,
+        "farmer_id" : farmer_id
+    }
+
+    return render_template('purchase/transaction_create.html',product_can_purchase=product_can_purchase_arr, datas=datas)
+
 
 
 @bp.route('/transaction/delete', methods=["POST","GET"])
