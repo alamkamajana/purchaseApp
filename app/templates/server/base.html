@@ -2,6 +2,7 @@
 <title>{% block title %}{% endblock %} - Tripper</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='/assets/jquery-ui/jquery-ui.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='/assets/fontawesome/css/fontawesome.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/fontawesome/css/all.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap-select.css') }}">
@@ -9,6 +10,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/index.css') }}">
 <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+
 {% block plugin %}{% endblock %}
 
 <body id="body-pd">
@@ -69,6 +71,7 @@
 
     <script src="{{ url_for('static', filename='/assets/popper/popper.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap-select.js') }}"></script>
+<!--    <script src="{{ url_for('static', filename='/assets/fontawesome/js/font.js') }}"></script>-->
     {% block script_plugin %}{% endblock %}
     <script type="text/javascript"  src="{{ url_for('static', filename='/js/server/index.js') }}"></script>
 </body>

@@ -77,7 +77,7 @@ class PurchaseEvent(db.Model):
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
     note = db.Column(db.Text)
-    date_stamp = db.Column(db.DateTime)
+    date_stamp = db.Column(db.Date)
     money_entries = db.relationship('Money', backref='purchase_event', lazy='dynamic')
     @property
     def compute_fund(self):

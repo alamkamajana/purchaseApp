@@ -21,37 +21,6 @@ Purchase Event
                 <form action="/server/purchase-event/update" method="POST">
                     <input type="hidden" name="event_id" value="{{ purchase_event.id }}">
                     <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ purchase_event.name }}"
-                               readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="fund">Fund</label>
-                        <input type="text" class="form-control" id="fund" name="fund" value="{{ purchase_event.fund }}"
-                               readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="ap_name">AP Name</label>
-                        <input type="text" class="form-control" id="ap_name" name="ap_name"
-                               value="{{ purchase_event.ap_name }}"
-                               readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="ip_address">IP Address</label>
-                        <input type="text" class="form-control" id="ip_address" name="ip_address"
-                               value="{{ purchase_event.ip_address }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="created_at">Created At</label>
-                        <input type="text" class="form-control" id="created_at" name="created_at"
-                               value="{{ purchase_event.created }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="modified">Modified</label>
-                        <input type="text" class="form-control" id="modified" name="modified"
-                               value="{{ purchase_event.modified }}" readonly>
-                    </div>
-                    <div class="form-group">
                         <label for="purchase-order">Purchase Order</label>
                         <select class="form-control" id="purchase-order" name="purchase-order" required>
                             {% for po in purchase_order %}
@@ -62,34 +31,26 @@ Purchase Event
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="ics">ICS</label>
-                        <input type="text" class="form-control" id="ics" name="ics" value="{{ purchase_event.ics }}">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ purchase_event.name }}"
+                               readonly>
                     </div>
                     <div class="form-group">
-                        <label for="purchaser">Purchaser</label>
-                        <select class="form-control" id="purchaser" name="purchaser" required>
-                            {% for purchaser in purchasers %}
-                            <option value="{{ purchaser.id }}" {% if purchaser.id== purchase_event.purchaser_id
-                                    %}selected{% endif %}>{{ purchaser.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <label for="date_stamp">Created</label>
+                        <input type="date" class="form-control" id="date_stamp" name="date_stamp"
+                               value="{{ purchase_event.date_stamp}}">
                     </div>
                     <div class="form-group">
-                        <label for="cashier">Cashier</label>
-                        <select class="form-control" id="cashier" name="cashier" required>
-                            {% for cashier in purchasers %}
-                            <option value="{{ cashier.id }}" {% if cashier.id== purchase_event.cashier_id %}selected{%
-                                    endif %}>{{ cashier.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <label for="notes" class="form-label">Note</label>
+                        <textarea id="notes" name="note" class="form-control"
+                                  rows="4">{{ purchase_event.note }}</textarea>
                     </div>
+                    <br/>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                     <button type="button" class="btn btn-primary" id="addMoneyButton">Add Money</button>
                     <button type="button" class="btn btn-primary" id="getMoneyButton">Get Money</button>
+                    <a href="/server/purchase-event" class="btn btn-primary">Back</a>
                 </form>
-
 
                 <!-- Modal for Adding Money -->
                 <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
@@ -114,7 +75,9 @@ Purchase Event
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" id="addMoneyButtonClose" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary" id="addMoneyButtonClose"
+                                            data-dismiss="modal">Close
+                                    </button>
                                     <button type="submit" class="btn btn-primary">Add Money</button>
                                 </div>
                             </form>
@@ -143,7 +106,9 @@ Purchase Event
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" id="getMoneyButtonClose" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-secondary" id="getMoneyButtonClose"
+                                            data-dismiss="modal">Close
+                                    </button>
                                     <button type="submit" class="btn btn-primary">Get Money</button>
                                 </div>
                             </form>
