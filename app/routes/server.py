@@ -7,7 +7,7 @@ from flask import jsonify
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo
-from app.models.models import PurchaseEvent, User, PurchaseOrder, PurchaseOrderLine
+from app.models.models import PurchaseEvent, User, PurchaseOrder, PurchaseOrderLine, Money
 from functools import wraps
 import socket
 import requests
@@ -186,5 +186,41 @@ def purchase_event_delete():
         db.session.commit()
 
     return redirect(url_for('routes.server.purchase_event_list'))
+
+
+@bp.route('/purchase-event/payments', methods=["POST","GET"])
+@login_required
+def purchase_event_payments():
+    purchase_event_id = request.args.get("pe")
+    purchase_event = PurchaseEvent.query.get(purchase_event_id)
+    payments = Money.query.filter_by(purchase_event_id=purchase_event.id).order_by(Money.created.asc())
+    return render_template('server/purchase_event_payments.html', purchase_event=purchase_event, payments=payments)
+
+
+@bp.route('/money/add', methods=["POST","GET"])
+@login_required
+def server_money_add():
+    try :
+        purchase_event_id = request.form.get('purchase_event_id')
+        purchase_order_id = request.form.get('purchase_order_id')
+        amount = request.form.get('amount')
+        type = request.form.get('type')
+        note = request.form.get('note')
+        amount = float(amount)
+        if type.lower() == 'credit' :
+            amount = -amount
+
+        purchase_event_id = int(purchase_event_id)
+        money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+        today_datetime = datetime.now()
+        current_user_session = session['user_odoo_id']
+        current_user = User.query.filter_by(
+            user_odoo_id=int(current_user_session) if current_user_session else None).first()
+        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime, create_uid=current_user.id if current_user else None)
+        db.session.add(money)
+        db.session.commit()
+        return redirect(request.referrer)
+    except Exception as e :
+        print(e)
 
 

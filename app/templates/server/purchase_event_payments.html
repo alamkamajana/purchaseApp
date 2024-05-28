@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PE Payments</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row text-center">
+        <div class="col">
+            <h1>Payments </h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <th>Fund</th>
+                <th>Amount</th>
+                <th>Type</th>
+                <th>Note</th>
+                </thead>
+                <tbody>
+                {% set ns = namespace(fund=0) %}
+                {% for payment in payments %}
+                <tr>
+                    {% set ns.fund = ns.fund + payment.amount %}
+                    <td>{{ ns.fund }}</td>
+                    <td>{{ payment.amount }}</td>
+                    <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                    <td>{{ payment.note }}</td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+
+</body>
+</html>

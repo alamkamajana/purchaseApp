@@ -42,3 +42,13 @@ def cashier_po_detail():
         return render_template('cashier/po_details.html', purchase_order=purchase_order)
     except Exception as e :
         print(e)
+
+@bp.route('/payment/add', methods=["GET"])
+@login_required
+def cashier_payment_add():
+    try :
+        po = request.args.get('po')
+        purchase_order = PurchaseOrder.query.filter_by(id=int(po)).first()
+        return redirect(request.referrer)
+    except Exception as e :
+        print(e)

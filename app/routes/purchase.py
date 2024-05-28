@@ -147,7 +147,7 @@ def transaction_order_add():
     else :
         purchase_event = request.args.get('pe')
         farmer = request.args.get('farmer')
-    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="")
+    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="ORDER-")
     new_po = PurchaseOrder(name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft')
     db.session.add(new_po)
     db.session.commit()
@@ -187,7 +187,8 @@ def transaction_add():
         unit_price = price_unit,
         qty = qty,
         barcode = barcode,
-        subtotal = subtotal
+        subtotal = subtotal,
+        product_odoo_id=product_odoo.id
     )
 
     db.session.add(new_transaction)

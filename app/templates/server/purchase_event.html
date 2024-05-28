@@ -144,7 +144,7 @@ Purchase Event
                     </td>
                     <td class="fund-column">
                         <div class="event-info{{ event.id }}" id="fund-info{{ event.id }}">
-                            {{ event.fund }}
+                            {{ event.compute_fund }}
                         </div>
                     </td>
                     <td>
@@ -159,6 +159,7 @@ Purchase Event
                             <span><i class='bx bxs-trash'></i></span>
                         </a>
                         <a href="/server/purchase-event/view?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">View</a>
+                        <a href="/server/purchase-event/payments?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">Payments</a>
                         <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">Purchase</a>
                         <a href="/delivery/index?pe={{ event.id }}" target="_blank"
                            class="btn-sm btn-success">Delivery</a>

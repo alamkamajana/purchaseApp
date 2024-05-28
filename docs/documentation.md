@@ -20,3 +20,11 @@ Standard Controller tridir dari list view, create, edit, form view, Delete
 Gambar di download, Tambahkan scanner, print ke printer nota via bluetotttyh, konsep crud sama dengan websol
 
 
+Tabel money
+
+![img_3.png](img_3.png)
+
+
+
+
+
