@@ -1,0 +1,54 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Purchase Order
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Master Data</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">master_data</span>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="event-container">
+                <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                    <tr>
+                        <th>
+                            PO
+                        </th>
+                        <th>
+                            Products
+                        </th>
+                    </tr>
+                    {% for po in purchase_data %}
+                        <tr>
+                            <td>{{ po.name }}</td>
+                            <td>
+                                {% if po.order_line %}
+                                    {% for order_line in po.order_line %}
+                                      {{ order_line.product_name }} , {{ order_line.price_unit }} <br/>
+                                    {% endfor %}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}

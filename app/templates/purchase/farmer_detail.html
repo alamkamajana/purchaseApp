@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Farmer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        {% if farmer %}
+        <div class="row">
+            <div class="col">
+                Farmer Name
+            </div>
+            <div class="col">
+                {{ farmer.farmer_name }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Farmer Code
+            </div>
+            <div class="col">
+                {{ farmer.code }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Role
+            </div>
+            <div class="col">
+                {{ farmer.farmer_role }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}">Confirm</a>
+            </div>
+            <div class="col">
+                <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col">
+                <p>No Farmer Data</p>
+                <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
+            </div>
+
+
+        </div>
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+</div>
+</body>
+</html>

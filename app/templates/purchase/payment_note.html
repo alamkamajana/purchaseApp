@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Note</title>
+    <style>
+        #noteContainer {
+            border: 1px solid black;
+            padding: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        #printButton {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+<div id="noteContainer">
+    <h1>Payment Note</h1>
+    <p>Purchase Order: 5555</p>
+    <p>Amount:10000}</p>
+    <!-- Add more details as needed -->
+</div>
+<button id="printButton">Print Note</button>
+<button onclick="window.print()">Print</button>
+
+<script>
+    const printButton = document.getElementById('printButton');
+    const noteContainer = document.getElementById('noteContainer');
+
+    printButton.addEventListener('click', () => {
+        // Request Bluetooth device
+        navigator.bluetooth.requestDevice({
+            filters: [{name: 'Printer'}],
+            optionalServices: ['0000110a-0000-1000-8000-00805f9b34fb'] // Optional, filter for specific service
+        })
+            .then(device => {
+                // Connect to the device
+                return device.gatt.connect();
+            })
+            .then(server => {
+                // Get the printing service
+                return server.getPrimaryService('0000110a-0000-1000-8000-00805f9b34fb');
+            })
+            .then(service => {
+                // Get the printing characteristic
+                return service.getCharacteristic('00001101-0000-1000-8000-00805f9b34fb');
+            })
+            .then(characteristic => {
+                // Encode the note as a byte array
+                const encoder = new TextEncoder();
+                const data = encoder.encode(noteContainer.innerHTML);
+
+                // Send the data to the printer
+                return characteristic.writeValue(data);
+            })
+            .catch(error => {
+                console.error('Error printing note:', error);
+            });
+    });
+</script>
+</body>
+</html>

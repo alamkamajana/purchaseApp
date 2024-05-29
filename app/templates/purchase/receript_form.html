@@ -1,0 +1,170 @@
+{% extends 'server/base.html' %}
+{% block title %}
+Purchase Receipt
+{% endblock %}
+{% block plugin %}
+
+{% endblock %}
+
+{% block header %}
+<b>Receipt</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">transaction</span>
+
+<div class="card">
+
+    <div class="card-body">
+
+        <form action="/purchase/transaction/add" method="post">
+            <div class="row">
+                <div class="form-floating col-sm-12 col-lg">
+                    <select name="purchase-order"
+                            class="form-control selectpicker"
+                            id="purchase-order"
+                            disabled
+                    >
+                        <option value={{purchase_order.id}} selected="true">{{purchase_order.name}}</option>
+                    </select>
+                    <label class="control-label" for="purchase-order">Purchase Order</label>
+                </div>
+                <div class="form-floating col-sm-12 col-lg">
+                    <select name="station"
+                            class="form-control selectpicker"
+                            data-live-search="true"
+                            id="station"
+                    >
+                        <option value="1" selected="true">Station1</option>
+                    </select>
+                    <label class="control-label" for="station">Station</label>
+                </div>
+
+                <div class="form-floating col-sm-12 col-lg">
+                    <select name="purchase-event"
+                            class="form-control selectpicker populateJSON selectpickerPurchaseEvent"
+                            data-live-search="true"
+                            data-live-search-placeholder="Search..."
+                            id="purchase-event"
+                    >
+                        <option value="" selected="true">Select Purchase Event...</option>
+
+                    </select>
+                    <label class="control-label" for="purchase-event">Purchase Event</label>
+                </div>
+
+                <div class="form-floating col-6 col-sm-6 col-lg">
+                    <input class="form-control" type="text" id="farmer" name="farmer" value="0000000">
+                    <label class="control-label" for="farmer">Farmer ID</label>
+                </div>
+                <div class="col col-sm-6 col-lg-1" style="display: flex; align-items: center;">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+
+                </tr>
+        </form>
+    </div>
+
+    <div class="event-container">
+        <table class="table event-table" style="width: 100%; margin-top: 32px;">
+            <tr>
+                <th style="width: 18%;">
+                    Item
+                </th>
+                <th style="width: 18%;">
+                    Price Unit
+                </th>
+                <th style="width: 18%;">
+                    Qty
+                </th>
+                <th style="width: 18%;">
+                    Subtotal
+                </th>
+                <th style="width: 18%;">
+                    Barcode
+                </th>
+                <th style="width: 10%;">
+                    Edit
+                </th>
+            </tr>
+            {% for transaction in transaction_list %}
+            <tr class="event-row">
+                <td>
+                    <div class="transaction-info{{transaction.id}}" id="farmer-info{{transaction.id}}">
+                        {{transaction.farmer.farmer_name}}
+                    </div>
+                    <div class="hidden" id="farmer-id{{transaction.id}}">
+                        {{transaction.farmer.id}}
+                    </div>
+                    <div class="transaction-info{{transaction.id}} hidden">
+                        <select name="farmer"
+                                class="form-control update-form selectpicker populateJSON selectpickerFarmer"
+                                data-live-search="true"
+                                data-live-search-placeholder="Search..."
+                                id="farmer-update{{transaction.id}}"
+                        >
+                            <option value="{{transaction.farmer.id}}" selected="true">
+                                {{transaction.farmer.farmer_name}}
+                            </option>
+
+                        </select>
+                    </div>
+                </td>
+                <td class="fund-column">
+                    <div class="transaction-info{{transaction.id}}" id="price-info{{transaction.id}}">
+                        {{'%.2f' | format(transaction.price_unit)}}
+                    </div>
+                    <div class="update-form transaction-info{{transaction.id}} hidden">
+                        <input type="number" id="price-update{{transaction.id}}" name="price-unit"
+                               value="{{'%.2f' | format(transaction.price_unit)}}" step="any">
+                    </div>
+                </td>
+                <td class="fund-column">
+                    <div class="transaction-info{{transaction.id}}" id="qty-info{{transaction.id}}">
+                        {{'%.0f' | format(transaction.qty)}}
+                    </div>
+                    <div class="update-form transaction-info{{transaction.id}} hidden">
+                        <input type="number" id="qty-update{{transaction.id}}" name="qty"
+                               value="{{'%.0f' | format(transaction.qty)}}">
+                    </div>
+                </td>
+                <td>
+                    <div id="subtotal-info{{transaction.id}}">
+                        {{'%.2f' | format(transaction.subtotal)}}
+                    </div>
+                </td>
+                <td class="fund-column">
+                    <div class="transaction-info{{transaction.id}}" id="barcode-info{{transaction.id}}">
+                        0000000
+                    </div>
+                    <div class="update-form transaction-info{{transaction.id}} hidden">
+                        <input type="text" id="barcode-update{{transaction.id}}" name="barcode" value="0000000">
+                    </div>
+                </td>
+                <td>
+                    <span class="event-id" style="display: none;">{{transaction.id}}</span>
+                    <button onclick="editTransaction('{{transaction.id }}')" type="button"
+                            class="btn btn-secondary transaction-info{{transaction.id}}" id="test1-btn">
+                        <span><i class='bx bxs-pencil'></i></span>
+                    </button>
+                    <button onclick="updateTransaction('{{ transaction.id }}')" type="button"
+                            class="btn btn-success transaction-info{{transaction.id}} hidden">
+                        <span><i class='bx bx-check'></i></span>
+                    </button>
+                    <button onclick="cancelUpdateTransaction('{{ transaction.id }}')" type="button"
+                            class="btn btn-danger transaction-info{{transaction.id}} hidden">
+                        <span><i class='bx bx-x'></i></span>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+
+{% endblock %}
+{% block script_plugin %}
+
+{% endblock %}

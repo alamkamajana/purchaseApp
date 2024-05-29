@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>purchase</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-floating col-sm-12 col-lg">
+                    {{ purchase_event.name }}
+                </div>
+            </div>
+            <div class="row col-3">
+                <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary">
+                    Add Purchase
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <td>
+                                Order
+                            </td>
+                            <td>
+                                Farmer
+                            </td>
+                            <td>
+                                Status
+                            </td>
+                            <td>Action</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for purchase in purchase_lists %}
+                        <tr>
+                            <td>{{ purchase.id }}</td>
+                            <td>
+                                {% if purchase.farmer_id %}
+                                {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
+                                {% else %}
+                                No farmer associated
+                                {% endif %}
+                            </td>
+                            <td>{{ purchase.status }}</td>
+                            <td>
+                                <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}">Add
+                                    Product</a>
+                                <a href="/purchase/payment-note?po={{ purchase.id }}">Payment Note</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

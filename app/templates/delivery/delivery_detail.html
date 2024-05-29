@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row text-center">
+        <div class="col">
+            <h1>Add Goods </h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <form action="/delivery/detail/add" method="post">
+        <input type="hidden" name="do" value="{{ do }}"/>
+        <div class="row menu-container text-center">
+            <div class="col">
+                <label>Scan Barcode</label>
+                <input type="text" class="form-control" name="barcode"/>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </div>
+    </form>
+    <div class="row mt-5">
+        <input type="hidden" id="do" value="{{ do }}">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <td>
+                    DO
+                </td>
+                <td> Product</td>
+                <td> Barcode</td>
+                <td> Action </td>
+            </tr>
+            </thead>
+            <tbody id="do-list">
+            {% for order in order_line %}
+            <tr>
+                <td>{{ DeliveryOrder.query.filter_by(id=do).first().name }}</td>
+<!--                <td>{{ order.product }}</td>-->
+<!--                <td>{{ do.vehicle_number }}</td>-->
+<!--                <td> {{ do.purchase_event_id }}</td>-->
+                <td>
+                    {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
+                </td>
+                <td> {{  order.barcode }} </td>
+                <td> <a href="/delivery/detail/delete?order_line={{ order.id }}" class="btn-sm btn-danger">Delete</a> </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
