@@ -37,16 +37,63 @@ def delivery_index():
 @login_required
 def delivery_create():
     try :
-        pe = request.args.get('pe')
-        # driver = request.args.get('driver')
-        # vehicle_number = request.args.get('vehicle_number')
+        pe = request.args.get("pe")
+        return render_template('delivery/delivery_create.html', pe=pe)
+    except Exception as e :
+        print(e)
+
+
+@bp.route('/add', methods=["POST","GET"])
+@login_required
+def delivery_add():
+    try :
+        pe = request.form['pe']
+        driver = request.form['driver']
+        vehicle = request.form['vehicle']
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
         today_datetime = datetime.now()
         #
         current_user_session = session['user_odoo_id']
         current_user = User.query.filter_by(user_odoo_id=int(current_user_session) if current_user_session else None).first()
-        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe), created=today_datetime, create_uid=current_user.id if current_user else None)
+        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime, create_uid=current_user.id if current_user else None)
         db.session.add(new_do)
+        db.session.commit()
+        return redirect(f"/delivery/index?pe={pe}")
+    except Exception as e :
+        print(e)
+        return jsonify(status=400, text=5555555)
+
+
+@bp.route('/edit', methods=["POST","GET"])
+@login_required
+def delivery_edit():
+    try :
+        do = request.args.get("do")
+        pe = request.args.get("pe")
+        delivery_order = DeliveryOrder.query.get(int(do))
+        return render_template('delivery/delivery_edit.html', do=delivery_order, pe=pe)
+    except Exception as e :
+        print(e)
+        return jsonify(status=400, text=5555555)
+
+@bp.route('/update', methods=["POST","GET"])
+@login_required
+def delivery_update():
+    try :
+        pe = request.form['pe']
+        do = request.form['do']
+        vehicle = request.form['vehicle']
+        driver = request.form['driver']
+        delivery_order = DeliveryOrder.query.get(int(do))
+        today_datetime = datetime.now()
+
+        current_user_session = session['user_odoo_id']
+        current_user = User.query.filter_by(user_odoo_id=int(current_user_session) if current_user_session else None).first()
+
+        delivery_order.driver = driver
+        delivery_order.vehicle_number = vehicle
+        delivery_order.modified = today_datetime
+        delivery_order.write_uid = current_user.id if current_user else None
         db.session.commit()
         return redirect(f"/delivery/index?pe={pe}")
     except Exception as e :

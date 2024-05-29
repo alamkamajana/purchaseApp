@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row text-center">
+        <div class="col">
+            <h1>Edit Delivery Order </h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col text-left">
+            <a href="/delivery/index?pe={{ pe }}" class="btn btn-success">
+                Back
+            </a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <form action="/delivery/update" method="post">
+        <input type="hidden" name="do" value="{{ do.id }}"/>
+        <input type="hidden" name="pe" value="{{ pe }}">
+        <div class="row menu-container text-center">
+            <div class="col">
+                <label>Driver</label>
+                <input type="text" class="form-control" value="{{ do.driver }}" name="driver"/>
+            </div>
+        </div>
+        <div class="row menu-container text-center">
+            <div class="col">
+                <label>Vehicle</label>
+                <input type="text" class="form-control" value="{{ do.vehicle_number }}" name="vehicle"/>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
+¬
