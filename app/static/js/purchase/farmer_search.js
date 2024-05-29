@@ -38,6 +38,34 @@ $(document).ready(function() {
         tab_info = document.getElementById('tab-info').innerHTML = 0;
 
     }
+
+    var selectedStation = $('#farmer_station_form').val();
+    $('#farmer_group_form').val(null).trigger('change');
+    $('#farmer_group_form option').each(function() {
+        var itemStation = $(this).data('category');
+        if (selectedStation == 'all' || selectedStation == itemStation || $(this).val()==0) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+        });
+    $('#farmer_group_form').val('').trigger('change');
+
+    
+    $('#farmer_station_form').on('change', function() {
+        var selectedStation = $(this).val();
+        $('#farmer_group_form').val(null).trigger('change');
+        $('#farmer_group_form option').each(function() {
+        var itemStation = $(this).data('category');
+        if (selectedStation == 'all' || selectedStation == itemStation || $(this).val()==0) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+        });
+        $('#farmer_group_form').val('').trigger('change');
+            
+    });
         
     
     

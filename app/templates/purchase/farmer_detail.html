@@ -8,7 +8,7 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/farmer_detail.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -17,47 +17,52 @@
 <body>
 <div class="container">
     <div class="card">
+
         {% if farmer %}
-        <div class="row">
-            <div class="col">
-                Farmer Name
-            </div>
-            <div class="col">
-                {{ farmer.farmer_name }}
-            </div>
+        <div class="card-header">
+            <a href="/purchase/search/farmer?pe={{ pe }}" class="btn btn-danger" style="width: fit-content;">Back</a>
         </div>
-        <div class="row">
-            <div class="col">
-                Farmer Code
+        <div class="card-body">
+        <div class="farmer-data">
+            <div class="farmer-photo">
+                <img width="200px" height="200px" src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}" alt="Farmer Photo"/>
             </div>
-            <div class="col">
-                {{ farmer.code }}
-            </div>
+            <table id="farmer-detail">
+                <tbody>
+                    <tr>
+                        <th style="width: 180px;">Farmer Name</th>
+                        <td>{{ farmer.farmer_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Farmer Code</th>
+                        <td>{{ farmer.code }}</td>
+                    </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td>{{ farmer.farmer_role }}</td>
+                    </tr>
+                    <tr>
+                        <th>Farmer Group</th>
+                        <td>{{ farmer.parent_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Station</th>
+                        <td>{{ farmer.station_name }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="row">
-            <div class="col">
-                Role
-            </div>
-            <div class="col">
-                {{ farmer.farmer_role }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}">Confirm</a>
-            </div>
-            <div class="col">
-                <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
-            </div>
-        </div>
+        <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}" class="btn btn-su">Confirm</a>
+
         {% else %}
         <div class="row">
-            <div class="col">
+            <div class="col-2">
                 <p>No Farmer Data</p>
                 <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
             </div>
 
 
+        </div>
         </div>
         {% endif %}
 

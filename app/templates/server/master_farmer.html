@@ -18,20 +18,54 @@
 
         <div class="card-body">
             <div class="event-container">
+                <form>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="station_id">Station</label>
+                            <select name="station_id" id="station_id">
+                                {% for station in stations %}
+                                    <option value="{{station.odoo_id}}" {% if station.odoo_id==station_id %} selected {% endif %} >{{station.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <label for="parent_id">Farmer Group</label>
+                            <select name="parent_id" id="parent_id">
+                                {% for cluster in clusters %}
+                                    <option value="{{cluster.odoo_id}}" {% if cluster.odoo_id==parent_id %} selected {% endif %} data-category="{{cluster.station_id}}">{{cluster.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <button style="margin-top: 20px;" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if datas %}
 
                 <table class="table event-table" style="width: 100%; margin-top: 32px;">
                     <tr>
                         <th>
-                            Farmer
+
                         </th>
                         <th>
                             Code
                         </th>
-                         <th>
+                        <th>
+                            Farmer
+                        </th>
+                        <th>
                             Farmer Group
                         </th>
                            <th>
                             Station
+                        </th>
+                        <th>
+
+                        </th>
+                        <th>
+
                         </th>
                     </tr>
                     {% for data in datas %}
@@ -56,6 +90,8 @@
                         </tr>
                     {% endfor %}
                 </table>
+
+                {% endif %}
             </div>
         </div>
 
@@ -64,5 +100,5 @@
 {% endblock %}
 
 {% block script_plugin %}
-
+<script src="{{ url_for('static', filename='/js/server/master_farmer.js') }}"></script>
 {% endblock %}

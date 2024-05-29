@@ -6,7 +6,7 @@ from sqlalchemy import and_, create_engine
 from flask import jsonify
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
-from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo
+from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.models import PurchaseEvent, User, PurchaseOrder, PurchaseOrderLine, Money
 from functools import wraps
 import socket
@@ -92,8 +92,11 @@ def sync_menu():
 @bp.route('/master/farmer', methods=["GET"])
 @login_required
 def master_data_farmer():
-    parent_id = request.args.get('parent_id', type=int)
+    parent_id = request.args.get('parent_id',0, type=int)
+    station_id = request.args.get('station_id', 0 , type=int)
     farmers = NfcappFarmerOdoo.query.filter_by(parent_id=parent_id).all()
+    clusters = NfcappClusterOdoo.query.all()
+    stations = NfcappStationOdoo.query.all()
     datas = []
     for farmer in farmers:
         data = {}
@@ -108,7 +111,7 @@ def master_data_farmer():
         data['commodity_items'] = data2
         datas.append(data)
 
-    return render_template('server/master_farmer.html',datas=datas)
+    return render_template('server/master_farmer.html',datas=datas, clusters=clusters, stations=stations, parent_id=parent_id, station_id=station_id)
 
 
 @bp.route('/master/purchase-order', methods=["GET"])
