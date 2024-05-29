@@ -6,29 +6,125 @@
     <title>Search Farmer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
           type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.min.css') }}"
+          type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='/js/purchase/farmer_search.js') }}"></script>
 </head>
 <body>
 <div class="container">
-    <div class="card">
-        <form action="/purchase/farmer/detail">
-            <input type="hidden" name="pe" id="pe" value="{{ pe }}">
-            <div class="form-group">
-                <label for="farmer_code">Farmer Code</label>
-                <input type="text" class="form-control" name="farmer_code" id="farmer_code" aria-describedby="emailHelp"
-                       placeholder="">
-                <small id="emailHelp" class="form-text text-muted">Scan farmer code</small>
+    <div class="tabs">
+        <span style="display:none;" id="tab-info">{{tab}}</span>
+        <ul class="tab-links tab-container">
+            <a href="#scan" class="active" type="button" id="scan-tab-btn">Scan</a>
+            <a href="#manual" type="button" id="manual-tab-btn">Manual</a>
+        </ul>
+        <div class="tab-content active" id="scan">
+            <div class="card">
+                <form class="farmer-form code-form" action="/purchase/farmer/detail">
+                    <input type="hidden" name="pe" id="pe" value="{{ pe }}">
+                    <div class="form-group">
+                        <label for="farmer_code">Farmer Code</label>
+                        <div class="row">
+                            <div class="col-11">
+                                
+                                <input type="text" class="form-control" name="farmer_code" id="farmer_code" aria-describedby="emailHelp"
+                                    placeholder="">
+                            </div>
+                            <div class="col-1">
+                                <button type="button" class="btn btn-primary" onclick="startScan()">
+                                    <span><i class='bx bxs-camera'></i></span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
+                        
+                        <!-- Button trigger modal -->
+                        
+                        
+                        <div class="modal fade" id="scannerModal" role="dialog">
+                            <div class="modal-dialog">
+                            
+                              <!-- Modal content-->
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                    
+                                        <h5 class="modal-title">QR Scanner</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="stopScan()">
+                                            <span><i class='bx bx-x bx-md'></i></span>
+                                        </button>
+                                
+                                </div>
+                                <div class="modal-body">
+                                    <div style="width: 100%;" id="reader"></div>
+                                </div>
+                              </div>
+                              
+                            </div>
+                          </div> 
+                    </div>
+                    <button type="submit" class="btn btn-primary code-form-btn">Submit</button>
+                </form>
+        
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-
+        </div>
+        <div class="tab-content" id="manual">
+            <div class="card">
+                <form class="farmer-form name-form" action="/purchase/search/farmer" method="get">
+                    <input type="hidden" name="pe" id="pe" value="{{ pe }}">
+                    <div class="form-group">
+                        <label for="farmer_name">Farmer Name</label>
+      
+                        <input type="text" class="form-control" name="q" id="farmer_name_form" aria-describedby="emailHelp"
+                                    placeholder="">
+                            
+                        <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
+                        
+                        <!-- Button trigger modal -->
+                    </div>
+                    <button type="submit" class="btn btn-primary code-form-btn">Submit</button>
+                </form>
+        
+            </div>
+        </div>
+        
     </div>
+
+    {%if farmers %}
+    <div class="card" style="padding: 24px;">
+        <table class="table" >
+            <tbody>
+                <tr>
+                    <th>Farmer Code</th>
+                    <th>Farmer Name</th>
+                    <th style="width: 15%;"></th>
+                </tr>
+                {% for farmer in farmers%}
+                    <tr>
+                        <td>{{farmer.code}}</td>
+                        <td>{{farmer.farmer_name}}</td>
+                        <td ><button class="btn btn-primary">Test Button</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    </div>
+    {% endif %}
+    
+    <script src="{{ url_for('static', filename='/js/tools/scanner.js') }}"></script>
+
 
 </div>
 </div>

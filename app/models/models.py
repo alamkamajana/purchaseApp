@@ -76,6 +76,15 @@ class PurchaseEvent(db.Model):
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+    note = db.Column(db.Text)
+    date_stamp = db.Column(db.Date)
+    money_entries = db.relationship('Money', backref='purchase_event', lazy='dynamic')
+    @property
+    def compute_fund(self):
+        total_fund = sum(m.amount for m in self.money_entries)
+        return total_fund
+
+
 
 class PurchaseOrder(db.Model):
     __tablename__ = 'purchase_order'
@@ -138,6 +147,20 @@ class DeliveryOrder(db.Model):
     vehicle_number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='delivery_order', lazy='dynamic')
+    created = db.Column(db.DateTime)
+    modified = db.Column(db.DateTime)
+    create_uid = db.Column(db.Integer)
+    write_uid = db.Column(db.Integer)
+
+
+class Money(db.Model):
+    __tablename__ = 'money'
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.String)
+    purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
+    purchase_order_id = db.Column(db.Integer, db.ForeignKey('purchase_order.id'))
+    amount = db.Column(db.Float)
+    note = db.Column(db.Text)
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)

@@ -156,8 +156,7 @@ def sync_get_farmer_odoo():
             else:
                 new_data = NfcappFarmerOdoo(**farmer_json)
                 db.session.add(new_data)
-
-            for commodity in farmer['commodity_items']:
+                for commodity in farmer['commodity_items']:
                     oid = commodity['odoo_id']
                     commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
                     # print(commodity_json)
@@ -321,7 +320,6 @@ def sync_station_odoo():
     except Exception as e:
         print(e)
         return {"message": str(e), "status": 400}
-
 
 
 @bp.route('/get-cluster-odoo')

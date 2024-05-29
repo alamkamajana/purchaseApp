@@ -41,9 +41,9 @@
                     </div>
 
                     <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" id="" value="{{ farmer.farmer_name }}" disabled>
+                        <input name="" class="form-control" id="farmer_name" value="{{ farmer.farmer_name }}" disabled>
                         <label class="control-label" for="farmer">Farmer</label>
-                        <input name="farmer" class="form-control" id="farmer" value="{{ farmer.id }}" hidden>
+                        <input name="farmer" class="form-control" id="farmer_code" value="{{ farmer.code }}" hidden>
 
                     </div>
                     <div class="form-floating col-sm-12 col-lg">
@@ -208,11 +208,14 @@
                     <a href="/purchase/transaction/confirm?purchase_order={{ po.id }}" type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</a>
                     {% endif %}
 
+                    <button onclick="btPrint()" class="btn btn-success">Print</button>
+
                 </div>
             </div>
         </div>
 
     </div>
+    <script src="{{ url_for('static', filename='/js/tools/print.js') }}"></script>
 
 </div>
 </div>

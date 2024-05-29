@@ -28,8 +28,11 @@ Purchase Event
         <div class="event-container">
             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                 <tr>
-                    <th style="width: 15%;">
-                        Id
+                    <!--                    <th style="width: 15%;">-->
+                    <!--                        Id-->
+                    <!--                    </th>-->
+                    <th style="width: 10%;">
+                        Date
                     </th>
                     <th style="width: 15%;">
                         Purchase Event
@@ -37,17 +40,17 @@ Purchase Event
                     <th style="width: 12%;">
                         Purchase Order
                     </th>
-                    <th style="width: 12%;">
-                        Cashier
-                    </th>
-                    <th style="width: 15%;">
-                        Purchaser
-                    </th>
+                    <!--                    <th style="width: 12%;">-->
+                    <!--                        Cashier-->
+                    <!--                    </th>-->
+                    <!--                    <th style="width: 15%;">-->
+                    <!--                        Purchaser-->
+                    <!--                    </th>-->
+                    <!--                    <th style="width: 10%;">-->
+                    <!--                        ICS-->
+                    <!--                    </th>-->
                     <th style="width: 10%;">
-                        ICS
-                    </th>
-                    <th style="width: 10%;">
-                        AP Name
+                        Note
                     </th>
                     <th style="width: 16%;">
                         Fund
@@ -59,7 +62,7 @@ Purchase Event
                 {% for event in events %}
                 <tr class="event-row">
                     <td>
-                        {{ event.id }}
+                        {{ event.date_stamp }}
                     </td>
                     <td>
                         {{ event.name }}
@@ -68,83 +71,13 @@ Purchase Event
                         <div class="event-info{{ event.id }}" id="po-info{{ event.id }}">
                             {{ event.purchase_order_odoo.name }}
                         </div>
-                        <div class="hidden" id="po-id{{ event.id }}">
-                            {{ event.purchase_order_odoo.id }}
-                        </div>
-                        <div class="event-info{{ event.id }} hidden">
-                            <select name="po"
-                                    class="form-control update-form selectpicker populateJSON selectpickerPo"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="po-update{{ event.id }}"
-                            >
-                                <option value="{{ event.purchase_order_odoo.id }}"
-                                        selected="true">{{ event.purchase_order_odoo.name }}
-                                </option>
-                            </select>
-                        </div>
                     </td>
                     <td>
-                        <div class="event-info{{ event.id }}" id="cashier-info{{ event.id }}">
-                            {{ event.cashier.name }}
-                        </div>
-                        <div class="hidden" id="cashier-id{{ event.id }}">
-                            {{ event.cashier.id }}
-                        </div>
-                        <div class="event-info{{ event.id }} hidden">
-                            <select name="cashier"
-                                    class="form-control update-form selectpicker populateJSON selectpickerUser"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="cashier-update{{ event.id }}"
-                            >
-                                <option value="{{ event.cashier.id }}"
-                                        selected="true">{{ event.cashier.name }}
-                                </option>
-                            </select>
-                        </div>
+                        {{ event.note }}
                     </td>
                     <td>
-                        <div class="event-info{{ event.id }}" id="purchaser-info{{ event.id }}">
-                            {{ event.purchaser.name }}
-                        </div>
-                        <div class="hidden" id="purchaser-id{{ event.id }}">
-                            {{ event.purchaser.id }}
-                        </div>
-                        <div class="event-info{{ event.id }} hidden">
-                            <select name="purchaser"
-                                    class="form-control update-form selectpicker populateJSON selectpickerUser"
-                                    data-live-search="true"
-                                    data-live-search-placeholder="Search..."
-                                    id="purchaser-update{{ event.id }}"
-                            >
-                                <option value="{{ event.purchaser.id }}"
-                                        selected="true">{{ event.purchaser.name }}
-                                </option>
-                            </select>
-                        </div>
-
-                    </td>
-                    <td class="ics-column">
-                        <div class="event-info{{ event.id }}" id="ics-info{{ event.id }}">
-                            {{ event.ics }}
-                        </div>
-                        <div class="update-form event-info{{ event.id }} hidden">
-                            <input type="text" id="ics-update{{ event.id }}" name="ics" value="{{ event.ics }}">
-                        </div>
-                    </td>
-                    <td class="ap-column">
-                        <div class="event-info{{ event.id }}" id="ap-info{{ event.id }}">
-                            {{ event.ap_name }}
-                        </div>
-                        <div class="update-form event-info{{ event.id }} hidden">
-                            <input type="text" id="ap-update{{ event.id }}" name="ap"
-                                   value="{{ event.ap_name }}">
-                        </div>
-                    </td>
-                    <td class="fund-column">
                         <div class="event-info{{ event.id }}" id="fund-info{{ event.id }}">
-                            {{ event.fund }}
+                            {{ event.compute_fund }}
                         </div>
                     </td>
                     <td>
@@ -154,44 +87,17 @@ Purchase Event
                            id="">
                             <span><i class='bx bxs-pencil'></i></span>
                         </a>
-                        <a type="button" class="btn btn-secondary event-info{{ event.id }}"
+                        <a href="/server/purchase-event/view?pe={{ event.id }}"
+                           class="btn btn-info"><i class="bx bx-table"></i></a>
+                        <a href="/server/purchase-event/payments?pe={{ event.id }}" target="_blank"
+                           class="btn btn-success"><i class="bx bx-money"></i></a>
+                        <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
+                        <a href="/delivery/index?pe={{ event.id }}" target="_blank"
+                           class="btn btn-warning"><i class="bx bxs-truck"> </i></a>
+                        <a type="button" class="btn btn-danger event-info{{ event.id }}"
                            href="/server/purchase-event/delete?pe={{ event.id }}">
                             <span><i class='bx bxs-trash'></i></span>
                         </a>
-                        <a href="/server/purchase-event/view?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">View</a>
-                        <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn-sm btn-success">Purchase</a>
-                        <a href="/delivery/index?pe={{ event.id }}" target="_blank"
-                           class="btn-sm btn-success">Delivery</a>
-<!--                        <button type="button" class="btn btn-primary" data-toggle="modal"-->
-<!--                                data-target="#qrModal{{ event.id }}">-->
-<!--                            QR-->
-<!--                        </button>-->
-
-<!--                        <div class="modal fade" id="qrModal{{ event.id }}" tabindex="-1" role="dialog"-->
-<!--                             aria-labelledby="qrModalLabel{{ event.id }}" aria-hidden="true">-->
-<!--                            <div class="modal-dialog" role="document">-->
-<!--                                <div class="modal-content">-->
-<!--                                    <div class="modal-header">-->
-<!--                                        <h5 class="modal-title" id="qrModalLabel{{ event.id }}">QR Code for-->
-<!--                                            Event {{ event.id }}</h5>-->
-<!--                                        <button type="button" class="close" data-dismiss="modal"-->
-<!--                                                aria-label="Close">-->
-<!--                                            <span aria-hidden="true">&times;</span>-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                    <div class="modal-body">-->
-<!--                                        {{ current_ip }}-->
-<!--                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ base_url }}purchase/transaction?pe={{ event.id }}"-->
-<!--                                             alt="QR Code for Event {{ event.id }}">-->
-<!--                                    </div>-->
-<!--                                    <div class="modal-footer">-->
-<!--                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">-->
-<!--                                            Close-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
                     </td>
                 </tr>
                 {% endfor %}
@@ -205,7 +111,6 @@ Purchase Event
 
 
 </div>
-
 
 
 {% endblock %}

@@ -51,7 +51,12 @@ def transaction_search_farmer():
 @bp.route('/search/farmer', methods=["GET"])
 @login_required
 def purchase_search_farmer_bycode():
+    query = request.args.get('q', 0)
     pe = request.args.get('pe', 1, type=int)
+    if query:
+        farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+        print(farmers)
+        return render_template('purchase/search_farmer.html', pe=pe, farmers = farmers, tab=2)
     # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
     return render_template('purchase/search_farmer.html', pe=pe)
 
@@ -147,7 +152,7 @@ def transaction_order_add():
     else :
         purchase_event = request.args.get('pe')
         farmer = request.args.get('farmer')
-    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="")
+    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="ORDER-")
     new_po = PurchaseOrder(name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft')
     db.session.add(new_po)
     db.session.commit()
@@ -187,7 +192,8 @@ def transaction_add():
         unit_price = price_unit,
         qty = qty,
         barcode = barcode,
-        subtotal = subtotal
+        subtotal = subtotal,
+        product_odoo_id=product_odoo.id
     )
 
     db.session.add(new_transaction)

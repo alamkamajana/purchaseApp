@@ -1,0 +1,80 @@
+{% extends 'server/base.html' %}
+{% block title %}
+Purchase Event
+{% endblock %}
+{% block plugin %}
+
+{% endblock %}
+
+{% block header %}
+<b>Create Purchase Event</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">purchase_event_create</span>
+
+<div class="card">
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <form action="/server/purchase-event/add" method="POST">
+                    <div class="form-group">
+                        <label for="purchase-order">Purchase Order</label>
+                        <select class="form-control" id="purchase-order" name="purchase-order" required>
+                            {% for po in purchase_order %}
+                            <option value="{{ po.id }}">{{ po.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" class="form-control pe-date" name="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <textarea type="text" class="form-control" id="note" name="note"></textarea>
+                    </div>
+                    <div class="form-group mt-2">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to pad single digit numbers with leading zero
+        function pad(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        // Get all inputs with class 'pe-date'
+        const dateInputs = document.querySelectorAll('.pe-date');
+
+        // Get the current date
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = pad(now.getMonth() + 1); // Months are zero-indexed
+        const day = pad(now.getDate());
+
+        // Format the date to 'YYYY-MM-DD'
+        const today = `${year}-${month}-${day}`;
+
+        // Loop through each input and set the value to today's date
+        dateInputs.forEach(function (input) {
+            input.value = today;
+        });
+    });
+</script>
+
+{% endblock %}
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
+{% endblock %}
