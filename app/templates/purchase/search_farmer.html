@@ -84,10 +84,24 @@
                 <form class="farmer-form name-form" action="/purchase/search/farmer" method="get">
                     <input type="hidden" name="pe" id="pe" value="{{ pe }}">
                     <div class="form-group">
+                        <label for="farmer_group">Farmer Group</label>
+      
+                        <select class="form-control" name="farmer_group" id="farmer_group_form">
+                            <option value="0">All</option>
+                            {% for group in farmer_groups %}
+                                <option value="{{group.id}}" {% if group.id==selected_group %}selected{% endif %}>{{group.name}}</option>
+                            {% endfor %}
+                        </select>
+                            
+                        <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
+                        
+                        <!-- Button trigger modal -->
+                    </div>
+                    <div class="form-group">
                         <label for="farmer_name">Farmer Name</label>
       
                         <input type="text" class="form-control" name="q" id="farmer_name_form" aria-describedby="emailHelp"
-                                    placeholder="">
+                                    value="{%if name %}{{name}}{% endif %}">
                             
                         <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
                         
@@ -101,22 +115,29 @@
         
     </div>
 
-    {%if farmers %}
+    {%if tab %}
     <div class="card" style="padding: 24px;">
         <table class="table" >
             <tbody>
                 <tr>
                     <th>Farmer Code</th>
                     <th>Farmer Name</th>
-                    <th style="width: 15%;"></th>
+                    <th style="width: 10%;"></th>
                 </tr>
-                {% for farmer in farmers%}
+                {% if farmers %}
+                    {% for farmer in farmers%}
+                        <tr>
+                            <td>{{farmer.code}}</td>
+                            <td>{{farmer.farmer_name}}</td>
+                            <td ><a href="/purchase/farmer/detail?pe={{pe}}&farmer_code={{farmer.code}}" class="btn btn-success">Submit</a></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
                     <tr>
-                        <td>{{farmer.code}}</td>
-                        <td>{{farmer.farmer_name}}</td>
-                        <td ><button class="btn btn-primary">Test Button</button></td>
+                        <td colspan="3" class="text-center">No farmer found.</td>
                     </tr>
-                {% endfor %}
+
+                {% endif %}
             </tbody>
             
         </table>

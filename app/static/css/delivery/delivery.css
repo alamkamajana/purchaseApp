@@ -10,8 +10,6 @@
     overflow: hidden;
     border: none;
     background-color: #eaeaea;
-    position: sticky;
-    top: 0;
     z-index: 7;
     display: flex;
 }
