@@ -12,3 +12,10 @@
     background-color: inherit;
     border: none;
 }
+
+.back-btn{
+    background-color: inherit !important;
+    box-shadow: none !important;
+    padding:0 !important;
+
+}

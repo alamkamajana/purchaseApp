@@ -8,7 +8,8 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/purchase.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -17,59 +18,94 @@
 <body>
 <div class="container">
     <div class="card">
+        <div class="card-header d-flex align-items-center">
+            <a href="/server/purchase-event" class="btn back-btn" style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
+            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">List Purchase</span>
+        </div>
         <div class="card-body">
-            <div class="row">
+            <div class="row" style="margin: 24px; margin-top: 0;">
                 <div class="form-floating col-sm-12 col-lg">
-                    {{ purchase_event.name }}
+                    <input name="" class="form-control" value="{{ purchase_event.name }}" disabled>
+                    <label class="control-label" for="purchase-event">Purchase Event</label>
+
+                </div>
+
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ purchase_event.purchase_order_odoo.name }}" disabled>
+                    <label class="control-label" for="purchase-order">Purchase Order</label>
+                </div>
+
+                <div class="form-floating col-sm-12 col-lg">
+                    <input name="" class="form-control" id="" value="{{ purchase_event.fund}}" disabled>
+                    <label class="control-label" for="">Fund</label>
+                </div>
+
+            </div>
+            <div class="purchase-note">
+                <div>
+                    <span>Note : </span>
+                </div>
+                <div class="note">
+                    <p>{{purchase_event.note}}</p>
                 </div>
             </div>
-            <div class="row col-3">
+            
                 <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary">
                     Add Purchase
                 </a>
-            </div>
+            
 
-            <div class="row">
-                <div class="col-6">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <td>
-                                Order
-                            </td>
-                            <td>
-                                Farmer
-                            </td>
-                            <td>
-                                Status
-                            </td>
-                            <td>Action</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for purchase in purchase_lists %}
-                        <tr>
-                            <td>{{ purchase.id }}</td>
-                            <td>
-                                {% if purchase.farmer_id %}
-                                {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
-                                {% else %}
-                                No farmer associated
-                                {% endif %}
-                            </td>
-                            <td>{{ purchase.status }}</td>
-                            <td>
-                                <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}">Add
-                                    Product</a>
-                                <a href="/purchase/payment-note?po={{ purchase.id }}">Payment Note</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>
+                            Order
+                        </td>
+                        <td>
+                            Farmer Code
+                        </td>
+                        <td>
+                            Farmer
+                        </td>
+                        <td>
+                            Status
+                        </td>
+                        <td>Action</td>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    {% for purchase in purchase_lists %}
+                    <tr>
+                        <td>{{ purchase.name }}</td>
+                        <td>
+                            {% if purchase.farmer_id %}
+                            {{ Farmer.query.filter_by(id=purchase.farmer_id).first().code }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if purchase.farmer_id %}
+                            {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
+                            {% else %}
+                            No farmer associated
+                            {% endif %}
+                        </td>
+                        <td>{{ purchase.status }}</td>
+                        <td>
+                            <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}" class="btn btn-primary" title="Add Product">
+                                <span><i class='bx bxs-cart-add'></i></span>
+                            </a>
+                            <a href="/purchase/payment-note?po={{ purchase.id }}" class="btn btn-success" title="Payment Note" >
+                                <span><i class='bx bxs-notepad'></i></span>
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    {% endfor %}
+                    
+            
+                </tbody>
+            </table>
+            
 
         </div>
 

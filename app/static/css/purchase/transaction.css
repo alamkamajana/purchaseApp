@@ -1,14 +1,11 @@
-
-
-.farmer-data{
+.purchase-data{
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
 }
 
-.card table{
-    min-width: 320px;
+.data-table{
     height: 200px;
 }
 
@@ -22,4 +19,8 @@
 
 .back-btn{
     padding:0;
+}
+
+.text-right{
+    text-align: right;
 }

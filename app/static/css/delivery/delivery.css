@@ -7,6 +7,7 @@
 }
 
 .tabs ul {
+    padding-left: 1rem;
     overflow: hidden;
     border: none;
     background-color: #eaeaea;
@@ -63,3 +64,4 @@
 .code-form-btn{
     margin-top: 24px;
 }
+

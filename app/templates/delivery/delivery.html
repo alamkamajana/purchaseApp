@@ -9,68 +9,83 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+    <style>
+        .btn-custom {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th, .table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        .table thead th {
+            font-weight: 500;
+            text-transform: uppercase;
+            background: #343a40;
+            color: #fff;
+            border: none;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <div class="row text-center">
-        <div class="col">
-            <h1>Delivery Order ( Surat Jalan ) </h1>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row menu-container text-center">
-        <div class="col">
-            <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom" id="" type="button">
-                Create Delivery Order
-            </a>
-        </div>
-    </div>
-    <div class="row mt-5">
-        <input type="hidden" id="purchase_event_name" value="{{ pe.name }}">
-         <input type="hidden" id="purchase_event_id" value="{{ pe.id }}">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <td>
-                    DO Name
-                </td>
-                <td> Driver</td>
-                <td> Vehicle</td>
-                <td> Purchase Event</td>
-                <td> Action</td>
-            </tr>
-            </thead>
-            <tbody id="do-list">
-            {% for do in do_list %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <h1 class="text-center mb-4">Delivery Order (Surat Jalan)</h1>
+            <div class="d-flex justify-content-center mb-4">
+                <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom">Create Delivery Order</a>
+            </div>
+            <input type="hidden" id="purchase_event_name" value="{{ pe.name }}">
+            <input type="hidden" id="purchase_event_id" value="{{ pe.id }}">
+            <table class="table table-hover">
+                <thead>
                 <tr>
-
-                    <td>{{ do.name }}</td>
+                    <th>DO Name</th>
+                    <th>Date</th>
+                    <th>To</th>
+                    <th>Driver</th>
+                    <th>Vehicle</th>
+                    <th>Note</th>
+                    <th nowrap="nowrap">Purchase Event</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="do-list">
+                {% for do in do_list %}
+                <tr>
+                    <td nowrap="nowrap">{{ do.name }}</td>
+                    <td nowrap="nowrap">{{ do.date }}</td>
+                    <td>{{ do.destination }}</td>
                     <td>{{ do.driver }}</td>
                     <td>{{ do.vehicle_number }}</td>
-                    <td> {{ do.purchase_event_id }} </td>
-                    <td>
-                        <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}" class="btn btn-sm btn-success btn-add-goods">
-                            Add Goods
-                        </a>
-                         <a href="/delivery/detail?do={{ do.id }}" class="btn btn-sm btn-success">
-                            Edit
-                        </a>
-                        <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-success">
-                            Delete
-                        </a>
+                    <td>{{ do.note }}</td>
+                    <td>{{ pe.name }}</td>
+                    <td nowrap="nowrap">
+                        <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}"
+                           class="btn btn-sm btn-success btn-add-goods"><i class="bx bxs-cart-add"></i></a>
+                        <a href="/delivery/edit?do={{ do.id }}&pe={{ pe.id }}" class="btn btn-sm btn-primary"><i class="bx bxs-pencil"></i></a>
+                        <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-danger"><i class="bx bxs-trash"></i></a>
+                        <a href="/delivery/letter?do={{ do.id }}" class="btn btn-sm btn-info"><i class="bx bxs-printer"></i></a>
                     </td>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 
 <script src="{{ url_for('static', filename='/js/delivery/delivery.js') }}"></script>
 </body>
