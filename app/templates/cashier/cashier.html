@@ -1,0 +1,61 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Cashier
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}
+
+{% block header %}
+    <b>Cashier</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">Cashier</span>
+    <div class="card">
+        <form id="barcode-form">
+            <div class="form-group">
+                <label for="barcode-input">Enter or Scan Barcode:</label>
+                <input type="text" class="form-control" id="barcode-input" name="barcode" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="scanned-result"></div>
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+    <script>
+        const barcodeForm = document.getElementById('barcode-form');
+        const barcodeInput = document.getElementById('barcode-input');
+        const scannedResult = document.getElementById('scanned-result');
+
+        barcodeForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const barcodeValue = barcodeInput.value.trim();
+            if (barcodeValue) {
+                fetchPurchaseOrder(barcodeValue);
+            } else {
+                scannedResult.textContent = 'Please enter or scan a barcode.';
+            }
+        });
+
+        function fetchPurchaseOrder(poNumber) {
+            const url = `{{ url_for('routes.cashier.cashier_search_po') }}?po=${poNumber}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data here
+
+                    // You can update the HTML with the received PO details
+                    scannedResult.textContent = `PO Details: ${data.po}`;
+                    window.location.href=`/cashier/po/detail?po=${data.po}`
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    scannedResult.textContent = 'Error fetching PO details.';
+                });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .menu-box {
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="menu-box bg-success"><a href="/server/sync">Server</a></div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="menu-box bg-danger"><a href="/server/purchase-event">Purchase</a></div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="menu-box bg-warning"><a href="/cashier/index">Cashier</a></div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="menu-box bg-info"><a href="/delivery/index">Delivery</a></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

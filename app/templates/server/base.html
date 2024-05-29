@@ -1,0 +1,76 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - Tripper</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/jquery-ui/jquery-ui.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/fontawesome/css/fontawesome.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/fontawesome/css/all.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap-select.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/index.css') }}">
+<script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+
+{% block plugin %}{% endblock %}
+
+<body id="body-pd">
+    <header class="header" id="header">
+        <div class="header_toggle"><span><i class='bx bx-menu' id="header-toggle"></i>{% block header %}{% endblock %}</span></div>
+        <div class="dropdown">
+            <button class="btn dropdown-toggle menu-dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                <span style="font-size: 28px;"><i class='bx bx-dots-vertical-rounded'></i></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="#" id="fullscreenButton">Full Screen</a>
+              <a class="dropdown-item" href="/">Show Main Menu</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" id="reloadButton">Reload</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/logout">Log Out</a>
+            </div>
+          </div>
+    </header>
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div>
+                <a href="#" class="nav_logo">
+<!--                    <i class='bx bx-layer nav_logo-icon'></i>-->
+                    <span class="nav_logo-name">{{ session['username'] }}</span>
+                </a>
+                <div class="nav_list">
+                    <a href="/server/sync" class="nav_link" id="nav_sync_data">
+                        <i class='bx bx-sync nav_icon' ></i>
+                        <span class="nav_name">Sync Server Data</span>
+                    </a>
+                    <a href="/server/master/farmer" class="nav_link" id="nav_master_data">
+                        <i class='bx bxs-data nav_icon'></i>
+                        <span class="nav_name">Master Data Farmer</span>
+                    </a>
+                    <a href="/server/master/purchase-order" class="nav_link" id="nav_purchase_order">
+                        <i class='bx bxs-data nav_icon'></i>
+                        <span class="nav_name">Master Data PO</span>
+                    </a>
+                    <a href="/server/purchase-event" class="nav_link" id="nav_purchase_event">
+                        <i class='bx bxs-calendar-event nav_icon'></i>
+                        <span class="nav_name">Purchase Event</span>
+                    </a>
+                </div>
+            </div>
+            <a href="/logout" class="nav_link">
+                <i class='bx bx-log-out nav_icon'></i>
+                <span class="nav_name">Log Out</span>
+            </a>
+        </nav>
+    </div>
+    <div class="content-container">
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='/assets/popper/popper.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap-select.js') }}"></script>
+    {% block script_plugin %}{% endblock %}
+    <script type="text/javascript"  src="{{ url_for('static', filename='/js/server/index.js') }}"></script>
+</body>

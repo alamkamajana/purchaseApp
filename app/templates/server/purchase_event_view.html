@@ -1,0 +1,180 @@
+{% extends 'server/base.html' %}
+{% block title %}
+Purchase Event
+{% endblock %}
+{% block plugin %}
+
+{% endblock %}
+
+{% block header %}
+<b>Purchase Event View</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">purchase_event_view</span>
+<style>
+    .active {
+        color: black;
+    }
+</style>
+<div class="row">
+    <div class="col">
+        <a href="/server/purchase-event" class="btn btn-primary">Back</a>
+    </div>
+</div>
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist" style="flex-direction: row;justify-content: center">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+                role="tab" aria-controls="nav-home" aria-selected="true">Purchase Event
+        </button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
+                role="tab" aria-controls="nav-profile" aria-selected="false">Purchase
+        </button>
+        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button"
+                role="tab" aria-controls="nav-contact" aria-selected="false">Delivery
+        </button>
+        <button class="nav-link" id="nav-contact-tab2" data-bs-toggle="tab" data-bs-target="#nav-contact2" type="button"
+                role="tab" aria-controls="nav-contact2" aria-selected="false">Cashier
+        </button>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+        <form>
+            <input type="hidden" name="event_id" value="{{ purchase_event.id }}">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name"
+                       value="{{ purchase_event.name }}"
+                       readonly>
+            </div>
+            <div class="form-group">
+                <label for="fund">Purchase Order</label>
+                <input type="text" class="form-control" id="po" name="po"
+                       value="{{ purchase_event.purchase_order_odoo.name }}"
+                       readonly>
+            </div>
+            <div class="form-group">
+                <label for="fund">Date Stamp</label>
+                <input type="date" class="form-control" id="date" name="date"
+                       value="{{ purchase_event.date_stamp }}"
+                       readonly>
+            </div>
+            <div class="form-group">
+                <label for="fund">Fund</label>
+                <input type="text" class="form-control" id="fund" name="fund"
+                       value="{{ purchase_event.fund }}"
+                       readonly>
+            </div>
+            <div class="form-group">
+                <label for="fund">Fund</label>
+                <textarea class="form-control" rows="4">{{purchase_event.note}}</textarea>
+            </div>
+            <br/>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="addMoneyButton">Add Money</button>
+                <button type="button" class="btn btn-primary" id="getMoneyButton">Get Money</button>
+            </div>
+            <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
+                 aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
+                        </div>
+                        <form action="/server/money/add" method="POST">
+                            <div class="modal-body">
+                                <input type="hidden" name="pe" value="{{ purchase_event.id }}">
+                                <input type="hidden" name="purchase_event_id" value="{{ purchase_event.id }}">
+                                <input type="hidden" name="type" value="debit">
+                                <div class="form-group">
+                                    <label for="amount">Amount</label>
+                                    <input type="number" class="form-control" id="amount" name="amount" step="0.01"
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="note">Note</label>
+                                    <textarea class="form-control" id="note" name="note"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" id="addMoneyButtonClose"
+                                        data-dismiss="modal">Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">Add Money</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal fade" id="getMoneyModal" tabindex="-1" role="dialog"
+                 aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="getMoneyModalLabel">Get Money</h5>
+                        </div>
+                        <form action="/server/money/add" method="POST">
+                            <div class="modal-body">
+                                <input type="hidden" name="pe" value="{{ purchase_event.id }}">
+                                <input type="hidden" name="purchase_event_id" value="{{ purchase_event.id }}">
+                                <input type="hidden" name="type" value="credit">
+                                <div class="form-group">
+                                    <label for="amount">Amount</label>
+                                    <input type="number" class="form-control" name="amount" step="0.01"
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="note">Note</label>
+                                    <textarea class="form-control" name="note"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" id="getMoneyButtonClose"
+                                        data-dismiss="modal">Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">Get Money</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+        <img src="data:image/png;base64,{{ qr_purchase }}">
+    </div>
+    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+        <img src="data:image/png;base64,{{ qr_delivery }}">
+    </div>
+    <div class="tab-pane fade" id="nav-contact2" role="tabpanel" aria-labelledby="nav-contact-tab2">
+        <img src="data:image/png;base64,{{ qr_cashier }}">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#addMoneyButton').click(function () {
+            $('#addMoneyModal').modal('show');
+        });
+        $('#addMoneyButtonClose').click(function () {
+            $('#addMoneyModal').modal('hide');
+        });
+        $('#getMoneyButton').click(function () {
+            $('#getMoneyModal').modal('show');
+        });
+        $('#getMoneyButtonClose').click(function () {
+            $('#getMoneyModal').modal('hide');
+        });
+    });
+</script>
+
+
+{% endblock %}
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
+{% endblock %}

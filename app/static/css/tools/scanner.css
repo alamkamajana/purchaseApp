@@ -1,0 +1,14 @@
+#html5-qrcode-button-camera-stop{
+    display: none !important;
+}
+
+.modal-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-header button{
+    color: gray;
+    background-color: inherit;
+    border: none;
+}

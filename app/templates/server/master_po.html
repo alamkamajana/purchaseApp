@@ -1,0 +1,66 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Purchase Order
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Master Data</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">master_data</span>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="event-container">
+                <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                    <tr>
+                        <th>
+                            PO
+                        </th>
+                           <th>
+                            Vendor
+                        </th>
+                        <th>
+                            Products
+                        </th>
+                    </tr>
+                    {% for po in purchase_data %}
+                        <tr>
+                            <td>{{ po.name }}</td>
+                             <td>{{ po.partner_name }}</td>
+                            <td>
+                                <table class="table">
+                                         {% if po.order_line %}
+                                            {% for order_line in po.order_line %}
+                                            <tr>
+                                                <td> {{ order_line.product_name }}</td>
+                                                <td align="right"> {{ "{:,.2f}".format(order_line.product_qty) }}</td>
+                                                <td align="right"> {{ "Rp. {:,.2f}".format(order_line.price_unit) }}</td>
+                                            </tr>
+                                         {% endfor %}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                                </table>
+
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}

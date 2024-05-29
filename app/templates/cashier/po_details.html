@@ -1,0 +1,100 @@
+{% extends 'server/base.html' %}
+{% block title %}
+PO Details
+{% endblock %}
+{% block plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+{% endblock %}
+
+{% block header %}
+<b>PO Details</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">PO Details</span>
+{% if purchase_order %}
+<div class="card">
+    <table>
+        <tr>
+            <td> ORDER</td>
+            <td> TOTAL</td>
+        </tr>
+        <tr>
+            <input type="hidden" id="purchase" value="{{ purchase_order.id }}"/>
+            <td> {{ purchase_order.name }}</td>
+            <td> {{ purchase_order.amount_total }}</td>
+        </tr>
+    </table>
+    <div class="row">
+        <div class="col-3">
+            <button type="button" class="btn btn-primary" id="addMoneyButton">Add Money</button>
+        </div>
+    </div>
+</div>
+{% else %}
+<p>No Purchase Order</p>
+{% endif %}
+
+<div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
+     aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
+            </div>
+            <form action="/server/money/add" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="purchase_order_id" value="{{ purchase_order.id }}">
+                    <input type="hidden" name="purchase_event_id" value="{{ purchase_order.purchase_event_id }}">
+                    <input type="hidden" name="type" value="credit">
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" class="form-control" value="{{ purchase_order.amount_total }}" id="amount" name="amount" step="0.01"
+                               required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <textarea class="form-control" id="note" name="note"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="addMoneyButtonClose" data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">Add Money</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('confirm-button').addEventListener('click', function () {
+        const purchaseOrderId = document.getElementById('purchase').value;
+
+        fetch('/confirm_purchase_order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({purchase_order_id: purchaseOrderId}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Purchase order confirmed!');
+                    // Optionally, you can redirect or update the page here
+                } else {
+                    alert('Error confirming purchase order.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+
+
+{% endblock %}
+
+{% block script_plugin %}
+{% endblock %}
