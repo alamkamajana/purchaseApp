@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order Letter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="page">
+                <div class="row">
+                    <div class="col-8">
+                        <table style="width:55%; float:left;">
+                            <tbody>
+                            <tr>
+                                <td colspan="2" style="text-align:center; vertical-align:middle">
+                                    <img width="300" src="https://odoo.tripper.com/web/image/183288/public.png?width=256&height=192"/>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong><b><span
+                                            t-field="o.picking_id.company_id.partner_id.name"/></b></strong><br/>
+                                    <div t-field="o.picking_id.company_id.partner_id.street"/>
+                                    <div>
+                                        <span t-field="o.picking_id.company_id.partner_id.city"/>
+                                        <span t-field="o.picking_id.company_id.partner_id.state_id.code"/>
+                                        <span t-field="o.picking_id.company_id.partner_id.zip"/>
+                                    </div>
+                                    <div t-field="o.picking_id.company_id.partner_id.country_id"/>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>TEL</td>
+                                <td>: <span t-field="o.picking_id.company_id.partner_id.phone"/></td>
+                            </tr>
+                            <tr>
+                                <td>Web</td>
+                                <td><span t-field="o.picking_id.company_id.partner_id.website"/></td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>: <span t-field="o.picking_id.company_id.partner_id.email"/></td>
+                            </tr>
+
+                            <tr>
+                                <td>NPWP</td>
+                                <td>: <span t-field="o.picking_id.company_id.partner_id.vat"/></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-4">
+                        <table>
+                            <tr>
+                                <td colspan="2"
+                                    style="font-size:15pt; text-align:center; border: 2px solid #E5E5E5; padding: 10px 10px;">
+                                    <strong>SURAT JALAN</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="font-size:15pt; text-align:center; padding:10px 10px;">
+                                    <span>{{ delivery_order.name }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Date</td>
+                                <td>: <span>{{ delivery_order.date }}</span></td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align:top">Kepada Yth</td>
+                                <td>:
+                                    <span>{{ delivery_order.destination }}</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            Harap diterima barang-barang berikut ini:
+                        </p>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th style="text-align:center; width:5%;">No</th>
+                                <th style="text-align:center; width:10%;"><b>Jumlah</b></th>
+                                <th style="text-align:center; width:15%;"><b>Berat Bersih</b></th>
+                                <th style="text-align:center;"><b>Nama Barang</b></th>
+                            </tr>
+                            <t t-set="num_urut" t-value="0"/>
+                            <t t-set="nettWeightTotal" t-value="0"/>
+                            <t t-set="grossWeightTotal" t-value="0"/>
+                            <t t-set="caseTotal" t-value="0"/>
+                            <t t-foreach="o.move_ids.filtered(lambda x: x.state  in ['draft','waiting','confirmed','done','partially_available','assigned','done'])"
+                               t-as="line">
+                                <t t-set="num_urut" t-value="num_urut + 1"/>
+                                <tr>
+                                    <td style="text-align:center"><span t-esc="num_urut"/></td>
+                                    <td style="text-align:right">
+                                        <!--<div t-if="line.sale_line_id.product_packaging">-->
+                                        <!--         <t t-set="case" t-value="line.product_uom_qty / line.sale_line_id.product_packaging.qty"/>-->
+                                        <!--         <span t-esc="case" t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 0}"/> Boxes-->
+                                        <!--         <t t-set="caseTotal" t-value="caseTotal + case"/>-->
+                                        <!--       </div>-->
+                                        <div t-if="line.product_id.packaging_ids">
+                                            <t t-set="case2"
+                                               t-value="int(line.product_uom_qty / line.product_id.packaging_ids[0].qty) + (line.product_uom_qty % line.product_id.packaging_ids[0].qty > 0 and 1 or 0)"/>
+                                            <t t-if="case2&lt;1" t-set="case" t-value="1"></t>
+                                            <t t-else="" t-set="case" t-value="case2"></t>
+                                            <span t-esc="case"
+                                                  t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 0}"/>
+                                            Boxes
+                                            <t t-set="caseTotal" t-value="caseTotal + case"/>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:right">
+                                        <div t-if="o.picking_id.in_lb">
+                                            <t t-set="nettWeight"
+                                               t-value="line.product_id.weight * line.product_uom_qty / 0.4536"/>
+                                            <span t-esc="nettWeight"
+                                                  t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"/>
+                                            Lb
+                                            <t t-set="nettWeightTotal" t-value="nettWeightTotal + nettWeight"/>
+                                        </div>
+                                        <div t-else="">
+                                            <t t-set="nettWeight"
+                                               t-value="line.product_id.weight * line.product_uom_qty"/>
+                                            <span t-esc="nettWeight"
+                                                  t-options="{&quot;widget&quot;: &quot;float&quot;, &quot;precision&quot;: 2}"/>
+                                            Kg
+                                            <t t-set="nettWeightTotal" t-value="nettWeightTotal + nettWeight"/>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span t-field="line.product_id.display_name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p>Dibawa bersama Container No. <span t-field="o.container_no"/> / Seal No. <span
+                                t-field="o.seal_no"/></p>
+                        <p>No. Truck: <span t-field="o.truck_no"/></p>
+                        <p>Tujuan: <span t-field="o.place_delivery"/><br/></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mt-3">
+                        <table class="footer o_standard_footer o_company_3_layout" style="width:100%; font-size:14px;">
+                            <tr>
+                                <td style="text-align:center">Hormat kami,</td>
+                                <td style="text-align:center">Telah diterima,</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <br/><br/><br/><br/>
+                                    __________________
+                                    <br/><br/>
+                                    <span t-field="o.exim_staff"/>
+                                </td>
+                                <td style="text-align:center">
+                                    <br/><br/><br/><br/>
+                                    __________________
+                                    <br/><br/>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

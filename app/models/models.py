@@ -147,10 +147,20 @@ class DeliveryOrder(db.Model):
     vehicle_number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='delivery_order', lazy='dynamic')
+    date = db.Column(db.Date)
+    destination = db.Column(db.String)
+    note = db.Column(db.Text)
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+
+    @property
+    def compute_total_qty(self):
+        total_qty = sum(m.qty for m in self.purchase_order_lines)
+        return total_qty
+
+
 
 
 class Money(db.Model):

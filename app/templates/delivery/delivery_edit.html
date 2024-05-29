@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light grey background */
+            font-family: Arial, sans-serif; /* Default font */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #343a40; /* Dark grey */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #495057; /* Slightly lighter grey */
+        }
+
+        input[type="text"], input[type="date"], textarea {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            margin-top: 20px;
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Bootstrap green */
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        .btn-success:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        .menu-container {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row text-center">
+        <div class="col">
+            <h1>Edit Delivery Order </h1>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col text-left">
+            <a href="/delivery/index?pe={{ pe }}" class="btn btn-success">
+                Back
+            </a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <form action="/delivery/update" method="post">
+        <input type="hidden" name="pe" value="{{ pe }}">
+        <input type="hidden" name="do" value="{{ do.id }}">
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Driver</label>
+                <input type="text" class="form-control" value="{{ do.driver }}" name="driver"/>
+            </div>
+        </div>
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Date</label>
+                <input type="date" id="date" class="form-control" value="{{ do.date }}" name="date"/>
+            </div>
+        </div>
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Destination</label>
+                <input type="text" class="form-control" value="{{ do.destination }}" name="destination"/>
+            </div>
+        </div>
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Vehicle</label>
+                <input type="text" class="form-control" value="{{ do.vehicle_number }}" name="vehicle"/>
+            </div>
+        </div>
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Note</label>
+                <textarea name="note" class="form-control" rows="4">{{ do.note }}</textarea>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
