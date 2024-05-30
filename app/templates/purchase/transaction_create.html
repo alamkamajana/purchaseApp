@@ -10,6 +10,7 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -17,80 +18,75 @@
 </head>
 <body>
 <div class="container">
-    <div class="row text-center">
-        <div class="col">
-            <h1>Add Product</h1>
+    <div class="card">
+        <div class="card-header d-flex align-items-center">
+            <a href="/purchase/order?po={{ datas['po'] }}&farmer={{ datas['farmer_id'] }}" class="btn back-btn" style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
+            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Add Product</span>
         </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <form action="/purchase/transaction/add" method="POST">
-                <input type="hidden" name="po" value="{{ datas['po'] }}">
-                <input type="hidden" name="pe" value="{{ datas['pe'] }}">
-                <input type="hidden" name="farmer_id" value="{{ datas['farmer_id'] }}">
-                <div class="form-group">
-                    <div>
-                        <table id="product-options" class="table">
-                            <tr>
-                                <td>
-                                    <div class="control-label">Product</div>
-                                </td>
-                            </tr>
-
-                            {% for product in product_can_purchase %}
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="product"
-                                               id="product-{{ product.product_id }}"
-                                               value="{{ product.product_id }}"
-                                               data-price="{{ product.commodityitem_price }}"
-                                               onchange="updatePrice(this)"
-
-                                            >
-
-                                        <label class="form-check-label"
-                                               for="product-{{ product.product_id }}" style="width:80%">
-                                            {{ product.product_name }}
-                                        </label>
-                                        <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
-                                             width="50"/>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            {% endfor %}
-
-                        </table>
-                    </div>
+    
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <form action="/purchase/transaction/add" method="POST">
+                        <input type="hidden" name="po" value="{{ datas['po'] }}">
+                        <input type="hidden" name="pe" value="{{ datas['pe'] }}">
+                        <input type="hidden" name="farmer_id" value="{{ datas['farmer_id'] }}">
+                        <div class="form-group">
+                            <div>
+                                <table id="product-options" class="table">
+                                    <tr>
+                                        <td>
+                                            <div class="control-label">Product</div>
+                                        </td>
+                                    </tr>
+            
+                                    {% for product in product_can_purchase %}
+                                    <tr>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="product"
+                                                    id="product-{{ product.product_id }}" value="{{ product.product_id }}"
+                                                    data-price="{{ product.commodityitem_price }}" onchange="updatePrice(this)">
+            
+                                                <label class="form-check-label" for="product-{{ product.product_id }}"
+                                                    style="width:80%">
+                                                    {{ product.product_name }}
+                                                </label>
+                                                <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
+                                                    width="50" />
+                                            </div>
+                                        </td>
+                                    </tr>
+            
+                                    {% endfor %}
+            
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="qty">Quantity</label>
+                            <input type="number" class="form-control" id="qty" name="qty" value="" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="price-unit">Unit Price</label>
+                            <input type="number" class="form-control" id="price-unit" name="price-unit" value="}" step="0.01"
+                                readonly>
+                        </div>
+            
+                        <div class="form-group">
+                            <label for="subtotal">Subtotal</label>
+                            <input type="number" class="form-control" id="subtotal" name="subtotal" value="" step="0.01" readonly>
+                        </div>
+            
+                        <div class="form-group">
+                            <label for="barcode">Barcode</label>
+                            <input type="text" class="form-control" id="barcode" name="barcode" value="">
+                        </div>
+                        <br />
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="qty">Quantity</label>
-                    <input type="number" class="form-control" id="qty" name="qty" value=""
-                           step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="price-unit">Unit Price</label>
-                    <input type="number" class="form-control" id="price-unit" name="price-unit"
-                           value="}" step="0.01" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="subtotal">Subtotal</label>
-                    <input type="number" class="form-control" id="subtotal" name="subtotal"
-                           value="" step="0.01" readonly>
-                </div>
-
-                <div class="form-group">
-                    <label for="barcode">Barcode</label>
-                    <input type="text" class="form-control" id="barcode" name="barcode"
-                           value="">
-                </div>
-                <br/>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>

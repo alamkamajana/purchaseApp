@@ -173,7 +173,7 @@ def transaction_order_add():
 def transaction_list():
     try :
         event_id = request.args.get('pe', 0, type=int)
-        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
+        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).order_by(PurchaseOrder.id.desc()).all()
         event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
         price_list = []
         for purchase in purchase_lists:
@@ -357,7 +357,7 @@ def transaction_detail():
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
             product_can_purchase_arr.append(commodity_data)
-    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr, ProductOdoo=ProductOdoo)
+    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr, ProductOdoo=ProductOdoo, farmer_id=farmer_id)
 
 
 @bp.route('/transaction/confirm', methods=["POST","GET"])
