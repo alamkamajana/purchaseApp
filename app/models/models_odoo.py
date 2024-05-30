@@ -8,6 +8,9 @@ from.models import User
 
 session = db.session
 
+def get_local_time():
+    return datetime.now()
+
 class ProductOdoo(db.Model):
     __tablename__ = 'product_odoo'
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +27,7 @@ class ProductOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
     def __repr__(self):
         return f'<ProductOdoo {self.default_code}>'
@@ -50,8 +54,10 @@ class NfcappFarmerOdoo(db.Model):
     bank_name_name = db.Column(db.String)
     odoo_id = db.Column(db.Integer)
     certification_status_id = db.Column(db.Integer)
+    certification_status_name = db.Column(db.String)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
 
     def __repr__(self):
@@ -79,6 +85,7 @@ class PurchaseOrderOdoo(db.Model):
     users = db.relationship('User', secondary=user_purchase_order_association, back_populates='purchase_orders')
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
     def __repr__(self):
         return f'<PurchaseOrderOdoo {self.name}>'
@@ -98,6 +105,7 @@ class PurchaseOrderLineOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
 
     def __repr__(self):
@@ -118,6 +126,7 @@ class ResUserOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
 class NfcappCommodityOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_odoo'
@@ -128,6 +137,7 @@ class NfcappCommodityOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
 class NfcappCommodityItemOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_item_odoo'
@@ -149,6 +159,7 @@ class NfcappCommodityItemOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
 class NfcappStationOdoo(db.Model):
     __tablename__ = 'nfcapp_station_odoo'
@@ -161,6 +172,7 @@ class NfcappStationOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
 class NfcappClusterOdoo(db.Model):
     __tablename__ = 'nfcapp_cluster_odoo'
@@ -173,3 +185,4 @@ class NfcappClusterOdoo(db.Model):
     odoo_id = db.Column(db.Integer)
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
+    sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)

@@ -125,19 +125,15 @@ def master_data_purchase_order():
     data = []
     for po in purchase_orders2 :
         po_json = {}
-        po_json['id'] = po.id
-        po_json['name'] = po.name
-        po_json['partner_name'] = po.partner_name
+        po_json['po'] = po
         data.append(po_json)
         po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(po.odoo_id)).all()
         po_order_line_arr = []
         for order_line in po_order_line :
             order_line_json = {}
-            order_line_json['product_name'] = order_line.name
-            order_line_json['price_unit'] = order_line.price_unit
-            order_line_json['product_qty'] = order_line.product_qty
+            order_line_json['order_line'] = order_line
             po_order_line_arr.append(order_line_json)
-        po_json['order_line'] = po_order_line_arr
+        po_json['order_lines'] = po_order_line_arr
     return render_template('server/master_po.html',purchase_data=data)
 
 
@@ -197,6 +193,7 @@ def purchase_event_add():
     purchase_order = request.form['purchase-order']
     pe_name = generate_unique_sequence_number(PurchaseEvent, PurchaseEvent.name, length=8, prefix="PE-")
     today_datetime = datetime.now()
+    date = datetime.strptime(date, '%Y-%m-%d').date()
     purchase_event = PurchaseEvent(name=pe_name, note=note,created=today_datetime, date_stamp=date,purchase_order_odoo_id=purchase_order)
     db.session.add(purchase_event)
     db.session.commit()
@@ -240,7 +237,7 @@ def purchase_event_update():
     event = PurchaseEvent.query.filter_by(id=id).first()
     if event:
         event.note = note
-        event.date_stamp = date
+        event.date_stamp = datetime.strptime(date, '%Y-%m-%d').date()
         event.purchase_order_odoo_id = int(po) if po else None
         db.session.commit()
         return redirect("/server/purchase-event")

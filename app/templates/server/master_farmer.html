@@ -67,6 +67,9 @@
                         <th>
 
                         </th>
+                        <th>
+
+                        </th>
                     </tr>
                     {% for data in datas %}
                         <tr>
@@ -77,7 +80,7 @@
                              <td>{{ data.farmer.farmer_name }}</td>
                                     <td>{{ data.farmer.parent_name }}</td>
                                <td>{{ data.farmer.station_name }}</td>
-                              <td>{{ data.farmer.certification_status_id }}</td>
+                              <td>{{ data.farmer.certification_status_name }}</td>
                             <td>
 
                               {% for commodity_item in data.commodity_items %}
@@ -85,6 +88,9 @@
                                       {{ commodity_item.product_id_code }}  {{ commodity_item.product_id_name }}  <br/>
                                  {% endfor %}
 
+                            </td>
+                            <td>
+                                   <td>{{ data.farmer.sync_date   }}</td>
                             </td>
 
                         </tr>
