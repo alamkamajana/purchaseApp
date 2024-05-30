@@ -175,7 +175,20 @@ def transaction_list():
         event_id = request.args.get('pe', 0, type=int)
         purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
         event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
-        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo)
+        price_list = []
+        for purchase in purchase_lists:
+            total_price = 0
+            po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=purchase.id).all()
+            for po_line in po_lines:
+                total_price = total_price + po_line.subtotal
+            price_data_json = {}
+            price_data_json['po_id'] = purchase.id
+            price_data_json['total'] = total_price
+            price_list.append(price_data_json)
+
+        print(price_list)
+
+        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo, price_list=price_list)
 
     except Exception as e :
         print(e)

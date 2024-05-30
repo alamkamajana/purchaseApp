@@ -94,5 +94,34 @@
     </div>
 </div>
 
+<script>
+    function updatePrice(radio) {
+        let price = radio.getAttribute('data-price');
+        document.getElementById('price-unit').value = price;
+        calculateSubtotal();
+    }
+
+    function calculateSubtotal() {
+        // Get the unit price and quantity
+        var price = parseFloat(document.getElementById('price-unit').value);
+        var qty = parseFloat(document.getElementById('qty').value);
+        // Calculate the subtotal
+        var subtotal = price * qty;
+        // Update the subtotal input field
+        document.getElementById('subtotal').value = subtotal.toFixed(2);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Attach event listeners to the quantity input and radio buttons
+        document.getElementById('qty').addEventListener('input', calculateSubtotal);
+        var productRadios = document.querySelectorAll('input[name="product"]');
+        productRadios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                updatePrice(radio);
+            });
+        });
+    });
+</script>
+
 </body>
 </html>
