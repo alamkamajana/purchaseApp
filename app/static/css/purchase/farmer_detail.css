@@ -1,24 +1,44 @@
+@media screen and (min-width: 768px){
+    .farmer-data{
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
 
+    .card table{
+        min-width: 320px;
+        height: 200px;
+    }
 
-.farmer-data{
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    .farmer-photo{
+        width: 200px;
+        height: 200px;
+        border: solid 1px black;
+        margin: 20px;
+        margin-left: 0;
+    }
 }
 
-.card table{
-    min-width: 320px;
-    height: 200px;
+@media screen and (max-width: 768px){
+
+    .farmer-data{
+        width: 100%;
+    }
+    .card table{
+        width: 100%;
+    }
+
+    .farmer-photo{
+        border: solid 1px black;
+        margin:8px;
+        margin-left: 0;
+        width: 140px;
+        height: 140px;
+    }
 }
 
-.farmer-photo{
-    width: 200px;
-    height: 200px;
-    border: solid 1px black;
-    margin: 20px;
-    margin-left: 0;
-}
+
 
 .back-btn{
     padding:0;

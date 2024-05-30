@@ -20,16 +20,20 @@
 <div class="container">
     <div class="card">
         <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <a href="/purchase/transaction?pe={{ event.id }}" class="btn back-btn" style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
+                <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Purchase Order Line</span>
+            </div>
 
             <div class="card-body">
                 <div class="purchase-data">
                     <div class="farmer-photo">
                         <img width="200px" height="200px" src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}" alt="Farmer Photo"/>
                     </div>
-                    <table id="farmer-detail" class="data-table" style="width: 60%;">
+                    <table id="farmer-detail" class="data-table">
                         <tbody>
                             <tr>
-                                <th style="width: 40%;">Farmer</th>
+                                <th style="width: 50%;">Farmer</th>
                                 <td>{{ farmer.farmer_name }}</td>
                             </tr>
                             <tr>
@@ -66,7 +70,7 @@
                 <input name="farmer" class="form-control" id="farmer_code" value="{{ farmer.code }}" hidden>
 
                 
-                <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
+                <div style="width:100%; display:flex; justify-content: flex-end; padding-right:4%;">
                     <div style="display: flex; align-items: center;">
                         {% if po_status.lower() == 'draft' %}
                         <!--                        <button type="button" class="btn btn-primary" data-toggle="modal"-->
@@ -185,7 +189,7 @@
                     </tr>
                 </table>
 
-                <table>
+                <table class="commodity-table">
                     <tr>
                         <td>PO</td>
                         <td>Commodity</td>
@@ -208,7 +212,7 @@
             </div>
             <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
                 <div style="display: flex; align-items: center;">
-                    <a href="/purchase/transaction?pe={{ event.id }}" class="btn btn-success">Back</a>
+                    <!-- <a href="/purchase/transaction?pe={{ event.id }}" class="btn btn-success">Back</a> -->
                     {% if po_status.lower() == 'draft' %}
                     <a href="/purchase/transaction/confirm?purchase_order={{ po.id }}" type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</a>
                     {% endif %}

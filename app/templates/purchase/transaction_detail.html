@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -18,7 +19,7 @@
 <div class="container">
     <div class="row text-center">
         <div class="col">
-            <h1>Add Produdct</h1>
+            <h1>Edit Product</h1>
         </div>
     </div>
 </div>
@@ -37,6 +38,8 @@
                                 </td>
                             </tr>
 
+                            {% set ori_product_id = ProductOdoo.query.filter_by(id=purchase_order_line.product_odoo_id).first().odoo_id %}
+
                             {% for product in product_can_purchase %}
                             <tr>
                                 <td>
@@ -46,6 +49,8 @@
                                                value="{{ product.product_id }}"
                                                data-price="{{ product.commodityitem_price }}"
                                                onchange="updatePrice(this)"
+                                               {% if product.product_id == ori_product_id %}checked{% endif %}
+                                               
                                         >
                                         <label class="form-check-label"
                                                for="product-{{ product.product_id }}" style="width:80%">

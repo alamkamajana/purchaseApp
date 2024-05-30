@@ -344,7 +344,7 @@ def transaction_detail():
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
             product_can_purchase_arr.append(commodity_data)
-    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr)
+    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr, ProductOdoo=ProductOdoo)
 
 
 @bp.route('/transaction/confirm', methods=["POST","GET"])

@@ -122,5 +122,13 @@
     padding: 8px;
 }
 
+.purchase-container{
+    overflow-x : auto;
+}
+
+.purchase-container table{
+    min-width: 640px;
+}
+
 
 

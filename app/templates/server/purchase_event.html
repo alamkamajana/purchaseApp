@@ -49,7 +49,7 @@ Purchase Event
                     <!--                    <th style="width: 10%;">-->
                     <!--                        ICS-->
                     <!--                    </th>-->
-                    <th style="width: 10%;">
+                    <th style="width: 10%;word-wrap: break-word;">
                         Note
                     </th>
                     <th style="width: 16%;">
@@ -72,7 +72,7 @@ Purchase Event
                             {{ event.purchase_order_odoo.name }}
                         </div>
                     </td>
-                    <td>
+                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
                         {{ event.note }}
                     </td>
                     <td>

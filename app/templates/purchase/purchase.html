@@ -54,57 +54,60 @@
                     Add Purchase
                 </a>
             
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <td>
-                            Order
-                        </td>
-                        <td>
-                            Farmer Code
-                        </td>
-                        <td>
-                            Farmer
-                        </td>
-                        <td>
-                            Status
-                        </td>
-                        <td>Action</td>
-                    </tr>
-                </thead>
-                <tbody class="align-middle">
-                    {% for purchase in purchase_lists %}
-                    <tr>
-                        <td>{{ purchase.name }}</td>
-                        <td>
-                            {% if purchase.farmer_id %}
-                            {{ Farmer.query.filter_by(id=purchase.farmer_id).first().code }}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if purchase.farmer_id %}
-                            {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
-                            {% else %}
-                            No farmer associated
-                            {% endif %}
-                        </td>
-                        <td>{{ purchase.status }}</td>
-                        <td>
-                            <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}" class="btn btn-primary" title="Add Product">
-                                <span><i class='bx bxs-cart-add'></i></span>
-                            </a>
-                            <a href="/purchase/payment-note?po={{ purchase.id }}" class="btn btn-success" title="Payment Note" >
-                                <span><i class='bx bxs-notepad'></i></span>
-                            </a>
-                        </td>
-                    </tr>
-                    
-                    {% endfor %}
-                    
             
-                </tbody>
-            </table>
+            <div class="purchase-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>
+                                Order
+                            </td>
+                            <td>
+                                Farmer Code
+                            </td>
+                            <td>
+                                Farmer
+                            </td>
+                            <td>
+                                Status
+                            </td>
+                            <td>Action</td>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        {% for purchase in purchase_lists %}
+                        <tr>
+                            <td>{{ purchase.name }}</td>
+                            <td>
+                                {% if purchase.farmer_id %}
+                                {{ Farmer.query.filter_by(id=purchase.farmer_id).first().code }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if purchase.farmer_id %}
+                                {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
+                                {% else %}
+                                No farmer associated
+                                {% endif %}
+                            </td>
+                            <td>{{ purchase.status }}</td>
+                            <td>
+                                <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}" class="btn btn-primary" title="Add Product">
+                                    <span><i class='bx bxs-cart-add'></i></span>
+                                </a>
+                                <a href="/purchase/payment-note?po={{ purchase.id }}" class="btn btn-success" title="Payment Note" >
+                                    <span><i class='bx bxs-notepad'></i></span>
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        {% endfor %}
+                        
+                
+                    </tbody>
+                </table>
+            </div>
+            
             
 
         </div>
