@@ -17,10 +17,13 @@
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script src="{{ url_for('static', filename='/assets/html5-qrcode/js/html5-qrcode.min.js') }}"></script>
+    <!-- <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='/js/purchase/farmer_search.js') }}"></script>
+
 </head>
 <body>
 <div class="container">
@@ -84,10 +87,38 @@
                 <form class="farmer-form name-form" action="/purchase/search/farmer" method="get">
                     <input type="hidden" name="pe" id="pe" value="{{ pe }}">
                     <div class="form-group">
+                        <label for="farmer_station">Station</label>
+
+                        <select class="form-control" name="farmer_station" id="farmer_station_form">
+                            <option value="">All</option>
+                            {% for station in stations %}
+                                <option value="{{station.odoo_id}}" {% if station.odoo_id==selected_station %}selected{% endif %}>{{station.name}}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
+
+                        <!-- Button trigger modal -->
+                    </div>
+                    <div class="form-group">
+                        <label for="farmer_group">Farmer Group</label>
+
+                        <select class="form-control" name="farmer_group" id="farmer_group_form">
+                            <option value="">All</option>
+                            {% for group in farmer_groups %}
+                                <option value="{{group.odoo_id}}" {% if group.odoo_id==selected_group %}selected{% endif %} data-category="{{group.station_id}}">{{group.name}}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
+
+                        <!-- Button trigger modal -->
+                    </div>
+                    <div class="form-group">
                         <label for="farmer_name">Farmer Name</label>
       
                         <input type="text" class="form-control" name="q" id="farmer_name_form" aria-describedby="emailHelp"
-                                    placeholder="">
+                                    value="{%if name %}{{name}}{% endif %}">
                             
                         <!-- <small id="emailHelp" class="form-text text-muted">Scan farmer code</small> -->
                         
@@ -97,33 +128,47 @@
                 </form>
         
             </div>
+
+            {%if tab %}
+            <div class="card" style="padding: 24px;">
+                <table class="table" >
+                    <tbody>
+                        <tr>
+                            <th></th>
+                            <th>Farmer Code</th>
+                            <th>Farmer Name</th>
+                            <th style="width: 10%;"></th>
+                        </tr>
+                        {% if farmers %}
+                            {% for farmer in farmers%}
+                                <tr>
+                                    <td>
+                                        <img width="100px" height="100px" src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}" alt="Farmer Photo"/>
+                                      </td>
+                                    <td>{{farmer.code}}</td>
+                                    <td>{{farmer.farmer_name}}</td>
+                                    <td ><a href="/purchase/farmer/detail?pe={{pe}}&farmer_code={{farmer.code}}" class="btn btn-success">Submit</a></td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">No farmer found.</td>
+                            </tr>
+
+                        {% endif %}
+                    </tbody>
+
+                </table>
+            </div>
+            {% endif %}
         </div>
-        
+
     </div>
 
-    {%if farmers %}
-    <div class="card" style="padding: 24px;">
-        <table class="table" >
-            <tbody>
-                <tr>
-                    <th>Farmer Code</th>
-                    <th>Farmer Name</th>
-                    <th style="width: 15%;"></th>
-                </tr>
-                {% for farmer in farmers%}
-                    <tr>
-                        <td>{{farmer.code}}</td>
-                        <td>{{farmer.farmer_name}}</td>
-                        <td ><button class="btn btn-primary">Test Button</button></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-            
-        </table>
-    </div>
-    {% endif %}
-    
     <script src="{{ url_for('static', filename='/js/tools/scanner.js') }}"></script>
+
+
+
 
 
 </div>

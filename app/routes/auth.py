@@ -26,6 +26,12 @@ def login_required(f):
         if not 'username' in session:
             flash('Please log in to access this page.', 'danger')
             return redirect(url_for('routes.auth.login'))
+        elif 'username' in session :
+            username = session['username']
+            user = User.query.filter_by(username=username).first()
+            if not user :
+                flash('Please log in to access this page.', 'danger')
+                return redirect(url_for('routes.auth.login'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -112,7 +118,7 @@ def logout():
 @login_required
 def main_page():
     try :
-        return render_template('/server/main_menu.html')
+        return redirect("/server/purchase-event")
     except Exception as e:
         print(e)
         return {"message": str(e), "status":400}

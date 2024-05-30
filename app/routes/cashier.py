@@ -6,7 +6,7 @@ import os
 import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.db import db
-from app.models.models import User, PurchaseOrder
+from app.models.models import User, PurchaseOrder, PurchaseOrderLine, Money
 from .auth import login_required
 import ast
 from flask import jsonify
@@ -20,7 +20,16 @@ token = os.getenv('TOKEN')
 @bp.route('/index', methods=["GET"])
 @login_required
 def cashier_index():
-    return render_template('cashier/cashier.html')
+    pe = request.args.get("pe")
+    purchase_order_paid = PurchaseOrder.query.filter(
+        PurchaseOrder.purchase_event_id == int(pe),
+        PurchaseOrder.is_paid == True
+    ).all()
+    purchase_order_not_paid = PurchaseOrder.query.filter(
+        PurchaseOrder.purchase_event_id == int(pe),
+        PurchaseOrder.is_paid == False or PurchaseOrder.is_paid == None
+    ).all()
+    return render_template('cashier/cashier.html', pe=pe, purchase_order_paid=purchase_order_paid, purchase_order_not_paid=purchase_order_not_paid, NfcappFarmerOdoo=NfcappFarmerOdoo)
 
 
 @bp.route('/search/po', methods=["GET","POST"])
@@ -39,7 +48,13 @@ def cashier_po_detail():
     try :
         po = request.args.get('po')
         purchase_order = PurchaseOrder.query.filter_by(id=int(po)).first()
-        return render_template('cashier/po_details.html', purchase_order=purchase_order)
+        order_line = PurchaseOrderLine.query.filter_by(purchase_order_id=purchase_order.id).all()
+        money_data = Money.query.filter_by(purchase_order_id=purchase_order.id).filter(Money.amount < 0).all()
+        payment_debt = purchase_order.amount_total
+        money_total = sum(money.amount for money in money_data)
+        payment_debt += money_total
+
+        return render_template('cashier/po_details.html', purchase_order=purchase_order, NfcappFarmerOdoo=NfcappFarmerOdoo, payment_debt=payment_debt, order_line=order_line, ProductOdoo=ProductOdoo, money_data=money_data, PurchaseOrder=PurchaseOrder)
     except Exception as e :
         print(e)
 
@@ -52,3 +67,6 @@ def cashier_payment_add():
         return redirect(request.referrer)
     except Exception as e :
         print(e)
+
+
+

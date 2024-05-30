@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from . import db
+from sqlalchemy import LargeBinary
 
 session = db.session
 
@@ -161,18 +162,42 @@ class DeliveryOrder(db.Model):
         return total_qty
 
 
-
-
 class Money(db.Model):
     __tablename__ = 'money'
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_id = db.Column(db.Integer, db.ForeignKey('purchase_order.id'))
+    expense_id = db.Column(db.Integer, db.ForeignKey('expense.id'))
     amount = db.Column(db.Float)
     note = db.Column(db.Text)
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+
+
+class Expense(db.Model):
+    __tablename__ = 'expense'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
+    amount = db.Column(db.Float)
+    note = db.Column(db.Text)
+    created = db.Column(db.DateTime)
+    modified = db.Column(db.DateTime)
+    create_uid = db.Column(db.Integer)
+    write_uid = db.Column(db.Integer)
+    image = db.Column(LargeBinary)
+    money_entries = db.relationship('Money', backref='expense', lazy='dynamic')
+    @property
+    def compute_payment(self):
+        total_payment = sum(m.amount for m in self.money_entries)
+        return total_payment
+
+    @property
+    def payment_debt(self):
+        total_payment = sum(m.amount for m in self.money_entries)
+        debt = self.amount + total_payment
+        return debt
 

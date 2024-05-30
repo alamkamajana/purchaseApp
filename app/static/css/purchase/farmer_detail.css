@@ -1,0 +1,21 @@
+
+
+.farmer-data{
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.card table{
+    min-width: 320px;
+    height: 200px;
+}
+
+.farmer-photo{
+    width: 200px;
+    height: 200px;
+    border: solid 1px black;
+    margin: 20px;
+    margin-left: 0;
+}

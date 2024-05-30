@@ -27,6 +27,7 @@
                 <th>Fund</th>
                 <th>Amount</th>
                 <th>Type</th>
+                <th>Purpose</th>
                 <th>Note</th>
                 </thead>
                 <tbody>
@@ -37,6 +38,15 @@
                     <td>{{ ns.fund }}</td>
                     <td>{{ payment.amount }}</td>
                     <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                    <td>
+                        {% if payment.purchase_order_id%}
+                        Purchase
+                        {% elif payment.expense_id %}
+                        Expense
+                        {% else %}
+
+                        {% endif %}
+                    </td>
                     <td>{{ payment.note }}</td>
                 </tr>
                 {% endfor %}

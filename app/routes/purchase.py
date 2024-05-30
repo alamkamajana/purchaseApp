@@ -8,7 +8,7 @@ from sqlalchemy import and_, create_engine
 from flask import jsonify
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
-from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo
+from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo, NfcappClusterOdoo, NfcappStationOdoo
 from app.models.models import PurchaseEvent,User, PurchaseOrder, PurchaseOrderLine
 
 from functools import wraps
@@ -52,13 +52,21 @@ def transaction_search_farmer():
 @login_required
 def purchase_search_farmer_bycode():
     query = request.args.get('q', 0)
+    group_id = request.args.get('farmer_group', 0, type=int)
+    station_id = request.args.get('farmer_station', 0, type=int)
     pe = request.args.get('pe', 1, type=int)
-    if query:
-        farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
-        print(farmers)
-        return render_template('purchase/search_farmer.html', pe=pe, farmers = farmers, tab=2)
+    stations = NfcappStationOdoo.query.all()
+    farmer_groups = NfcappClusterOdoo.query.all()
+    if query or group_id or station_id:
+        if group_id :
+            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.parent_id==group_id).filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+        elif station_id:
+            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.station_id==station_id).filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+        else:
+            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+        return render_template('purchase/search_farmer.html', pe=pe, farmers = farmers, tab=2, name = query, farmer_groups=farmer_groups, stations=stations, selected_group=group_id, selected_station=station_id)
     # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
-    return render_template('purchase/search_farmer.html', pe=pe)
+    return render_template('purchase/search_farmer.html', pe=pe, farmer_groups=farmer_groups, stations=stations)
 
 @bp.route('/farmer/detail', methods=["GET"])
 @login_required
