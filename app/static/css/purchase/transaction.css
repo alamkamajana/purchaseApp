@@ -1,14 +1,14 @@
 @media screen and (min-width: 768px){
-    .farmer-data{
+    .purchase-data{
         width: 100%;
         display: flex;
         justify-content: flex-start;
         align-items: center;
     }
 
-    .card table{
-        min-width: 320px;
+    .data-table{
         height: 200px;
+        width: 60%;
     }
 
     .farmer-photo{
@@ -17,15 +17,18 @@
         border: solid 1px black;
         margin: 20px;
         margin-left: 0;
+        max-width: 30%;
+        max-height: auto;
     }
 }
 
-@media screen and (max-width: 768px){
 
-    .farmer-data{
+
+@media screen and (max-width: 768px){
+    .purchase-data{
         width: 100%;
     }
-    .card table{
+    .data-table{
         width: 100%;
     }
 
@@ -36,10 +39,42 @@
         width: 140px;
         height: 140px;
     }
+
+    .commodity-table{
+        width:100%;
+        position: sticky;
+        left: 0;
+    }
+
+    .event-table{
+        min-width:960px;
+    }
 }
 
+.data-table td{
+    vertical-align: middle;
+}
 
 
 .back-btn{
     padding:0;
 }
+
+.text-right{
+    text-align: right;
+}
+
+.event-container{
+    overflow-x : auto;
+}
+
+.form-check-input{
+    margin-top: 16px;
+}
+
+#product-options{
+    vertical-align: middle;
+}
+
+
+
