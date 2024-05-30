@@ -72,7 +72,7 @@ Purchase Event
                             {{ event.purchase_order_odoo.name }}
                         </div>
                     </td>
-                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                    <td>
                         {{ event.note }}
                     </td>
                     <td>
@@ -92,8 +92,16 @@ Purchase Event
                         <a href="/server/purchase-event/payments?pe={{ event.id }}" target="_blank"
                            class="btn btn-success"><i class="bx bx-money"></i></a>
                         <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
+                        <a type="button" class="btn btn-info event-info{{ event.id }}"
+                           href="/expense/index?pe={{ event.id }}">
+                            <span><i class='bx bx-credit-card'></i></span>
+                        </a>
                         <a href="/delivery/index?pe={{ event.id }}" target="_blank"
                            class="btn btn-warning"><i class="bx bxs-truck"> </i></a>
+                        <a type="button" class="btn btn-success event-info{{ event.id }}"
+                           href="/cashier/index?pe={{ event.id }}">
+                            <span><i class='bx bx-dollar'></i></span>
+                        </a>
                         <a type="button" class="btn btn-danger event-info{{ event.id }}"
                            href="/server/purchase-event/delete?pe={{ event.id }}">
                             <span><i class='bx bxs-trash'></i></span>

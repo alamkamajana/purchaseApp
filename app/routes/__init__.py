@@ -9,6 +9,7 @@ from .sync import bp as sync_bp
 from .purchase import bp as purchase_bp
 from .cashier import bp as cashier_bp
 from .delivery import bp as delivery_bp
+from .expense import bp as expense_bp
 
 bp.register_blueprint(server_bp)
 bp.register_blueprint(auth_bp)
@@ -16,3 +17,4 @@ bp.register_blueprint(sync_bp)
 bp.register_blueprint(purchase_bp)
 bp.register_blueprint(cashier_bp)
 bp.register_blueprint(delivery_bp)
+bp.register_blueprint(expense_bp)
