@@ -6,7 +6,7 @@
         align-items: center;
     }
 
-    .card table{
+    .card #farmer-detail{
         min-width: 320px;
         height: 200px;
     }

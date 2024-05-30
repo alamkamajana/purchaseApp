@@ -105,6 +105,10 @@
 }
 
 .card-body{
+    padding : 0;
+}
+
+.tab-content{
     padding: 16px;
 }
 
@@ -128,6 +132,11 @@
 
 .purchase-container table{
     min-width: 640px;
+}
+
+.add-purchase-container{
+    width:100%;
+    background-color: #eaeaea;
 }
 
 
