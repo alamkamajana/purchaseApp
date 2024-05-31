@@ -6,7 +6,7 @@ import os
 import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.db import db
-from app.models.models import User, PurchaseOrder, PurchaseOrderLine, Money
+from app.models.models import User, PurchaseOrder, PurchaseOrderLine, Money, PurchaseEvent
 from .auth import login_required
 import ast
 from flask import jsonify
@@ -29,7 +29,8 @@ def cashier_index():
         PurchaseOrder.purchase_event_id == int(pe),
         PurchaseOrder.is_paid == False or PurchaseOrder.is_paid == None
     ).all()
-    return render_template('cashier/cashier.html', pe=pe, purchase_order_paid=purchase_order_paid, purchase_order_not_paid=purchase_order_not_paid, NfcappFarmerOdoo=NfcappFarmerOdoo)
+    purchase_event = PurchaseEvent.query.get(int(pe))
+    return render_template('cashier/cashier.html', pe=pe,purchase_event=purchase_event, purchase_order_paid=purchase_order_paid, purchase_order_not_paid=purchase_order_not_paid, NfcappFarmerOdoo=NfcappFarmerOdoo)
 
 
 @bp.route('/search/po', methods=["GET","POST"])
