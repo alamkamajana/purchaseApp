@@ -3,7 +3,7 @@ import functools
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from sqlalchemy import and_, create_engine
+from sqlalchemy import and_, create_engine, or_
 
 from flask import jsonify
 from app.models.db import db
@@ -59,11 +59,11 @@ def purchase_search_farmer_bycode():
     farmer_groups = NfcappClusterOdoo.query.all()
     if query or group_id or station_id:
         if group_id :
-            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.parent_id==group_id).filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.parent_id==group_id).filter(or_(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%'),NfcappFarmerOdoo.code.ilike(f'%{query}%'))).all()
         elif station_id:
-            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.station_id==station_id).filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.station_id==station_id).filter(or_(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%'),NfcappFarmerOdoo.code.ilike(f'%{query}%'))).all()
         else:
-            farmers = NfcappFarmerOdoo.query.filter(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%')).all()
+            farmers = NfcappFarmerOdoo.query.filter(or_(NfcappFarmerOdoo.farmer_name.ilike(f'%{query}%'),NfcappFarmerOdoo.code.ilike(f'%{query}%'))).all()
         return render_template('purchase/search_farmer.html', pe=pe, farmers = farmers, tab=2, name = query, farmer_groups=farmer_groups, stations=stations, selected_group=group_id, selected_station=station_id)
     # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
     return render_template('purchase/search_farmer.html', pe=pe, farmer_groups=farmer_groups, stations=stations)
@@ -74,9 +74,13 @@ def purchase_farmer_detail():
     pe = request.args.get('pe', 1, type=int)
     farmer_code = request.args.get('farmer_code')
     farmer = NfcappFarmerOdoo.query.filter_by(code=farmer_code).first()
+    commodity_items = NfcappCommodityItemOdoo.query.filter(
+            NfcappCommodityItemOdoo.farmer_id == farmer.odoo_id,
+            NfcappCommodityItemOdoo.product_id.isnot(None)
+    ).all()
 
     # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
-    return render_template('purchase/farmer_detail.html', pe=pe, farmer=farmer)
+    return render_template('purchase/farmer_detail.html', pe=pe, farmer=farmer, commodity_items=commodity_items)
 
 
 @bp.route('/order', methods=["GET"])
@@ -173,9 +177,27 @@ def transaction_order_add():
 def transaction_list():
     try :
         event_id = request.args.get('pe', 0, type=int)
-        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).all()
+        purchase_lists = PurchaseOrder.query.filter_by(purchase_event_id=event_id).order_by(PurchaseOrder.id.desc()).all()
         event_obj = PurchaseEvent.query.filter_by(id=event_id).first()
-        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo)
+        po_json = {}
+        po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(event_obj.purchase_order_odoo.odoo_id)).all()
+        grand_total=0
+        for order in po_order_line:
+            grand_total=grand_total+(order.price_unit*order.product_qty)
+        price_list = []
+        for purchase in purchase_lists:
+            total_price = 0
+            po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=purchase.id).all()
+            for po_line in po_lines:
+                total_price = total_price + po_line.subtotal
+            price_data_json = {}
+            price_data_json['po_id'] = purchase.id
+            price_data_json['total'] = total_price
+            price_list.append(price_data_json)
+
+        print(price_list)
+
+        return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo, price_list=price_list, po_order_line=po_order_line, grand_total=grand_total)
 
     except Exception as e :
         print(e)
@@ -344,7 +366,7 @@ def transaction_detail():
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
             product_can_purchase_arr.append(commodity_data)
-    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr)
+    return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr, ProductOdoo=ProductOdoo, farmer_id=farmer_id)
 
 
 @bp.route('/transaction/confirm', methods=["POST","GET"])

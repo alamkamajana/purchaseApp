@@ -118,7 +118,7 @@ def logout():
 @login_required
 def main_page():
     try :
-        return redirect("/server/purchase-event")
+        return render_template('/server/main_menu.html')
     except Exception as e:
         print(e)
         return {"message": str(e), "status":400}

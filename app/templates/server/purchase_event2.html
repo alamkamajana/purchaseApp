@@ -11,11 +11,6 @@ Purchase Event
 {% endblock %}
 
 {% block content %}
-<style>
-    .active {
-        color: black;
-    }
-</style>
 <span id="selected-menu" style="display: none;">purchase_event</span>
 
 <div class="card">
@@ -29,27 +24,16 @@ Purchase Event
         </nav>
     </div>
     <div class="card-body">
-        <div style="width:100%;" class="mb-2">
-            <div style="display: flex; align-items: center;">
-                <a type="button" class="btn btn-primary" href="/server/purchase-event/create?po={{po}}">
-                    Add
-                </a>
-            </div>
-        </div>
-        <nav>
-            <div class="nav nav-tabs" id="nav-tab" role="tablist" style="flex-direction: row;justify-content: left">
-                <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
-                        type="button"
-                        role="tab" aria-controls="nav-home" aria-selected="true">Event List
-                </button>
-                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
-                        type="button"
-                        role="tab" aria-controls="nav-profile" aria-selected="false">Purchase
-                </button>
-            </div>
-        </nav>
-        <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+        <div class="tab-content" id="purchaseEventTabsContent">
+            <div class="tab-pane fade show active" id="event-list" role="tabpanel" aria-labelledby="event-list-tab">
+                <div style="width:100%;">
+                    <div style="display: flex; align-items: center;">
+                        <a type="button" class="btn btn-primary" href="/server/purchase-event/create?po={{po}}">
+                            Add
+                        </a>
+                    </div>
+                </div>
                 <div class="event-container">
                     <table class="table event-table" style="width: 100%; margin-top: 32px;">
                         <tr>
@@ -111,66 +95,8 @@ Purchase Event
                     <div id="pagination" style="width:100%; display:flex; justify-content: center;"></div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                <table class="table event-table" style="width: 100%; margin-top: 32px;">
-                    <tr>
-                        <th style="width: 10%;">Order</th>
-                        <th style="width: 15%;">Farmer</th>
-                        <th style="width: 12%;">status</th>
-                        <th style="width: 10%;">Is Paid</th>
-                        <th>Order Line</th>
-                        <th>Action</th>
-                    </tr>
-                    {% for order in orders %}
-                    <tr class="event-row">
-                        <td>{{ order.name }}</td>
-                        <td>{{ NfcappFarmerOdoo.query.get(order.farmer_id).farmer_name }}</td>
-                        <td>
-                            {{ order.status }}
-                        </td>
-                        <td>
-                            {{ order.is_paid }}
-                        </td>
-                        <td>
-                            {% set order_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=order.id).all() %}
-                            {% for line in order_lines %}
-                            <table style="border-collapse: collapse;margin: 0;padding: 0;">
-                                <tr>
-                                    <td><b>Product</b> :</td>
-                                    <td>
-                                        {% if line.product_odoo_id %}
-                                        {{ ProductOdoo.query.get(line.product_odoo_id).name }}
-                                        {% else %}
 
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><b>Unit Price</b> :</td>
-                                    <td>
-                                        {{ line.unit_price }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <b>Quantity</b> : {{ line.qty }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><b>Quantity</b> : </td>
-                                    <td>{{ line.subtotal }}</td>
-                                </tr>
-                            </table>
-                            {% endfor %}
-                        </td>
-                        <td></td>
-                    </tr>
-                    {% endfor %}
-
-                </table>
-            </div>
         </div>
-
     </div>
 </div>
 

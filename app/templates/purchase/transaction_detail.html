@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -16,78 +18,112 @@
 </head>
 <body>
 <div class="container">
-    <div class="row text-center">
-        <div class="col">
-            <h1>Add Produdct</h1>
+    <div class="card">
+        <div class="card-header d-flex align-items-center">
+            <a href="/purchase/order?po={{purchase_order_line.purchase_order_id}}&farmer={{farmer_id}}" class="btn back-btn" style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
+            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Edit Product</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <form action="/purchase/transaction/update" method="POST">
+                        <input type="hidden" name="transaction" value="{{ purchase_order_line.id }}">
+                        <div class="form-group">
+                            <div>
+
+                                <table id="product-options" class="table">
+                                    <tr>
+                                        <td>
+                                            <div class="control-label">Product</div>
+                                        </td>
+                                    </tr>
+
+                                    {% set ori_product_id = ProductOdoo.query.filter_by(id=purchase_order_line.product_odoo_id).first().odoo_id %}
+
+                                    {% for product in product_can_purchase %}
+                                    <tr>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="product"
+                                                    id="product-{{ product.product_id }}"
+                                                    value="{{ product.product_id }}"
+                                                    data-price="{{ product.commodityitem_price }}"
+                                                    onchange="updatePrice(this)"
+                                                    {% if product.product_id == ori_product_id %}checked{% endif %}
+                                                    
+                                                >
+                                                <label class="form-check-label"
+                                                    for="product-{{ product.product_id }}" style="width:80%">
+                                                    {{ product.product_name }}
+                                                </label>
+                                                <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
+                                                    width="50"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    {% endfor %}
+
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="qty">Quantity</label>
+                            <input type="number" class="form-control" id="qty" name="qty" value="{{ purchase_order_line.qty }}"
+                                step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="price-unit">Unit Price</label>
+                            <input type="number" class="form-control" id="price-unit" name="price-unit"
+                                value="{{ purchase_order_line.unit_price }}" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="barcode">Barcode</label>
+                            <input type="text" class="form-control" id="barcode" name="barcode"
+                                value="{{ purchase_order_line.barcode }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="subtotal">Subtotal</label>
+                            <input type="number" class="form-control" id="subtotal" name="subtotal"
+                                value="{{ purchase_order_line.subtotal }}" step="0.01" readonly>
+                        </div>
+                        <br/>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <form action="/purchase/transaction/update" method="POST">
-                <input type="hidden" name="transaction" value="{{ purchase_order_line.id }}">
-                <div class="form-group">
-                    <div>
 
-                        <table id="product-options" class="table">
-                            <tr>
-                                <td>
-                                    <div class="control-label">Product</div>
-                                </td>
-                            </tr>
+<script>
+    function updatePrice(radio) {
+        let price = radio.getAttribute('data-price');
+        document.getElementById('price-unit').value = price;
+        calculateSubtotal();
+    }
 
-                            {% for product in product_can_purchase %}
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="product"
-                                               id="product-{{ product.product_id }}"
-                                               value="{{ product.product_id }}"
-                                               data-price="{{ product.commodityitem_price }}"
-                                               onchange="updatePrice(this)"
-                                        >
-                                        <label class="form-check-label"
-                                               for="product-{{ product.product_id }}" style="width:80%">
-                                            {{ product.product_name }}
-                                        </label>
-                                        <img src="https://odoo.tripper.com/nfcapp/web/image?model=nfcapp.iconcommodity&id=13&field=icon"
-                                             width="50"/>
-                                    </div>
-                                </td>
-                            </tr>
+    function calculateSubtotal() {
+        // Get the unit price and quantity
+        var price = parseFloat(document.getElementById('price-unit').value);
+        var qty = parseFloat(document.getElementById('qty').value);
+        // Calculate the subtotal
+        var subtotal = price * qty;
+        // Update the subtotal input field
+        document.getElementById('subtotal').value = subtotal.toFixed(2);
+    }
 
-                            {% endfor %}
-
-                        </table>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="qty">Quantity</label>
-                    <input type="number" class="form-control" id="qty" name="qty" value="{{ purchase_order_line.qty }}"
-                           step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="price-unit">Unit Price</label>
-                    <input type="number" class="form-control" id="price-unit" name="price-unit"
-                           value="{{ purchase_order_line.unit_price }}" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label for="barcode">Barcode</label>
-                    <input type="text" class="form-control" id="barcode" name="barcode"
-                           value="{{ purchase_order_line.barcode }}">
-                </div>
-                <div class="form-group">
-                    <label for="subtotal">Subtotal</label>
-                    <input type="number" class="form-control" id="subtotal" name="subtotal"
-                           value="{{ purchase_order_line.subtotal }}" step="0.01" readonly>
-                </div>
-                <br/>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </form>
-        </div>
-    </div>
-</div>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Attach event listeners to the quantity input and radio buttons
+        document.getElementById('qty').addEventListener('input', calculateSubtotal);
+        var productRadios = document.querySelectorAll('input[name="product"]');
+        productRadios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                updatePrice(radio);
+            });
+        });
+    });
+</script>
 
 </body>
 </html>

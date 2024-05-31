@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/farmer_detail.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -19,8 +20,9 @@
     <div class="card">
 
         {% if farmer %}
-        <div class="card-header">
-            <a href="/purchase/search/farmer?pe={{ pe }}" class="btn btn-danger" style="width: fit-content;">Back</a>
+        <div class="card-header d-flex align-items-center">
+            <a href="/purchase/search/farmer?pe={{ pe }}" class="btn back-btn" style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
+            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Farmer Detail</span>
         </div>
         <div class="card-body">
         <div class="farmer-data">
@@ -30,17 +32,14 @@
             <table id="farmer-detail">
                 <tbody>
                     <tr>
-                        <th style="width: 180px;">Farmer Name</th>
-                        <td>{{ farmer.farmer_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Farmer Code</th>
+                        <th style="width: 180px;">Farmer Code</th>
                         <td>{{ farmer.code }}</td>
                     </tr>
                     <tr>
-                        <th>Role</th>
-                        <td>{{ farmer.farmer_role }}</td>
+                        <th >Farmer Name</th>
+                        <td>{{ farmer.farmer_name }}</td>
                     </tr>
+                    
                     <tr>
                         <th>Farmer Group</th>
                         <td>{{ farmer.parent_name }}</td>
@@ -49,10 +48,25 @@
                         <th>Station</th>
                         <td>{{ farmer.station_name }}</td>
                     </tr>
+                    <tr>
+                        <th>Certification Status</th>
+                        <td>{{ farmer.certification_status_name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div style="margin-bottom: 32px;">
+            <h5>Possible Product to Purchase</h5>
+            <table>
+                <tbody>
+                    {% for commodity_item in commodity_items %}
+                        {{ commodity_item.product_id_code }}  {{ commodity_item.product_id_name }}  <br/>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
-        <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}" class="btn btn-su">Confirm</a>
+        <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}" class="btn btn-success">Confirm</a>
 
         {% else %}
         <div class="row">

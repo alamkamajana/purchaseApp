@@ -40,7 +40,7 @@ $(document).ready(function() {
     }
 
     var selectedStation = $('#farmer_station_form').val();
-    $('#farmer_group_form').val(null).trigger('change');
+    // $('#farmer_group_form').val(null).trigger('change');
     $('#farmer_group_form option').each(function() {
         var itemStation = $(this).data('category');
         if (selectedStation == 'all' || selectedStation == itemStation || $(this).val()==0) {
@@ -48,8 +48,8 @@ $(document).ready(function() {
         } else {
             $(this).hide();
         }
-        });
-    $('#farmer_group_form').val('').trigger('change');
+    });
+    
 
     
     $('#farmer_station_form').on('change', function() {

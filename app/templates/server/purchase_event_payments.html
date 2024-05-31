@@ -1,64 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PE Payments</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
-          type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
-          type="text/css">
-    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
-    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
-    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
-    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
-</head>
-<body>
-<div class="container">
-    <div class="row text-center">
-        <div class="col">
-            <h1>Payments </h1>
+{% extends 'server/base.html' %}
+{% block title %}
+Purchase Event
+{% endblock %}
+{% block plugin %}
+
+{% endblock %}
+
+{% block header %}
+<b>Create Purchase Event</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">purchase_event_create</span>
+
+<div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;">Purchase Order</a></li>
+                <li class="breadcrumb-item"><a href="/server/purchase-event?po={{purchase_event.purchase_order_odoo_id}}" style="color: #e27f34;">Purchase Event</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><p>Payments</p></li>
+            </ol>
+        </nav>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col">
+                    <h1>Payments </h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <thead>
+                        <th>Fund</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Note</th>
+                        </thead>
+                        <tbody>
+                        {% set ns = namespace(fund=0) %}
+                        {% for payment in payments %}
+                        <tr>
+                            {% set ns.fund = ns.fund + payment.amount %}
+                            <td>{{ ns.fund }}</td>
+                            <td>{{ payment.amount }}</td>
+                            <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                            <td>{{ payment.note }}</td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <table class="table">
-                <thead>
-                <th>Fund</th>
-                <th>Amount</th>
-                <th>Type</th>
-                <th>Purpose</th>
-                <th>Note</th>
-                </thead>
-                <tbody>
-                {% set ns = namespace(fund=0) %}
-                {% for payment in payments %}
-                <tr>
-                    {% set ns.fund = ns.fund + payment.amount %}
-                    <td>{{ ns.fund }}</td>
-                    <td>{{ payment.amount }}</td>
-                    <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
-                    <td>
-                        {% if payment.purchase_order_id%}
-                        Purchase
-                        {% elif payment.expense_id %}
-                        Expense
-                        {% else %}
 
-                        {% endif %}
-                    </td>
-                    <td>{{ payment.note }}</td>
-                </tr>
-                {% endfor %}
 
-                </tbody>
-
-            </table>
-        </div>
-
-    </div>
 </div>
 
-
-</body>
-</html>
+{% endblock %}
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
+{% endblock %}

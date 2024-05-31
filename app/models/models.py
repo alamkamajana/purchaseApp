@@ -1,11 +1,12 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime,date
 from . import db
+import uuid
 from sqlalchemy import LargeBinary
-
 session = db.session
-
+from sqlalchemy.orm import validates
+from sqlalchemy import event
 user_purchase_order_association = db.Table('user_purchase_order_association',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('purchase_order_odoo_id', db.Integer, db.ForeignKey('purchase_order_odoo.id'), primary_key=True)
@@ -58,6 +59,7 @@ class UserSession(db.Model):
 
 class PurchaseEvent(db.Model):
     __tablename__ = 'purchase_event'
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     fund = db.Column(db.Float)
@@ -80,6 +82,11 @@ class PurchaseEvent(db.Model):
     note = db.Column(db.Text)
     date_stamp = db.Column(db.Date)
     money_entries = db.relationship('Money', backref='purchase_event', lazy='dynamic')
+
+
+
+
+
     @property
     def compute_fund(self):
         total_fund = sum(m.amount for m in self.money_entries)
@@ -87,8 +94,10 @@ class PurchaseEvent(db.Model):
 
 
 
+
 class PurchaseOrder(db.Model):
     __tablename__ = 'purchase_order'
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     receipt_number = db.Column(db.String(64))
@@ -108,8 +117,10 @@ class PurchaseOrder(db.Model):
     def amount_total(self):
         return sum(line.subtotal for line in self.purchase_order_lines)
 
+
 class PurchaseOrderLine(db.Model):
     __tablename__ = 'purchase_order_line'
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     id = db.Column(db.Integer, primary_key=True)
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     qty = db.Column(db.Float)
@@ -128,6 +139,7 @@ class PurchaseOrderLine(db.Model):
 
 class Payment(db.Model):
     __tablename__ = 'payment'
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     id = db.Column(db.Integer, primary_key=True)
     purchase_order_id = db.Column(db.Integer, db.ForeignKey('purchase_order.id'))
     debit = db.Column(db.Float)
@@ -142,6 +154,7 @@ class Payment(db.Model):
 
 class DeliveryOrder(db.Model):
     __tablename__ = 'delivery_order'
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     driver = db.Column(db.String)
@@ -164,6 +177,7 @@ class DeliveryOrder(db.Model):
 
 class Money(db.Model):
     __tablename__ = 'money'
+    uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))

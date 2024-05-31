@@ -14,6 +14,18 @@ Purchase Event
 <span id="selected-menu" style="display: none;">purchase_event_create</span>
 
 <div class="card">
+    <div class="card-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;">Purchase
+                    Order</a></li>
+                <li class="breadcrumb-item"><a
+                        href="/server/purchase-event?po={{purchase_order.id}}"
+                        style="color: #e27f34;">Purchase Event</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><p>Create</p></li>
+            </ol>
+        </nav>
+    </div>
 
     <div class="card-body">
         <div class="row">
@@ -22,10 +34,9 @@ Purchase Event
                     <div class="form-group">
                         <label for="purchase-order">Purchase Order</label>
                         <select class="form-control" id="purchase-order" name="purchase-order" required>
-                            {% for po in purchase_order %}
-                            <option value="{{ po.id }}">{{ po.name }}
+
+                            <option value="{{ purchase_order.id }}">{{ purchase_order.name }}
                             </option>
-                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
