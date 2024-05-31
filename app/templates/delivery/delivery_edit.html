@@ -8,6 +8,7 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
@@ -53,6 +54,10 @@
             border-radius: 5px;
         }
 
+        .back-btn{
+            padding-left: 8px;  
+        }
+
         .btn-success:hover {
             background-color: #218838; /* Darker green on hover */
         }
@@ -76,15 +81,15 @@
 <div class="container">
     <div class="row text-center">
         <div class="col">
-            <h1>Edit Delivery Order </h1>
+            <h1>Ubah Surat Jalan</h1>
         </div>
     </div>
 </div>
 <div class="container">
     <div class="row">
         <div class="col text-left">
-            <a href="/delivery/index?pe={{ pe }}" class="btn btn-success">
-                Back
+            <a href="/delivery/index?pe={{ pe }}" class="btn btn-secondary back-btn">
+                <i class='bx bx-chevron-left'></i>Kembali
             </a>
         </div>
     </div>
@@ -95,37 +100,37 @@
         <input type="hidden" name="do" value="{{ do.id }}">
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Driver</label>
+                <label>Sopir</label>
                 <input type="text" class="form-control" value="{{ do.driver }}" name="driver"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Date</label>
+                <label>Tanggal</label>
                 <input type="date" id="date" class="form-control" value="{{ do.date }}" name="date"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Destination</label>
+                <label>Tujuan</label>
                 <input type="text" class="form-control" value="{{ do.destination }}" name="destination"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Vehicle</label>
+                <label>Kendaraan</label>
                 <input type="text" class="form-control" value="{{ do.vehicle_number }}" name="vehicle"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Note</label>
+                <label>Catatan</label>
                 <textarea name="note" class="form-control" rows="4">{{ do.note }}</textarea>
             </div>
         </div>
         <div class="row mt-2">
             <div class="col text-center">
-                <button type="submit" class="btn btn-success">Submit</button>
+                <button type="submit" class="btn btn-success">Kirim</button>
             </div>
         </div>
     </form>
