@@ -143,8 +143,23 @@ def transaction_order():
     # print(po_line_product_arr)
     # print(commodity_item_product_arr)
     farmer_odoo = NfcappFarmerOdoo.query.filter_by(odoo_id=farmer.odoo_id).first()
+
+    po_json = {}
+    po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(event.purchase_order_odoo.odoo_id)).all()
+    grand_total=0
+    for order in po_order_line:
+        grand_total=grand_total+(order.price_unit*order.product_qty)
+
+    commodity_items = NfcappCommodityItemOdoo.query.filter(
+            NfcappCommodityItemOdoo.farmer_id == farmer.odoo_id,
+            NfcappCommodityItemOdoo.product_id.isnot(None)
+    ).all()
+
     return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
-                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,po_line_product_arr=po_line_product_arr)
+                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, 
+                           ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
+                           po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
+                           po_order_line=po_order_line, grand_total=grand_total )
 
 @bp.route('/payment-note', methods=["GET"])
 @login_required
@@ -195,7 +210,6 @@ def transaction_list():
             price_data_json['total'] = total_price
             price_list.append(price_data_json)
 
-        print(price_list)
 
         return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo, price_list=price_list, po_order_line=po_order_line, grand_total=grand_total)
 
