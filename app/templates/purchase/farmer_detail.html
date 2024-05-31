@@ -62,11 +62,11 @@
 
                 </div>
                 <div style="margin-bottom: 32px; margin-top: 24px;">
-                    <h5>Possible Product to Purchase</h5>
+                    <h5>Product Possible to Purchase from This farmer based on Certification Status</h5>
                     <table>
                         <tbody>
                             {% for commodity_item in commodity_items %}
-                            {{ commodity_item.product_id_code }} {{ commodity_item.product_id_name }} <br />
+                            [{{ commodity_item.product_id_code }}] {{ commodity_item.product_id_name }} <br />
                             {% endfor %}
                         </tbody>
                     </table>

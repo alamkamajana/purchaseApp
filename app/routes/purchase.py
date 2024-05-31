@@ -277,6 +277,7 @@ def transaction_create():
             commodityitem_json['commodityitem_name'] = commodityitem.code
             commodityitem_json['commodityitem_price'] = commodityitem.price
             commodityitem_json['product_id'] = commodityitem.product_id
+            commodityitem_json['product_id_code'] = commodityitem.product_id_code
             commodityitem_json['product_name'] = commodityitem.product_name
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
             commodityitem_json['certStatus'] = commodityitem.certStatus
@@ -372,6 +373,7 @@ def transaction_detail():
             commodityitem_json['commodityitem_price'] = commodityitem.price
             commodityitem_json['product_id'] = commodityitem.product_id
             commodityitem_json['product_name'] = commodityitem.product_name
+            commodityitem_json['product_id_code'] = commodityitem.product_id_code
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
             commodityitem_json['certStatus'] = commodityitem.certStatus
             commodity_item_product_arr.append(commodityitem_json)

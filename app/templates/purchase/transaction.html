@@ -207,26 +207,6 @@
                                 </tr>
                             </table>
 
-                            <table class="commodity-table">
-                                <tr>
-                                    <td>PO</td>
-                                    <td>Commodity</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        {% for po_line in po_line_product_arr %}
-                                        <p>{{ ProductOdoo.query.filter_by(odoo_id=po_line).first().name }} </p>
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        {% for cmd in commodity_item_product_arr %}
-                                        <p> {{ cmd['commodityitem_name'] }} / {{ cmd['product_name'] }}
-                                            / {{ cmd['certStatus'] }} </p>
-                                        {% endfor %}
-                                    </td>
-                                </tr>
-                            </table>
-
                         </div>
                         <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
                             <div style="display: flex; align-items: center;">
@@ -246,15 +226,20 @@
                     <div class="tab-content" id="po-info">
                         <div class="row" style="margin: 24px; margin-top: 0;">
                             <div class="form-floating col-sm-12 col-lg">
-                                <input name="" class="form-control" value="{{ event.name }}" disabled>
-                                <label class="control-label" for="purchase-event">Purchase Event</label>
-                    
-                            </div>
-                    
-                            <div class="form-floating col-sm-12 col-lg">
                                 <input name="" class="form-control" id="" value="{{ event.purchase_order_odoo.name }}" disabled>
-                                <label class="control-label" for="purchase-order">Purchase Order</label>
+                                <label class="control-label" for="purchase-order">Odoo PO#</label>
                             </div>
+                            <div class="form-floating col-sm-12 col-lg">
+                                <input name="" class="form-control" value="{{ event.purchase_order_odoo.partner_name }}" disabled>
+                                <label class="control-label" for="purchase-event">Vendor</label>
+                    
+                            </div>
+                            <div class="form-floating col-sm-12 col-lg">
+                                <input name="" class="form-control" value="{{ event.purchase_order_odoo.partner_ref }}" disabled>
+                                <label class="control-label" for="purchase-event">Ref</label>
+                    
+                            </div>
+                    
                     
                             <div class="form-floating col-sm-12 col-lg">
                                 <input name="" class="form-control" id="" value="{{ event.fund}}" disabled>
@@ -277,15 +262,15 @@
                                 <tbody>
                                     <tr>
                                         <th>Product</td>
-                                        <th align="right">Qty</td>
-                                        <th align="right">Unit Price</td>
-                                        <th align="right">Subtotal</td>
+                                        <th class="text-end">Qty</td>
+                                        <th class="text-end">Unit Price</td>
+                                        <th class="text-end">Subtotal</td>
                                     </tr>
                                     
                                     {% if po_order_line %}
                                         {% for order in po_order_line %}
                                             <tr>
-                                                <td> {{ order.product_name }}</td>
+                                                <td> {{ order.name }}</td>
                                                 <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
                                                 <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
                                                 <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>
@@ -345,11 +330,11 @@
         
                         </div>
                         <div style="margin-bottom: 32px; margin-top: 24px;">
-                            <h5>Possible Product to Purchase</h5>
+                            <h5>Product Possible to Purchase from This farmer based on Certification Status</h5>
                             <table>
                                 <tbody>
                                     {% for commodity_item in commodity_items %}
-                                    {{ commodity_item.product_id_code }} {{ commodity_item.product_id_name }} <br />
+                                    [{{ commodity_item.product_id_code }}] {{ commodity_item.product_id_name }} <br />
                                     {% endfor %}
                                 </tbody>
                             </table>

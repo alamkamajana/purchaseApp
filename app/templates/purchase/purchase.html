@@ -20,44 +20,45 @@
 <div class="container">
     <div class="card">
         <div class="card-header d-flex align-items-center">
-            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">List Purchase</span>
+            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Purchase Event {{ purchase_event.name }}</span>
         </div>
         <div class="card-body">
             <div class="add-purchase-container">
-                <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary" style="margin:16px">
-                    Add Purchase
-                </a>
+                
             </div>
             
             <div class=tabs>
                 <ul class="tab-links tab-container">
                     <a href="#list" class="active" type="button" id="list-tab-btn">Purchase List</a>
-                    <a href="#info"  type="button" id="info-tab-btn">Purchase Info</a>
+                    <a href="#info"  type="button" id="info-tab-btn">Odoo PO Info</a>
                     
                 </ul>
                 
 
                 <div class="tab-content active" id="list">
+                    <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary" style="margin:8px">
+                        Add Purchase
+                    </a>
                     <div class="purchase-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <td>
-                                        Order
-                                    </td>
-                                    <td>
+                                    <th>
+                                        Order#
+                                    </th>
+                                    <th>
                                         Farmer Code
-                                    </td>
-                                    <td>
+                                    </th>
+                                    <th>
                                         Farmer
-                                    </td>
-                                    <td class="text-end">
-                                        Total Price
-                                    </td>
-                                    <td>
+                                    </th>
+                                    <th class="text-end">
+                                        Grand Total
+                                    </th>
+                                    <th>
                                         Status
-                                    </td>
-                                    <td>Action</td>
+                                    </th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody class="align-middle">
@@ -108,15 +109,20 @@
             <div class="tab-content" id="info">
                 <div class="row" style="margin: 24px; margin-top: 0;">
                     <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" value="{{ purchase_event.name }}" disabled>
-                        <label class="control-label" for="purchase-event">Purchase Event</label>
-            
-                    </div>
-            
-                    <div class="form-floating col-sm-12 col-lg">
                         <input name="" class="form-control" id="" value="{{ purchase_event.purchase_order_odoo.name }}" disabled>
-                        <label class="control-label" for="purchase-order">Purchase Order</label>
+                        <label class="control-label" for="purchase-order">Odoo PO#</label>
                     </div>
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" value="{{ purchase_event.purchase_order_odoo.partner_name }}" disabled>
+                        <label class="control-label" for="purchase-event">Vendor</label>
+            
+                    </div>
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" value="{{ purchase_event.purchase_order_odoo.partner_ref }}" disabled>
+                        <label class="control-label" for="purchase-event">Ref</label>
+            
+                    </div>
+            
             
                     <div class="form-floating col-sm-12 col-lg">
                         <input name="" class="form-control" id="" value="{{ purchase_event.fund}}" disabled>
@@ -139,15 +145,15 @@
                         <tbody>
                             <tr>
                                 <th>Product</td>
-                                <th align="right">Qty</td>
-                                <th align="right">Unit Price</td>
-                                <th align="right">Subtotal</td>
+                                <th class="text-end">Qty</td>
+                                <th class="text-end">Unit Price</td>
+                                <th class="text-end">Subtotal</td>
                             </tr>
                             
                             {% if po_order_line %}
                                 {% for order in po_order_line %}
                                     <tr>
-                                        <td> {{ order.product_name }}</td>
+                                        <td> {{ order.name }}</td>
                                         <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
                                         <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
                                         <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>

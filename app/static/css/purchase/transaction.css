@@ -20,6 +20,10 @@
         max-width: 30%;
         max-height: auto;
     }
+
+    .event-container{
+        max-width:100%;
+    }
 }
 
 
@@ -66,10 +70,6 @@
 
 .event-container{
     overflow-x : auto;
-}
-
-.form-check-input{
-    margin-top: 16px;
 }
 
 #product-options{
