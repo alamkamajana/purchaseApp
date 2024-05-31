@@ -48,6 +48,21 @@
                         <th>Station</th>
                         <td>{{ farmer.station_name }}</td>
                     </tr>
+                    <tr>
+                        <th>Certification Status</th>
+                        <td>{{ farmer.certification_status_name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div style="margin-bottom: 32px;">
+            <h5>Possible Product to Purchase</h5>
+            <table>
+                <tbody>
+                    {% for commodity_item in commodity_items %}
+                        {{ commodity_item.product_id_code }}  {{ commodity_item.product_id_name }}  <br/>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

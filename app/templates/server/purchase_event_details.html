@@ -23,11 +23,10 @@ Purchase Event
                     <div class="form-group">
                         <label for="purchase-order">Purchase Order</label>
                         <select class="form-control" id="purchase-order" name="purchase-order" required>
-                            {% for po in purchase_order %}
-                            <option value="{{ po.id }}" {% if po.id== purchase_event.purchase_order_odoo_id
-                                    %}selected{% endif %}>{{ po.name }}
+
+                            <option value="{{ purchase_order.id }}">{{ purchase_order.name }}
                             </option>
-                            {% endfor %}
+
                         </select>
                     </div>
                     <div class="form-group">

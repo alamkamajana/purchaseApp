@@ -136,6 +136,10 @@
             <a href="/delivery/index?pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
                class="btn btn-warning"><i class="bx bx-arrow-back"></i></a>
         </div>
+           <div class="col">
+            <a href="/delivery/edit?do={{do}}&pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
+               class="btn btn-info">Edit</a>
+        </div>
     </div>
 </div>
 <div class="container">

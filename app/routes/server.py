@@ -137,30 +137,27 @@ def master_data_purchase_order():
     return render_template('server/master_po.html',purchase_data=data)
 
 
-@bp.route('/purchase-event', methods=["GET"])
+@bp.route('/purchase-order/view', methods=["POST","GET"])
+@login_required
+def purchase_order_view():
+    print(request)
+    po_id = request.args.get("po")
+    purchase_order = PurchaseOrderOdoo.query.get(po_id)
+    return render_template('server/purchase_order_view.html', purchase_order=purchase_order)
+
+
+@bp.route('/purchase-event/', methods=["GET"])
 @login_required
 def purchase_event_list():
-    device_name = os.environ.get('USER')
-    mac_addr = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
-    local_ip_address = socket.gethostbyname(socket.gethostname())
-    external_ip_address = requests.get('https://api.ipify.org').text
-    po_list = PurchaseOrderOdoo.query.all()
-    user_list = ResUserOdoo.query.all()
-    page = request.args.get('page', 1, type=int)
-    per_page = 10
-    pagination = PurchaseEvent.query.order_by(PurchaseEvent.id.desc()).paginate(page=page, per_page=per_page,
-                                                                                error_out=False)
-    events = pagination.items
-    total_pages = pagination.pages
-    users = User.query.all()
-    user = session['user_odoo_id']
-    user_odoo = User.query.filter_by(user_odoo_id=int(user)).first()
-    # purchase_orders = PurchaseOrderOdoo.query.order_by(PurchaseOrderOdoo.odoo_id.desc()).all()
-    purchase_orders = user_odoo.purchase_orders if user else []
-    # events = PurchaseEvent.query.order_by(PurchaseEvent.id).all()
-    base_url = request.url_root
-    return render_template('server/purchase_event.html', events=events, users=users, page=page, total_pages=total_pages,
-                           po_list=purchase_orders, user_list=user_list, device_name=device_name, base_url=base_url)
+
+    po_id = request.args.get('po', 0, type=int)
+
+
+
+    events = PurchaseEvent.query.filter_by(purchase_order_odoo_id=po_id).all()
+    purchase_order = PurchaseOrderOdoo.query.get(po_id)
+
+    return render_template('server/purchase_event.html', events=events,po=po_id,purchase_order=purchase_order)
 
 
 # @bp.route('/purchase-event/create', methods=["POST","GET"])
@@ -179,9 +176,12 @@ def purchase_event_list():
 @bp.route('/purchase-event/create', methods=["POST","GET"])
 @login_required
 def purchase_event_create_new():
+    po_id = request.args.get('po', 0, type=int)
+
+    po_list = PurchaseOrderOdoo.query.filter_by(id=po_id).first()
+
     user_odoo = session['user_odoo_id']
     user = User.query.filter_by(user_odoo_id=user_odoo).first()
-    po_list = user.purchase_orders
     return render_template('server/purchase_event_create.html', purchase_order=po_list)
 
 
@@ -198,16 +198,16 @@ def purchase_event_add():
     db.session.add(purchase_event)
     db.session.commit()
 
-    return redirect(url_for('routes.server.purchase_event_list'))
+    return redirect(url_for('routes.server.purchase_event_list', po=purchase_event.purchase_order_odoo_id))
 
 @bp.route('/purchase-event/details', methods=["POST","GET"])
 @login_required
 def purchase_event_details():
     purchasers = ResUserOdoo.query.all()
-    purchase_order = PurchaseOrderOdoo.query.all()
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
-    return render_template('server/purchase_event_details.html', purchase_event=purchase_event, purchasers=purchasers, purchase_order=purchase_order)
+    purchase_order = PurchaseOrderOdoo.query.get(purchase_event.purchase_order_odoo_id)
+    return render_template('server/purchase_event_details.html', purchase_event=purchase_event, purchase_order=purchase_order)
 
 @bp.route('/purchase-event/view', methods=["POST","GET"])
 @login_required
@@ -240,9 +240,9 @@ def purchase_event_update():
         event.date_stamp = datetime.strptime(date, '%Y-%m-%d').date()
         event.purchase_order_odoo_id = int(po) if po else None
         db.session.commit()
-        return redirect("/server/purchase-event")
+        return redirect("/server/purchase-event?po="+str(event.purchase_order_odoo_id))
     else:
-        return redirect("/server/purchase-event")
+        return redirect("/server/purchase-event?po="+str(event.purchase_order_odoo_id))
 
 
 @bp.route('/purchase-event/delete', methods=["POST","GET"])
