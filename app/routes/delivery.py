@@ -13,6 +13,7 @@ from flask import jsonify
 import random
 import string
 from datetime import datetime
+from sqlalchemy import and_
 
 load_dotenv()
 bp = Blueprint('delivery', __name__, url_prefix='/delivery')
@@ -108,8 +109,20 @@ def delivery_update():
 def delivery_detail():
     do = request.args.get("do")
     order_line = PurchaseOrderLine.query.filter_by(delivery_order_id=int(do)).all()
+    
     delivery_order = DeliveryOrder.query.get(int(do))
-    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order)
+    purchase_event = PurchaseEvent.query.get(int(delivery_order.purchase_event_id))
+    purchase_order_list = PurchaseOrder.query.filter_by(purchase_event_id=purchase_event.id)
+
+    available_order_line = []
+    for order in purchase_order_list:
+        order_lines = PurchaseOrderLine.query.filter(and_(PurchaseOrderLine.delivery_order_id==None, PurchaseOrderLine.purchase_order_id == order.id))
+        for order2 in order_lines:
+            available_order_line.append(order2)
+    
+    print(available_order_line)
+
+    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line)
 
 @bp.route('/detail/delete', methods=["GET"])
 @login_required
