@@ -140,6 +140,10 @@ def sync_get_farmer_odoo():
         url = f"{odoo_base_url}/nfcapp-purchase/get-nfcapp-farmer"
         data = {'token': token}
 
+        odoo_id = request.args.get("odoo_id")
+        if odoo_id:
+            data["odoo_id"] = int(odoo_id)
+
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()
