@@ -55,6 +55,9 @@ Purchase Event
                     <th style="width: 16%;">
                         Fund
                     </th>
+                    <th style="width: 5%;">
+                        Status
+                    </th>
                     <th style="width: 10%;">
                         Action
                     </th>
@@ -79,6 +82,9 @@ Purchase Event
                         <div class="event-info{{ event.id }}" id="fund-info{{ event.id }}">
                             {{ event.compute_fund }}
                         </div>
+                    </td>
+                    <td class="check-update" id="checkUpdate-{{event.id}}" data-event-id="{{event.id}}">
+
                     </td>
                     <td>
                         <span class="event-id" style="display: none;"></span>
@@ -116,4 +122,68 @@ Purchase Event
 {% endblock %}
 {% block script_plugin %}
 <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
+<script>
+    $(document).ready(function() {
+        if (navigator.onLine) {
+            $('.check-update').each(function() {
+                var thisCheck = $(this);
+                var eventId = $(thisCheck).attr('data-event-id');
+                var modelName = 'PurchaseEvent';
+
+                $.ajax({
+                    url: '/nfcpurchase/upload/check-update-by-id/',
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        check_id: eventId,
+                        model: modelName,
+                    },
+                    success: function(response) {
+                        if (response.update_type) {
+                            $(thisCheck).attr('data-update-type', response.update_type);
+                            $(thisCheck).html('Update');
+                        } else {
+                            $(thisCheck).html('Updated');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('.check-update').click(function(event) {
+                event.preventDefault();
+                if ($(this).attr('data-update-type')) {
+                    var thisUpdate = $(this);
+                    var eventId = $(thisUpdate).attr('data-event-id');
+                    var modelName = 'PurchaseEvent';
+                    var updateType = $(thisUpdate).attr('data-update-type');
+
+                    $.ajax({
+                        url: '/nfcpurchase/upload/update/',
+                        type: 'POST',
+                        dataType: 'json',
+                        async: true,
+                        data: {
+                            update_id: eventId,
+                            model: modelName,
+                            update_type: updateType,
+                        },
+                        success: function(response) {
+                            if (response.status === 200) {
+                                $(thisUpdate).attr('data-update-type', '');
+                                $(thisUpdate).html('Updated');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+            });
+        };
+    });
+</script>
 {% endblock %}
