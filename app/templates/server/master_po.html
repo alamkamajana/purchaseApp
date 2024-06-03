@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block header %}
-    <b>Odoo Purchase Order</b>
+    <b>Odoo PO List</b>
 {% endblock %}
 
 {% block content %}
@@ -18,16 +18,19 @@
 
         <div class="card-body">
             <div class="event-container">
-                <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                <table class="table" style="width: 100%; margin-top: 32px;">
                     <tr>
                         <th>
-                            Odoo PO
+                            Odoo PO#
                         </th>
                            <th>
                             Ref
                         </th>
                            <th>
                             Vendor
+                        </th>
+                           <th align="right">
+                            Total
                         </th>
                         <th>
                             Sync Date
@@ -38,9 +41,9 @@
                             <td>{{ data.po.name }}</td>
                              <td>{{ data.po.partner_ref }}</td>
                              <td>{{ data.po.partner_name }}</td>
+                                   <td align="right">{{"Rp. {:,.2f}".format(data.po.calculate_grand_total())}}</td>
                               <td> {{ data.po.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
                             <td>
-                                <a href="/server/purchase-order/view?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i class="bx bxs-search"> </i></span></a>
 
                                 <a href="/server/purchase-event?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
 

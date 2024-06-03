@@ -87,6 +87,13 @@ class PurchaseOrderOdoo(db.Model):
     write_date = db.Column(db.DateTime)
     sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
 
+
+    def calculate_grand_total(self):
+        lines = PurchaseOrderLineOdoo.query.filter_by(order_id = self.odoo_id).all()
+        return sum(line.product_qty * line.price_unit for line in lines)
+
+
+
     def __repr__(self):
         return f'<PurchaseOrderOdoo {self.name}>'
 

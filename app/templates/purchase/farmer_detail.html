@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Farmer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
-          type="text/css">
+        type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
-          type="text/css">
+        type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/farmer_detail.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
@@ -15,76 +16,81 @@
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
 </head>
+
 <body>
-<div class="container">
-    <div class="card">
+    <div class="container">
+        <div class="card">
 
-        {% if farmer %}
-        <div class="card-header d-flex align-items-center">
-            <a href="/purchase/search/farmer?pe={{ pe }}" class="btn back-btn" style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
-            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Farmer Detail</span>
-        </div>
-        <div class="card-body">
-        <div class="farmer-data">
-            <div class="farmer-photo">
-                <img width="200px" height="200px" src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}" alt="Farmer Photo"/>
+            {% if farmer %}
+            <div class="card-header d-flex align-items-center">
+                <a href="/purchase/search/farmer?pe={{ pe }}" class="btn back-btn" style="width: fit-content;"><span><i
+                            class='bx bx-chevron-left bx-md'></i></span></a>
+                <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Farmer Detail</span>
             </div>
-            <table id="farmer-detail">
-                <tbody>
-                    <tr>
-                        <th style="width: 180px;">Farmer Code</th>
-                        <td>{{ farmer.code }}</td>
-                    </tr>
-                    <tr>
-                        <th >Farmer Name</th>
-                        <td>{{ farmer.farmer_name }}</td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Farmer Group</th>
-                        <td>{{ farmer.parent_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Station</th>
-                        <td>{{ farmer.station_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Certification Status</th>
-                        <td>{{ farmer.certification_status_name }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="card-body">
+                <div class="farmer-data">
+                    <div class="farmer-photo">
+                        <img width="200px" height="200px"
+                            src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
+                            alt="Farmer Photo" />
+                    </div>
+                    <table id="farmer-detail">
+                        <tbody>
+                            <tr>
+                                <th style="width: 180px;">Farmer Code</th>
+                                <td>{{ farmer.code }}</td>
+                            </tr>
+                            <tr>
+                                <th>Farmer Name</th>
+                                <td>{{ farmer.farmer_name }}</td>
+                            </tr>
 
-        </div>
-        <div style="margin-bottom: 32px;">
-            <h5>Possible Product to Purchase</h5>
-            <table>
-                <tbody>
-                    {% for commodity_item in commodity_items %}
-                        {{ commodity_item.product_id_code }}  {{ commodity_item.product_id_name }}  <br/>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}" class="btn btn-success">Confirm</a>
+                            <tr>
+                                <th>Farmer Group</th>
+                                <td>{{ farmer.parent_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Station</th>
+                                <td>{{ farmer.station_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Certification Status</th>
+                                <td>{{ farmer.certification_status_name }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        {% else %}
-        <div class="row">
-            <div class="col-2">
-                <p>No Farmer Data</p>
-                <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
+                </div>
+                <div style="margin-bottom: 32px; margin-top: 24px;">
+                    <h5>Product Possible to Purchase from This farmer based on Certification Status</h5>
+                    <table>
+                        <tbody>
+                            {% for commodity_item in commodity_items %}
+                            [{{ commodity_item.product_id_code }}] {{ commodity_item.product_id_name }} <br />
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/purchase/order/add?pe={{ pe }}&farmer={{ farmer.id }}" class="btn btn-success">Confirm</a>
+
+                {% else %}
+                <div class="row">
+                    <div class="col-2">
+                        <p>No Farmer Data</p>
+                        <a href="/purchase/search/farmer?pe={{ pe }}">Back</a>
+                    </div>
+
+
+                </div>
             </div>
+            {% endif %}
 
 
         </div>
-        </div>
-        {% endif %}
 
 
     </div>
-
-
-</div>
-</div>
+    </div>
 </body>
+
 </html>

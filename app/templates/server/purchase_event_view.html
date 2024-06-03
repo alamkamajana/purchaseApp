@@ -7,7 +7,7 @@ Purchase Event
 {% endblock %}
 
 {% block header %}
-<b>Purchase Event View</b>
+<b>Purchase Event Details</b>
 {% endblock %}
 
 {% block content %}
@@ -17,161 +17,221 @@ Purchase Event
         color: black;
     }
 </style>
-<div class="row">
-    <div class="col">
-        <a href="/server/purchase-event" class="btn btn-primary">Back</a>
+
+     <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
+                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}}</p></li>
+            </ol>
+        </nav>
+
+
+<div class="card">
+
+    <div class="card-body">
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist" style="flex-direction: row;justify-content: left">
+                <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+                        type="button"
+                        role="tab" aria-controls="nav-home" aria-selected="true">Purchase Event
+                </button>
+                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                        type="button"
+                        role="tab" aria-controls="nav-profile" aria-selected="false">Purchase
+                </button>
+                <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
+                        type="button"
+                        role="tab" aria-controls="nav-contact" aria-selected="false">Surat Jalan
+                </button>
+                <button class="nav-link" id="nav-contact-tab2" data-bs-toggle="tab" data-bs-target="#nav-contact2"
+                        type="button"
+                        role="tab" aria-controls="nav-contact2" aria-selected="false">Cashier
+                </button>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+                <form>
+                    <input type="hidden" name="event_id" value="{{ purchase_event.id }}">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ purchase_event.name }}"
+                               readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="fund">Purchase Order</label>
+                        <input type="text" class="form-control" id="po" name="po"
+                               value="{{ purchase_event.purchase_order_odoo.name }}"
+                               readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="fund">Date Stamp</label>
+                        <input type="date" class="form-control" id="date" name="date"
+                               value="{{ purchase_event.date_stamp }}"
+                               readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="fund">Fund</label>
+                        <input type="text" class="form-control" id="fund" name="fund"
+                               value="{{ purchase_event.fund }}"
+                               readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="fund">Note</label>
+                        <textarea class="form-control" rows="4" readonly>{{purchase_event.note}}</textarea>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+
+                          <a type="button" class="btn btn-secondary event-info"
+                                   href="/server/purchase-event/details?pe={{ purchase_event.id }}">
+                                    <span><i class='bx bxs-pencil'></i> EDIT</span>
+                                </a>
+
+
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                            + Add Money
+                        </button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal2">
+                             - Get Money
+                        </button>
+                    </div>
+
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-body">
+                                        <input type="hidden" name="pe" id="pe2" value="{{ purchase_event.id }}">
+                                        <input type="hidden" id="purchase_event_id2" name="purchase_event_id"
+                                               value="{{ purchase_event.id }}">
+                                        <input type="hidden" name="type" id="type2" value="debit">
+                                        <div class="form-group">
+                                            <label for="amount2">Amount</label>
+                                            <input type="number" id="amount2" class="form-control" name="amount"
+                                                   step="0.01"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="note2">Note</label>
+                                            <textarea class="form-control" id="note2" name="note"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="addMoneyButton">Add
+                                            Money
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModal2Label">Modal title</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-body">
+                                        <input type="hidden" name="pe" id="pe" value="{{ purchase_event.id }}">
+                                        <input type="hidden" id="purchase_event_id" name="purchase_event_id"
+                                               value="{{ purchase_event.id }}">
+                                        <input type="hidden" name="type" id="type" value="credit">
+                                        <div class="form-group">
+                                            <label for="amount">Amount</label>
+                                            <input type="number" id="amount" class="form-control" name="amount"
+                                                   step="0.01"
+                                                   required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="note">Note</label>
+                                            <textarea class="form-control" id="note" name="note"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="getMoneyButton">Get
+                                            Money
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+<h1>for Purchaser</h1>
+
+
+                                <a href="{{ data_purchase }}" target="_blank"
+                                   class="btn btn-primary" type="button"> <i class="bx bxs-cart"></i></a>
+
+
+                <img src="data:image/png;base64,{{ qr_code_purchase }}">
+            </div>
+            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                <h1>for Trucker</h1>
+                      <a href="{{data_delivery}}" target="_blank" class="btn btn-warning"><i
+                                        class="bx bxs-truck"></i></a>
+
+
+                <img src="data:image/png;base64,{{ qr_code_delivery }}">
+            </div>
+            <div class="tab-pane fade" id="nav-contact2" role="tabpanel" aria-labelledby="nav-contact-tab2">
+                <h1>for Cashier</h1>
+                <a type="button" class="btn btn-success event-info"
+                                   href="{{ data_cashier}}" target="_blank">
+                                    <span><i class='bx bx-dollar'></i></span>
+                                </a>
+                <img src="data:image/png;base64,{{ qr_code_cashier }}">
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                document.getElementById("addMoneyButton").addEventListener("click", function (event) {
+                    let amount = document.getElementById("amount2").value
+                    let note = document.getElementById("note2").value
+                    let purchase_event_id = document.getElementById("purchase_event_id2").value
+                    let pe = document.getElementById("pe2").value
+                    let type = document.getElementById("type2").value
+                    window.location.href = `/server/money/add2?purchase_event_id=${purchase_event_id}&amount=${amount}&type=${type}&note=${note}`
+                });
+                document.getElementById("getMoneyButton").addEventListener("click", function (event) {
+                    let amount = document.getElementById("amount").value
+                    let note = document.getElementById("note").value
+                    let purchase_event_id = document.getElementById("purchase_event_id").value
+                    let pe = document.getElementById("pe").value
+                    let type = document.getElementById("type").value
+                    window.location.href = `/server/money/add2?purchase_event_id=${purchase_event_id}&amount=${amount}&type=${type}&note=${note}`
+                });
+            });
+        </script>
     </div>
 </div>
-
-<nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist" style="flex-direction: row;justify-content: center">
-        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
-                role="tab" aria-controls="nav-home" aria-selected="true">Purchase Event
-        </button>
-        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
-                role="tab" aria-controls="nav-profile" aria-selected="false">Purchase
-        </button>
-        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button"
-                role="tab" aria-controls="nav-contact" aria-selected="false">Delivery
-        </button>
-        <button class="nav-link" id="nav-contact-tab2" data-bs-toggle="tab" data-bs-target="#nav-contact2" type="button"
-                role="tab" aria-controls="nav-contact2" aria-selected="false">Cashier
-        </button>
-    </div>
-</nav>
-<div class="tab-content" id="nav-tabContent">
-    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-        <form>
-            <input type="hidden" name="event_id" value="{{ purchase_event.id }}">
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" name="name"
-                       value="{{ purchase_event.name }}"
-                       readonly>
-            </div>
-            <div class="form-group">
-                <label for="fund">Purchase Order</label>
-                <input type="text" class="form-control" id="po" name="po"
-                       value="{{ purchase_event.purchase_order_odoo.name }}"
-                       readonly>
-            </div>
-            <div class="form-group">
-                <label for="fund">Date Stamp</label>
-                <input type="date" class="form-control" id="date" name="date"
-                       value="{{ purchase_event.date_stamp }}"
-                       readonly>
-            </div>
-            <div class="form-group">
-                <label for="fund">Fund</label>
-                <input type="text" class="form-control" id="fund" name="fund"
-                       value="{{ purchase_event.fund }}"
-                       readonly>
-            </div>
-            <div class="form-group">
-                <label for="fund">Fund</label>
-                <textarea class="form-control" rows="4">{{purchase_event.note}}</textarea>
-            </div>
-            <br/>
-            <div class="form-group">
-                <button type="button" class="btn btn-primary" id="addMoneyButton">Add Money</button>
-                <button type="button" class="btn btn-primary" id="getMoneyButton">Get Money</button>
-            </div>
-            <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
-                 aria-labelledby="addMoneyModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
-                        </div>
-                        <form action="/server/money/add" method="POST">
-                            <div class="modal-body">
-                                <input type="hidden" name="pe" value="{{ purchase_event.id }}">
-                                <input type="hidden" name="purchase_event_id" value="{{ purchase_event.id }}">
-                                <input type="hidden" name="type" value="debit">
-                                <div class="form-group">
-                                    <label for="amount">Amount</label>
-                                    <input type="number" class="form-control" id="amount" name="amount" step="0.01"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="note">Note</label>
-                                    <textarea class="form-control" id="note" name="note"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" id="addMoneyButtonClose"
-                                        data-dismiss="modal">Close
-                                </button>
-                                <button type="submit" class="btn btn-primary">Add Money</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="modal fade" id="getMoneyModal" tabindex="-1" role="dialog"
-                 aria-labelledby="addMoneyModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="getMoneyModalLabel">Get Money</h5>
-                        </div>
-                        <form action="/server/money/add" method="POST">
-                            <div class="modal-body">
-                                <input type="hidden" name="pe" value="{{ purchase_event.id }}">
-                                <input type="hidden" name="purchase_event_id" value="{{ purchase_event.id }}">
-                                <input type="hidden" name="type" value="credit">
-                                <div class="form-group">
-                                    <label for="amount">Amount</label>
-                                    <input type="number" class="form-control" name="amount" step="0.01"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="note">Note</label>
-                                    <textarea class="form-control" name="note"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" id="getMoneyButtonClose"
-                                        data-dismiss="modal">Close
-                                </button>
-                                <button type="submit" class="btn btn-primary">Get Money</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-        </form>
-    </div>
-    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-
-        <img src="data:image/png;base64,{{ qr_purchase }}">
-    </div>
-    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-        <img src="data:image/png;base64,{{ qr_delivery }}">
-    </div>
-    <div class="tab-pane fade" id="nav-contact2" role="tabpanel" aria-labelledby="nav-contact-tab2">
-        <img src="data:image/png;base64,{{ qr_cashier }}">
-    </div>
-</div>
-<script>
-    $(document).ready(function () {
-        $('#addMoneyButton').click(function () {
-            $('#addMoneyModal').modal('show');
-        });
-        $('#addMoneyButtonClose').click(function () {
-            $('#addMoneyModal').modal('hide');
-        });
-        $('#getMoneyButton').click(function () {
-            $('#getMoneyModal').modal('show');
-        });
-        $('#getMoneyButtonClose').click(function () {
-            $('#getMoneyModal').modal('hide');
-        });
-    });
-</script>
 
 
 {% endblock %}

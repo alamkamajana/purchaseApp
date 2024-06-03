@@ -135,6 +135,7 @@ class PurchaseOrderLine(db.Model):
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+    note = db.Column(db.Text)
 
 class Payment(db.Model):
     __tablename__ = 'payment'

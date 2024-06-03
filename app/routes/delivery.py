@@ -93,7 +93,7 @@ def delivery_update():
         delivery_order.driver = driver
         delivery_order.vehicle_number = vehicle
         delivery_order.modified = today_datetime
-        delivery_order.date = date
+        delivery_order.date = datetime.strptime(date,"%Y-%m-%d")
         delivery_order.destination = destination
         delivery_order.note = note
         db.session.commit()
