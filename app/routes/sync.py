@@ -67,9 +67,14 @@ def sync_get_purchase_order():
         url = f"{odoo_base_url}/nfcapp-purchase/get-purchase-order"
         data = {'token': token, 'odoo_user_id': session['user_odoo_id']}
 
+        odoo_id = request.args.get("odoo_id")
+        if odoo_id:
+            data["odoo_id"] = int(odoo_id)
+
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()
+        print(response_json)
         for po in response_json:
             oid = po['odoo_id']
             po_json = {k: v for k, v in po.items() if k != 'id'}
@@ -416,6 +421,7 @@ def sync_farmer_photo():
 
 MAPPED_MODEL_ODOO_NAMES = {
     "NfcappFarmerOdoo": NfcappFarmerOdoo,
+    "PurchaseOrderOdoo": PurchaseOrderOdoo,
 }
 
 
@@ -425,15 +431,14 @@ def check_update():
     flask_id = int(request.args.get("flask_id"))
     url = f"{odoo_base_url}/nfcapp-purchase/check-write-date"
 
-    model_name = 'NfcappFarmerOdoo'  # request.args.get('model')
-
+    model_name = request.args.get('model')
     model = MAPPED_MODEL_ODOO_NAMES.get(model_name)
     model_odoo = model.query.get(flask_id)
     data = {
         'token': token,
         'odoo_id': model_odoo.odoo_id,
         'write_date': model_odoo.write_date,
-        'model': 'NfcappFarmerOdoo'
+        'model': model_name,
     }
 
     # GET Request
