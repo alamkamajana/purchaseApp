@@ -9,19 +9,46 @@
 
 {% block header %}
     <b>Sync Server Data</b>
+    <style>
+        .upload-button{
+            border: none;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 240px;
+            height: 160px;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-end;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
     <span id="selected-menu" style="display: none;">sync_data</span>
     <div class="container">
-        <button class="sync-button">
-            <div style="color: blue">
-                <i class='bx bx-sync bx-lg'></i>
+        <div class="row">
+            <div class="col-6">
+                <button class="sync-button">
+                    <div style="color: blue">
+                        <i class='bx bx-sync bx-lg'></i>
+                    </div>
+                    <div>
+                        Sync Data
+                    </div>
+                </button>
             </div>
-            <div>
-                Sync Data
+
+            <div class="col-6">
+                <button class="upload-button">
+                    <div style="color: blue">
+                        <i class='bx bx-sync bx-lg'></i>
+                    </div>
+                    <div>
+                        Upload Data
+                    </div>
+                </button>
             </div>
-        </button>
+        </div>
 
     </div>
     <div class="container">
@@ -77,6 +104,23 @@
                 alert(`Synchronization failed: ${error.message}`);
             }
         }
+
+
+        const uploadButton = document.querySelector('.upload-button');
+        var url = '/nfcpurchase/upload/all';
+        uploadButton.addEventListener('click', () => {
+            callUploadApi(url);
+        });
+        function callUploadApi(url) {
+            try {
+                var response = fetch(url);
+                if (response) {
+                    console.log(response);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
     </script>
 
 {% endblock %}
