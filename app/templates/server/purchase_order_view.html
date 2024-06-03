@@ -1,0 +1,54 @@
+{% extends 'server/base.html' %}
+{% block title %}
+Purchase Event
+{% endblock %}
+{% block plugin %}
+
+{% endblock %}
+
+{% block header %}
+<b>Purchase Order {{purchase_order.name}}</b>
+{% endblock %}
+
+{% block content %}
+<span id="selected-menu" style="display: none;">purchase_order_view</span>
+<style>
+    .active {
+        color: black;
+    }
+</style>
+<div class="row">
+    <div class="col">
+        <a href="/server/master/purchase-order" class="btn btn-primary">Back</a>
+    </div>
+</div>
+
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#addMoneyButton').click(function () {
+            $('#addMoneyModal').modal('show');
+        });
+        $('#addMoneyButtonClose').click(function () {
+            $('#addMoneyModal').modal('hide');
+        });
+        $('#getMoneyButton').click(function () {
+            $('#getMoneyModal').modal('show');
+        });
+        $('#getMoneyButtonClose').click(function () {
+            $('#getMoneyModal').modal('hide');
+        });
+    });
+</script>
+
+
+{% endblock %}
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
+{% endblock %}

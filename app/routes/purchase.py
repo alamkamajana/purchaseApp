@@ -156,7 +156,7 @@ def transaction_order():
     ).all()
 
     return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
-                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price, 
+                           product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price,
                            ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
                            po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
                            po_order_line=po_order_line, grand_total=grand_total )
@@ -227,6 +227,7 @@ def transaction_add():
     price_unit = request.form['price-unit']
     qty = request.form['qty']
     barcode = request.form['barcode']
+    note = request.form['note']
     subtotal = request.form['subtotal']
     product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product)).first()
 
@@ -236,6 +237,7 @@ def transaction_add():
         unit_price = price_unit,
         qty = qty,
         barcode = barcode,
+        note=note,
         subtotal = subtotal,
         product_odoo_id=product_odoo.id
     )
@@ -320,6 +322,7 @@ def transaction_update():
     price_unit = request.form['price-unit']
     qty = request.form['qty']
     barcode = request.form['barcode']
+    note = request.form['note']
     product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product)).first()
 
 
@@ -332,6 +335,8 @@ def transaction_update():
         transaction.qty = qty
         transaction.product_odoo_id = product_odoo.id
         transaction.barcode = barcode
+        transaction.note = note
+
         transaction.subtotal = float(qty) * float(price_unit)
         db.session.commit()
         return redirect(f"/purchase/order?purchase-event={po.purchase_event_id}&po={po.id}&farmer={po.farmer_id}")
