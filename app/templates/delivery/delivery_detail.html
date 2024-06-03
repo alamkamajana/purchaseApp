@@ -191,6 +191,7 @@
     <div class="row text-center">
         <div class="col">
             <h1>Tambah Barang</h1>
+            <img id="tripper-logo-black" width="250" height="59" src="{{ url_for('static', filename='/image/tripper_logo.png') }}">
         </div>
     </div>
 </div>
@@ -206,6 +207,9 @@
 <div class="container">
     <div class="card">
         <div class="row" style="margin: 24px; margin-top: 0;">
+            <div id="po_name" style="display: none">{{po_odoo.name}}</div>
+            <div id="po_partner" style="display: none">{{po_odoo.partner_name}}</div>
+            <div id="order_driver" style="display: none">{{delivery_order.driver}}</div>
             <div class="form-floating col-sm-12 col-lg">
                 <input name="" class="form-control" id="" value="{{delivery_order.name}}" disabled>
                 <label class="control-label" for="">Surat Jalan#</label>
@@ -215,18 +219,23 @@
                 <label class="control-label" for="">Purchase Event#</label>
             </div>
             <div class="form-floating col-sm-12 col-lg">
-                <input name="" class="form-control" value="{{delivery_order.vehicle_number}}" disabled>
+                <input name="" id="order_vehicle" class="form-control" value="{{delivery_order.vehicle_number}}" disabled>
                 <label class="control-label" for="">Kendaraan</label>
     
             </div>
             <div class="form-floating col-sm-12 col-lg">
-                <input name="" class="form-control" value="{{delivery_order.destination}}" disabled>
+                <input name="" id="order_origin" class="form-control" value="{{delivery_order.origin}}" disabled>
+                <label class="control-label" for="">Asal</label>
+
+            </div>
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" id="order_destination" class="form-control" value="{{delivery_order.destination}}" disabled>
                 <label class="control-label" for="">Tujuan</label>
     
             </div>
 
             <div class="form-floating col-sm-12 col-lg">
-                <input name="" class="form-control" value="{{delivery_order.date}}" disabled>
+                <input name="" id="order_date" class="form-control" value="{{delivery_order.date}}" disabled>
                 <label class="control-label" for="">Tanggal</label>
     
             </div>
@@ -249,6 +258,10 @@
         <div class="col">
             <a href="/delivery/edit?do={{do}}&pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
                 class="btn btn-primary">Ubah</a>
+        </div>
+        <div class="col">
+            <button onclick="deliveryInfo()"
+                class="btn btn-success">Print</button>
         </div>
     </div>
     </div>
@@ -318,12 +331,15 @@
                         <tbody id="do-list">
                         {% for order in order_line %}
                         <tr>
-                            
+                            <td style="display: none;" class="product-id">{{order.product_odoo_id}}</td>
+                            <td style="display: none;" class="product-farmer">{{order.product_odoo_id}}</td>
+
                             <td> {{ order.purchase_order.name }}</td>
-                            <td>
+                            <td class="product-name">
+
                                 [{{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().default_code }}] {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
                             </td>
-                            <td class="text-end"> {{ order.qty }}</td>
+                            <td class="text-end order-qty"> {{ order.qty }}</td>
                             <td> {{ order.barcode }}</td>
                             <!-- <td><a href="/delivery/detail/delete?order_line={{ order.id }}" class="btn btn-sm btn-danger"><i
                                     class="bx bxs-trash"></i></a>
@@ -481,6 +497,8 @@
         $('.modal').modal('hide');
     }
 </script>
+
+<script src="{{ url_for('static', filename='/js/tools/print_delivery.js') }}"></script>
 
 
 </body>

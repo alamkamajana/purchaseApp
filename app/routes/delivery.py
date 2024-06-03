@@ -52,11 +52,12 @@ def delivery_add():
         driver = request.form['driver']
         vehicle = request.form['vehicle']
         date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+        origin = request.form['origin']
         destination = request.form['destination']
         note = request.form['note']
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
         today_datetime = datetime.now()
-        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,date=date,destination=destination,note=note)
+        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,date=date,origin=origin,destination=destination,note=note)
         db.session.add(new_do)
         db.session.commit()
         return redirect(f"/delivery/detail?do={new_do.id}")
@@ -86,15 +87,18 @@ def delivery_update():
         vehicle = request.form['vehicle']
         driver = request.form['driver']
         date = request.form['date']
+        origin = request.form['origin']
         destination = request.form['destination']
         note = request.form['note']
         delivery_order = DeliveryOrder.query.get(int(do))
         today_datetime = datetime.now()
+        date_convert = datetime.strptime(date,"%Y-%m-%d").date()
 
         delivery_order.driver = driver
         delivery_order.vehicle_number = vehicle
         delivery_order.modified = today_datetime
-        delivery_order.date = date
+        delivery_order.date = date_convert
+        delivery_order.origin = origin
         delivery_order.destination = destination
         delivery_order.note = note
         db.session.commit()
@@ -112,6 +116,7 @@ def delivery_detail():
     
     delivery_order = DeliveryOrder.query.get(int(do))
     purchase_event = PurchaseEvent.query.get(int(delivery_order.purchase_event_id))
+    po_odoo = PurchaseOrderOdoo.query.get(int(purchase_event.purchase_order_odoo_id))
     purchase_order_list = PurchaseOrder.query.filter_by(purchase_event_id=purchase_event.id)
 
     available_order_line = []
@@ -122,7 +127,7 @@ def delivery_detail():
     
     print(available_order_line)
 
-    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line)
+    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line, po_odoo=po_odoo)
 
 @bp.route('/detail/delete', methods=["GET"])
 @login_required
