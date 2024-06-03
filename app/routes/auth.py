@@ -62,7 +62,6 @@ def login():
         # print(password)
         if login_data['result']['status'] == 200:
             data_login = login_data['result']
-            print(data_login)
             user = User.query.filter_by(username=data_login['name'] if data_login['name'] else None).first()
             # session['username'] = data_login['name']
             datetime_now = datetime.today()

@@ -25,6 +25,9 @@
         <div class="card">
             <input type="hidden" id="purchase_order_id" value="{{po.id}}">
             <input type="hidden" id="purchase_order_name" value="{{po.name}}">
+            <input type="hidden" id="purchase_event_id" value="{{event.name}}">
+            <input type="hidden" id="purchase_order_odoo_id" value="{{ event.purchase_order_odoo.name }}">
+            <input type="hidden" id="certification_status_id" value="{{farmer.certification_status_name}}">
             <div class="card-header d-flex align-items-center">
                 <a href="/purchase/transaction?pe={{ event.id }}" class="btn back-btn"
                     style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
@@ -229,6 +232,9 @@
                                     <td></td>
                                 </tr>
                             </table>
+
+                        </div>
+                        <div>
 
                         </div>
                         <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">

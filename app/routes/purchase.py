@@ -362,7 +362,6 @@ def transaction_detail():
         po_line_product_arr.append(product.product_id)
 
     farmer_itemcodelist = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
-
     item_odoo_arr = []
     for i in farmer_itemcodelist:
         if i.odoo_id not in item_odoo_arr:
@@ -418,6 +417,7 @@ def transaction_items():
         product_name = ProductOdoo.query.get(line.product_odoo_id)
         commodity_item = NfcappCommodityItemOdoo.query.filter_by(product_id=product_name.odoo_id).first()
         data_json = {}
+        data_json['product_code'] = commodity_item.code
         data_json['product_name'] = commodity_item.desc
         data_json['price'] = line.unit_price
         data_json['quantity'] = line.qty
