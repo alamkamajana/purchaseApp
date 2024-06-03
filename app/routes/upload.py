@@ -41,7 +41,7 @@ def serialize_model(model_instance):
     for column in model_instance.__table__.columns:
         value = getattr(model_instance, column.name)
         if isinstance(value, (datetime, date)):
-            value = value.strftime('%Y-%m-%d %H:%M:%S')
+            value = value.strftime('%Y-%m-%d %H:%M:%S') if value else None
         serialized_data[column.name] = value
 
     return serialized_data
