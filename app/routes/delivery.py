@@ -13,6 +13,7 @@ from flask import jsonify
 import random
 import string
 from datetime import datetime
+from sqlalchemy import and_
 
 load_dotenv()
 bp = Blueprint('delivery', __name__, url_prefix='/delivery')
@@ -50,7 +51,7 @@ def delivery_add():
         pe = request.form['pe']
         driver = request.form['driver']
         vehicle = request.form['vehicle']
-        date = request.form['date']
+        date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
         destination = request.form['destination']
         note = request.form['note']
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
@@ -58,7 +59,7 @@ def delivery_add():
         new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,date=date,destination=destination,note=note)
         db.session.add(new_do)
         db.session.commit()
-        return redirect(f"/delivery/index?pe={pe}")
+        return redirect(f"/delivery/detail?do={new_do.id}")
     except Exception as e :
         print(e)
         return jsonify(status=400, text=5555555)
@@ -108,8 +109,20 @@ def delivery_update():
 def delivery_detail():
     do = request.args.get("do")
     order_line = PurchaseOrderLine.query.filter_by(delivery_order_id=int(do)).all()
+    
     delivery_order = DeliveryOrder.query.get(int(do))
-    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order)
+    purchase_event = PurchaseEvent.query.get(int(delivery_order.purchase_event_id))
+    purchase_order_list = PurchaseOrder.query.filter_by(purchase_event_id=purchase_event.id)
+
+    available_order_line = []
+    for order in purchase_order_list:
+        order_lines = PurchaseOrderLine.query.filter(and_(PurchaseOrderLine.delivery_order_id==None, PurchaseOrderLine.purchase_order_id == order.id))
+        for order2 in order_lines:
+            available_order_line.append(order2)
+    
+    print(available_order_line)
+
+    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line)
 
 @bp.route('/detail/delete', methods=["GET"])
 @login_required

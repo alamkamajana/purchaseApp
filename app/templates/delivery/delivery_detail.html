@@ -10,11 +10,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='/assets/html5-qrcode/js/html5-qrcode.min.js') }}"></script>
 
     <style>
         body {
@@ -34,7 +35,7 @@
             margin-bottom: 20px;
         }
 
-        label {
+        .menu-container label {
             font-weight: bold;
             color: #495057; /* Slightly lighter grey */
         }
@@ -48,10 +49,14 @@
             margin-top: 20px;
         }
 
+        .kembali-btn{
+            padding-left: 4px;  
+        }
+
         .btn-success {
             background-color: #28a745; /* Bootstrap green */
             border: none;
-            padding: 10px 20px;
+            /* padding: 10px 20px; */
             font-size: 1em;
             border-radius: 5px;
         }
@@ -64,8 +69,18 @@
             background-color: #f1f1f1;
         }
 
-        .menu-container {
+        /* .menu-container {
             margin-bottom: 20px;
+        } */
+
+        .barcode-btn button{
+            height:38px;
+            margin-right: 16px;
+        }
+
+        .card{
+            margin-bottom: 20px;
+            padding : 16px;
         }
 
         @media (max-width: 576px) {
@@ -76,6 +91,8 @@
             .btn {
                 width: 100%;
             }
+
+            
 
             .form-control {
                 margin-bottom: 10px;
@@ -118,7 +135,54 @@
                 font-weight: bold;
                 color: #495057;
             }
+
+            .barcode-btn{
+                display: flex;
+                
+            }
+
+            .barcode-btn button{
+                
+                width: fit-content;
+            }
         }
+
+        .form-control:disabled{
+            background-color: inherit;
+            color: black;
+            cursor: not-allowed;
+            border: none !important;
+            padding-left: 4px;
+        }
+
+        .form-floating{
+            padding-left: 0;
+            >.form-control:disabled~label::after, .form-floating>:disabled~label::after {
+                background-color: inherit;
+            }
+            > label {
+                padding-left: 0;
+            }
+        }
+
+        .delivery-note{
+            margin-bottom: 32px;
+        }
+
+        .note{
+            margin-top: 8px;
+            min-height : 100px;
+            border-radius: 12px;
+            background-color: #f5f5f5;
+            overflow: hidden;
+            color: dimgray;
+            padding: 8px;
+        }
+
+        .tab-content{
+            padding: 16px;
+        }
+
 
     </style>
 </head>
@@ -126,7 +190,7 @@
 <div class="container">
     <div class="row text-center">
         <div class="col">
-            <h1>Add Goods </h1>
+            <h1>Tambah Barang</h1>
         </div>
     </div>
 </div>
@@ -134,100 +198,242 @@
     <div class="row">
         <div class="col">
             <a href="/delivery/index?pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
-               class="btn btn-warning"><i class="bx bx-arrow-back"></i></a>
+               class="btn btn-secondary kembali-btn"><i class='bx bx-chevron-left'></i> Kembali</a>
         </div>
+        
     </div>
 </div>
 <div class="container">
+    <div class="card">
+        <div class="row" style="margin: 24px; margin-top: 0;">
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" class="form-control" id="" value="{{delivery_order.name}}" disabled>
+                <label class="control-label" for="">Surat Jalan#</label>
+            </div>
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" class="form-control" id="" value="{{purchase_event.name}}" disabled>
+                <label class="control-label" for="">Purchase Event#</label>
+            </div>
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" class="form-control" value="{{delivery_order.vehicle_number}}" disabled>
+                <label class="control-label" for="">Kendaraan</label>
+    
+            </div>
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" class="form-control" value="{{delivery_order.destination}}" disabled>
+                <label class="control-label" for="">Tujuan</label>
+    
+            </div>
+
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" class="form-control" value="{{delivery_order.date}}" disabled>
+                <label class="control-label" for="">Tanggal</label>
+    
+            </div>
+            <div class="form-floating col-sm-12 col-lg">
+                <input name="" class="form-control" value="{{delivery_order.compute_total_qty}}" disabled>
+                <label class="control-label" for="">Total Kuantitas</label>
+    
+            </div>
+    
+        </div>
+        <div class="delivery-note">
+            <div>
+                <span>Note : </span>
+            </div>
+            <div class="note">
+                <p>{{delivery_order.note}}</p>
+            </div>
+        </div>
     <div class="row">
         <div class="col">
-            <p>Delivery Order : {{delivery_order.name}}</p>
-            <p>Destination : {{delivery_order.destination}}</p>
-            <p>Date : {{delivery_order.date}}</p>
+            <a href="/delivery/edit?do={{do}}&pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
+                class="btn btn-primary">Ubah</a>
         </div>
-        <div class="col">
-            <p>Vehicle : {{delivery_order.vehicle_number}}</p>
-            <p>Total Qty : {{delivery_order.compute_total_qty}}</p>
-            <p>Note : {{delivery_order.note}}</p>
-        </div>
+    </div>
     </div>
 </div>
 <div class="container">
-    <form action="/delivery/detail/add" method="post">
-        <input type="hidden" name="do" value="{{ do }}"/>
-        <div class="row menu-container text-left">
-            <div class="col">
-                <label>Barcode</label>
-                <input type="text" id="barcode" class="form-control" name="barcode"/>
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-info" onclick="startScan()" id="scan-barcode-btn"><i class="bx bx-scan"></i></button>
-            </div>
-            <div class="modal fade" id="scannerModal" role="dialog">
-                <div class="modal-dialog">
+    <div class="card" style="padding: 0;">
+        <div class="tabs">
+            <ul class="tab-links tab-container">
+                <a href="#tab-1" class="active" type="button" id="1-tab-btn">Tab 1</a>
+                <a href="#tab-2" type="button" id="2-tab-btn">Tab 2</a>
 
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
 
-                            <h5 class="modal-title">QR Scanner</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                    onclick="stopScan()">
-                                <span><i class='bx bx-x bx-md'></i></span>
-                            </button>
-
+            </ul>
+            <div class="tab-content active" id="tab-1">
+                <form action="/delivery/detail/add" method="post">
+                    <input type="hidden" name="do" value="{{ do }}"/>
+                    <div class="row menu-container text-left">
+                        <div class="col col-6">
+                            <label>Barcode</label>
+                            <input type="text" id="barcode" class="form-control" name="barcode"/>
                         </div>
-                        <div class="modal-body">
-                            <div style="width: 100%;" id="reader"></div>
+                        <div class="col col-6 barcode-btn">
+                            <button type="button" class="btn btn-primary" onclick="startScan()" id="scan-barcode-btn" style="margin-top: 34px;"><i class="bx bx-scan"></i></button>
+                            <button type="submit" class="btn btn-success" style="margin-top: 34px;">Tambah</button>
+                        </div>
+                        
+                        <div class="modal fade" id="scannerModal" role="dialog">
+                            <div class="modal-dialog">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                                    
+                                        <h5 class="modal-title">QR Scanner</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:0" onclick="stopScan()">
+                                            <span><i class='bx bx-x bx-md'></i></span>
+                                        </button>
+                                
+                                </div>
+                                    <div class="modal-body">
+                                        <div style="width: 100%;" id="reader"></div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
+                    <!-- <div class="row mt-2">
+                        <div class="col text-center">
+                            <button type="submit" class="btn btn-success">Tambah</button>
+                        </div>
+                    </div> -->
+                </form>
+                <div class="row mt-1">
+                    <input type="hidden" id="do" value="{{ do }}">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            
+                            <td> Order</td>
+                            <td> Produk</td>
+                            <td class="text-end"> Kuantitas</td>
+                            <td> Barcode</td>
+                            <td> Action</td>
+                        </tr>
+                        </thead>
+                        <tbody id="do-list">
+                        {% for order in order_line %}
+                        <tr>
+                            
+                            <td> {{ order.purchase_order.name }}</td>
+                            <td>
+                                [{{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().default_code }}] {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
+                            </td>
+                            <td class="text-end"> {{ order.qty }}</td>
+                            <td> {{ order.barcode }}</td>
+                            <!-- <td><a href="/delivery/detail/delete?order_line={{ order.id }}" class="btn btn-sm btn-danger"><i
+                                    class="bx bxs-trash"></i></a>
+                            </td> -->
+                            <td>
+                                <button type="button" class="btn btn-sm btn-danger" style="margin:0" onclick="deleteOrder({{order.id}})">
+                                    <span><i class="bx bxs-trash"></i></i></span>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
 
+                        </tbody>
+                    </table>
+                    <div class="modal fade" id="deleteModal" role="dialog">
+                        <div class="modal-dialog">
+                    
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                    
+                                    <h5 class="modal-title">Hapus Barang</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:0" onclick="closeModal()">
+                                        <span><i class='bx bx-x bx-md'></i></span>
+                                    </button>
+                    
+                                </div>
+                                <div class="modal-body">
+                                    <span>Apakah anda yakin ingin menghapus barang ini?</span>
+                                    <form method="get" action="/delivery/detail/delete">
+                                        
+                                    
+                                    <input type="text" id="delete_order_line" class="form-control" name="order_line" hidden/>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" onclick="closeModal()">Batal</button>
+                                    <button class="btn btn-danger" type="submit">Hapus</button>
+                                    </form>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col text-center">
-                <button type="submit" class="btn btn-success">Submit</button>
+            <div class="tab-content active" id="tab-2">
+                <div class="row mt-1">
+                    <input type="hidden" id="do" value="{{ do }}">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            
+                            <td> Order</td>
+                            <td> Produk</td>
+                            <td class="text-end"> Kuantitas</td>
+                            <td> Barcode</td>
+                            
+                        </tr>
+                        </thead>
+                        <tbody id="do-list">
+                        {% for order in available_order_line %}
+                        <tr>
+                            
+                            <td> {{ order.purchase_order.name }}</td>
+                            <td>
+                                [{{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().default_code }}] {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
+                            </td>
+                            <td class="text-end"> {{ order.qty }}</td>
+                            <td> {{ order.barcode }}</td>
+                            <!-- <td><a href="/delivery/detail/delete?order_line={{ order.id }}" class="btn btn-sm btn-danger"><i
+                                    class="bx bxs-trash"></i></a>
+                            </td> -->
+                            
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
             </div>
         </div>
-    </form>
-    <div class="row mt-5">
-        <input type="hidden" id="do" value="{{ do }}">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <td>
-                    DO
-                </td>
-                <td> Order</td>
-                <td> Product</td>
-                <td> Quantity</td>
-                <td> Barcode</td>
-                <td> Action</td>
-            </tr>
-            </thead>
-            <tbody id="do-list">
-            {% for order in order_line %}
-            <tr>
-                <td>{{ DeliveryOrder.query.filter_by(id=do).first().name }}</td>
-                <td> {{ order.purchase_order.name }}</td>
-                <td>
-                    {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
-                </td>
-                <td> {{ order.qty }}</td>
-                <td> {{ order.barcode }}</td>
-                <td><a href="/delivery/detail/delete?order_line={{ order.id }}" class="btn-sm btn-danger"><i
-                        class="bx bxs-trash"></i></a>
-                </td>
-            </tr>
-            {% endfor %}
-
-            </tbody>
-        </table>
     </div>
 </div>
 
 <script>
+    $(document).ready(function() {
+
+        // Hide all tab contents except the first one
+        $('.tab-content').not(':first').hide();
+
+        // Handle tab click event
+        $('.tab-links a').click(function() {
+            var tab_id = $(this).attr('href');
+
+            // Remove the 'active' class from all tabs
+            $('.tab-links a').removeClass('active');
+
+            // Add the 'active' class to the clicked tab
+            $(this).addClass('active');
+
+            // Hide all tab contents
+            $('.tab-content').hide();
+
+            // Show the clicked tab content
+            $(tab_id).show();
+        });
+
+
+    });
+
+
     var html5QrcodeScanner = new Html5QrcodeScanner(
         "reader", {fps: 10, qrbox: 250});
 
@@ -253,6 +459,11 @@
         );
     }
 
+    function deleteOrder(order_line){
+        $('#deleteModal').modal('show');
+        document.getElementById('delete_order_line').value = order_line
+    }
+
 
     function stopScan() {
         html5QrcodeScanner.clear().then(_ => {
@@ -264,6 +475,10 @@
             // This conditions should ideally not happen.
         });
 
+    }
+
+    function closeModal(){
+        $('.modal').modal('hide');
     }
 </script>
 

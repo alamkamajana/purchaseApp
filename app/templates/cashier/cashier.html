@@ -1,61 +1,236 @@
 {% extends 'server/base.html' %}
 {% block title %}
-    Cashier
+Purchase Event
 {% endblock %}
 {% block plugin %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+
 {% endblock %}
 
 {% block header %}
-    <b>Cashier</b>
+<b>Cashier</b>
 {% endblock %}
 
 {% block content %}
-    <span id="selected-menu" style="display: none;">Cashier</span>
-    <div class="card">
-        <form id="barcode-form">
-            <div class="form-group">
-                <label for="barcode-input">Enter or Scan Barcode:</label>
-                <input type="text" class="form-control" id="barcode-input" name="barcode" required>
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+      type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+      type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/cashier/breadcumb.css') }}">
+<script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+<script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+<script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+<script src="{{ url_for('static', filename='/assets/html5-qrcode/js/html5-qrcode.min.js') }}"></script>
+<style>
+    .active {
+        color: black;
+    }
+</style>
+<span id="selected-menu" style="display: none;">purchase_event</span>
+
+
+     <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
+                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}}</p></li>
+            </ol>
+        </nav>
+
+
+<div class="card">
+    <div class="card-body">
+
+            <div class="row justify-content-center ">
+                <div class="col-6">
+                    <form id="barcode-form">
+                        <div class="form-group">
+                            <input placeholder="Enter or Scan Qrcode:" type="text" class="form-control" id="barcode-input" name="barcode" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-1">
+                    <div id="scanned-result">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-info" onclick="startScan()" id="scan-barcode-btn"><i
+                                    class="bx bx-scan"></i></button>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="scannerModal" role="dialog">
+                        <div class="modal-dialog">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title">QR Scanner</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                            onclick="stopScan()">
+                                        <span><i class='bx bx-x bx-md'></i></span>
+                                    </button>
+
+                                </div>
+                                <div class="modal-body">
+                                    <div style="width: 100%;" id="reader"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                  <div class="col-5">
+                    <button style="width: 30%; background-color: #e27f34;" type="submit" class="btn btn-primary"
+                            id="process-payment">
+                        Submit
+                    </button>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        <div id="scanned-result"></div>
+
+            <div class="row mt-4">
+                <div class="col">
+                    <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist"
+                        style="flex-direction: row;justify-content: left;height: unset;">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pills-profile-tab" data-bs-toggle="pill"
+                                    data-bs-target="#pills-profile" type="button" role="tab"
+                                    aria-controls="pills-profile"
+                                    aria-selected="false">Order Not Paid
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-home-tab" data-bs-toggle="pill"
+                                    data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                                    aria-selected="true">Order Paid
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade" id="pills-home" role="tabpanel"
+                             aria-labelledby="pills-home-tab">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Farmer</td>
+                                    <td>Amount</td>
+                                    <td>Status</td>
+                                    <td>Paid Status</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for po in purchase_order_paid %}
+                                <tr>
+                                    <td>{{ po.name }}</td>
+                                    <td>{{ po.farmer_id }}</td>
+                                    <td>{{ po.amount_total }}</td>
+                                    <td>{{ po.status }}</td>
+                                    <td>{{ 'Paid' if po.is_paid else 'Not Paid' }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade active show" id="pills-profile" role="tabpanel"
+                             aria-labelledby="pills-profile-tab">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Farmer</td>
+                                    <td>Amount</td>
+                                    <td>Status</td>
+                                    <td>Paid Status</td>
+                                    <td>Action</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for po in purchase_order_not_paid %}
+                                <tr>
+                                    <td>{{ po.name }}</td>
+                                    <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).farmer_name }}</td>
+                                    <td>{{ po.amount_total }}</td>
+                                    <td>{{ po.status }}</td>
+                                    <td>{{ 'Paid' if po.is_paid else 'Not Paid' }}</td>
+                                    <td>
+                                        <a href="/cashier/po/detail?po={{ po.id }}"
+                                           class="btn btn-sm btn-success">Open</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
     </div>
+</div>
+<script>
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader", {fps: 10, qrbox: 250});
 
-{% endblock %}
+    function startScan() {
+        $('#scannerModal').modal('show');
+        html5QrcodeScanner.render(
+            function (decodedText) {
+                document.getElementById('barcode-input').value = decodedText;
 
-{% block script_plugin %}
-    <script>
-        const barcodeForm = document.getElementById('barcode-form');
-        const barcodeInput = document.getElementById('barcode-input');
-        const scannedResult = document.getElementById('scanned-result');
+                // Stop scanning after successfully decoding a QR code
+                html5QrcodeScanner.clear().then(_ => {
 
-        barcodeForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const barcodeValue = barcodeInput.value.trim();
-            if (barcodeValue) {
-                fetchPurchaseOrder(barcodeValue);
-            } else {
-                scannedResult.textContent = 'Please enter or scan a barcode.';
+                    // the UI should be cleared here
+                    $('.modal').modal('hide');
+                }).catch(error => {
+                    // Could not stop scanning for reasons specified in `error`.
+                    // This conditions should ideally not happen.
+                });
+            },
+            function (errorMessage) {
+
             }
+        );
+    }
+
+
+    function stopScan() {
+        html5QrcodeScanner.clear().then(_ => {
+
+            // the UI should be cleared here
+            $('.modal').modal('hide');
+        }).catch(error => {
+            // Could not stop scanning for reasons specified in `error`.
+            // This conditions should ideally not happen.
         });
+
+    }
+
+    document.getElementById("process-payment").addEventListener("click", function () {
+        let barcodeInput = document.getElementById('barcode-input');
+        let barcodeValue = barcodeInput.value.trim();
+        if (barcodeValue) {
+            fetchPurchaseOrder(barcodeValue);
+        }
 
         function fetchPurchaseOrder(poNumber) {
             const url = `{{ url_for('routes.cashier.cashier_search_po') }}?po=${poNumber}`;
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    // Handle the response data here
-
-                    // You can update the HTML with the received PO details
-                    scannedResult.textContent = `PO Details: ${data.po}`;
-                    window.location.href=`/cashier/po/detail?po=${data.po}`
+                    window.location.href = `/cashier/po/detail?po=${data.po}`
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    scannedResult.textContent = 'Error fetching PO details.';
                 });
         }
-    </script>
+
+    });
+</script>
+
+{% endblock %}
+{% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
 {% endblock %}

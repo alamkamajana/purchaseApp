@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
+          type="text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
+    <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
+    <style>
+        .btn-custom {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th, .table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        .table thead th {
+            font-weight: 500;
+            text-transform: uppercase;
+            background: #343a40;
+            color: #fff;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center mb-4">Expense</h1>
+            <div class="d-flex mb-4">
+                <a href="/expense/create?pe={{ purchase_event.id }}" class="btn btn-success btn-custom">Create
+                    Expense</a>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <table>
+                <tr>
+                    <td> Purchase event :</td>
+                    <td> {{ purchase_event.name }}</td>
+                </tr>
+                <tr>
+                    <td>Fund :</td>
+                    <td> {{ purchase_event.compute_fund }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-8">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Expense</th>
+                    <th nowrap="nowrap">Purchase Event</th>
+                    <th>Amount</th>
+                    <th nowrap="nowrap">Total Payment</th>
+                    <th>Debt</th>
+                    <th>Note</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="expense-list">
+                {% for expense in expense_list %}
+                <tr>
+                    <td nowrap="nowrap">{{ expense.name }}</td>
+                    <td nowrap="nowrap">{{ purchase_event.name }}</td>
+                    <td nowrap="nowrap" class="currency" data-value="{{expense.amount}}">{{ expense.amount }}</td>
+                    <td nowrap="nowrap" class="currency" data-value="{{expense.compute_payment}}">{{
+                        expense.compute_payment }}
+                    </td>
+                    <td nowrap="nowrap" class="currency" data-value="{{expense.payment_debt}}">{{
+                        expense.payment_debt }}
+                    </td>
+                    <td>{{ expense.note }}</td>
+                    <td>
+                        <img src="/expense/expense_image/{{expense.id}}" style="max-width: 100px; max-height: 100px;">
+                    </td>
+                    <!--                    <td nowrap="nowrap">{{ expense.created }}</td>-->
+                    <td nowrap="nowrap">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal{{expense.id}}">
+                            <i class="bx bxs-badge-dollar"></i>
+                        </button>
+                        <a href="/expense/edit?pe={{expense.purchase_event_id}}&expense_id={{expense.id}}" class="btn btn-info"><i
+                                class="bx bxs-pencil"></i></a>
+                        <a href="/expense/delete?expense_id={{expense.id}}" class="btn btn-danger"><i
+                                class="bx bxs-trash"></i></a>
+                        <div class="modal fade" id="exampleModal{{expense.id}}" tabindex="-1"
+                             aria-labelledby="exampleModalLabel{{expense.id}}"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form action="/expense/money/add" method="POST">
+                                        <div class="modal-body">
+                                            <input type="hidden" name="purchase_event_id"
+                                                   value="{{ expense.purchase_event_id }}">
+                                            <input type="hidden" name="expense_id"
+                                                   value="{{ expense.id }}">
+                                            <input type="hidden" name="type" value="credit">
+                                            <div class="form-group">
+                                                <label for="amount">Amount</label>
+                                                <input type="number" class="form-control"
+                                                       value="{{ expense.payment_debt }}"
+                                                       id="amount"
+                                                       name="amount" step="0.01"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="note">Note</label>
+                                                <textarea class="form-control" id="note" name="note"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" id="addMoneyButtonClose"
+                                                    data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" class="btn btn-success">Pay</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Button trigger modal -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const currencyElements = document.querySelectorAll('.currency');
+        currencyElements.forEach(function (element) {
+            const value = parseFloat(element.getAttribute('data-value'));
+            element.textContent = formatCurrency(value);
+        });
+    });
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'IDR'
+        }).format(value).replace('IDR', 'IDR ').trim();
+    }
+</script>
+
+</body>
+</html>

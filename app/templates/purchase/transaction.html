@@ -1,223 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Farmer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
-          type="text/css">
+        type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
-          type="text/css">
+        type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/farmer_detail.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/purchase.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
 </head>
+
 <body>
-<div class="container">
-    <div class="card">
+    <div class="container">
         <div class="card">
 
+            <div class="card-header d-flex align-items-center">
+                <a href="/purchase/transaction?pe={{ event.id }}" class="btn back-btn"
+                    style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
+                <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Purchase {{ po.name }} </span>
+            </div>
+
             <div class="card-body">
+                <div class="tabs">
+                    <ul class="tab-links tab-container">
+                        <a href="#purchase" class="active" type="button" id="list-tab-btn">Purchase</a>
+                        <a href="#po-info" type="button" id="info-tab-btn">Odoo PO Info</a>
+                        <a href="#farmer" type="button" id="farmer-tab-btn">Farmer Detail</a>
 
-                <div class="row">
-                    <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" value="{{ event.name }}" disabled>
-                        <label class="control-label" for="purchase-event">Purchase Event</label>
+
+                    </ul>
+                    <div class="tab-content active" id="purchase">
+                        <div class="purchase-data">
+                            <div class="farmer-photo">
+                                <img width="200px" height="200px"
+                                    src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
+                                    alt="Farmer Photo" />
+                            </div>
+                            <table id="farmer-detail" class="data-table">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 50%;">Farmer Code</th>
+                                        <td>{{ farmer.code }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="width: 50%;">Farmer</th>
+                                        <td>{{ farmer.farmer_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Purchase Event</th>
+                                        <td>{{ event.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Odoo PO#</th>
+                                        <td>{{ event.purchase_order_odoo.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Order</th>
+                                        <td>{{ po.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>{{ po.status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Certification Status</th>
+                                        <td>{{ farmer.certification_status_name }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
                         <input name="purchase-event" class="form-control" id="purchase-event" value="{{ event.id }}"
-                               hidden>
+                            hidden>
 
-                    </div>
-
-                    <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" id="" value="{{ event.purchase_order_odoo.name }}" disabled>
-                        <label class="control-label" for="purchase-order">Purchase Order</label>
                         <input name="purchase-order-odoo" class="form-control" id="purchase-order-odoo"
-                               value="{{ event.purchase_order_odoo.id }}" hidden>
+                            value="{{ event.purchase_order_odoo.id }}" hidden>
                         <input name="purchase-order" class="form-control" id="purchase-order" value="{{ po.id }}"
-                               hidden>
-                    </div>
-
-                    <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" id="farmer_name" value="{{ farmer.farmer_name }}" disabled>
-                        <label class="control-label" for="farmer">Farmer</label>
+                            hidden>
                         <input name="farmer" class="form-control" id="farmer_code" value="{{ farmer.code }}" hidden>
 
+
+                        <div style="width:100%; display:flex; justify-content: flex-end; padding-right:4%;">
+                            <div style="display: flex; align-items: center;">
+                                {% if po_status.lower() == 'draft' %}
+                                <!--                        <button type="button" class="btn btn-primary" data-toggle="modal"-->
+                                <!--                                data-target="#addTransactionModal">-->
+                                <!--                            Add-->
+                                <!--                        </button>-->
+                                <a type="button" class="btn btn-primary"
+                                    href="/purchase/transaction/create?purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}">
+                                    Add
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="event-container">
+
+                            <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                                <tr>
+                                    <th style="width: 5%;">
+                                        No
+                                    </th>
+                                    <th style="width: 12%;">
+                                        Product
+                                    </th>
+
+                                    <th class="text-right" style="width: 12%;">
+                                        Price Unit
+                                    </th>
+                                    <th class="text-right" style="width: 8%;">
+                                        Qty
+                                    </th>
+                                    <th class="text-right" style="width: 16%;">
+                                        Subtotal
+                                    </th>
+                                    <th style="width: 16%;">
+                                        Barcode
+                                    </th>
+                                    <th style="width: 16%;">
+                                        Note
+                                    </th>
+                                    <th style="width: 10%;">
+                                        Action
+                                    </th>
+                                </tr>
+                                {% set total_value = 0 %}
+
+                                {% for transaction in transaction_list %}
+
+                                <tr class="event-row">
+                                    <td>
+                                        {{ loop.index }}
+                                    </td>
+                                    <td>
+                                        <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
+                                            {{ transaction.product_odoo_id.id }}
+                                        </div>
+                                        {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
+                                        {# {{transaction.product_odoo_id}}#}
+                                    </td>
+                                    <td class="price-column text-right">
+                                        <div class="transaction-info{{ transaction.id }} text-right"
+                                            id="price-info{{ transaction.id }}">
+                                            Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
+                                        </div>
+                                    </td>
+                                    <td class="qty-column ">
+                                        <div class="transaction-info{{ transaction.id }} text-right"
+                                            id="qty-info{{ transaction.id }}">
+                                            {{ '{:,.0f}'.format(transaction.qty) }}
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div id="subtotal-info{{ transaction.id }} text-right">
+
+                                            Rp {{ '{:,.2f}'.format(transaction.subtotal) }}
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subtotal-info{{ transaction.id }}">
+
+                                            {{ transaction.barcode }}
+
+                                        </div>
+                                    </td>
+                                      <td>
+                                        <div id="subtotal-info{{ transaction.id }}">
+
+                                            {{ transaction.note }}
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="event-id" style="display: none;">{{ transaction.id }}</span>
+                                        <a type="button"
+                                            href="/purchase/transaction/detail?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
+                                            class="btn btn-secondary">
+                                            <span><i class='bx bxs-pencil'></i></span>
+                                        </a>
+                                        <!--                    <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"-->
+                                        <!--                            id="edit-{{ transaction.id }}-btn" data-toggle="modal"-->
+                                        <!--                            data-target="#editTransactionModal" data-transaction-id="{{ transaction.id }}">-->
+                                        <!--                        <span><i class='bx bxs-pencil'></i></span>-->
+                                        <!--                    </button>-->
+                                        <a type="button"
+                                            href="/purchase/transaction/delete?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
+                                            class="btn btn-secondary" onclick="return confirm('Are you sure you want to delete this item?');">
+                                            <span><i class='bx bxs-trash'></i></span>
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+
+                                <tr>
+                                    <td colspan="4">
+                                        <b>Grand Total</b>
+                                    </td>
+                                    <td>
+                                        <div id="total-price" class="text-right">
+                                            Rp {{ '{:,.2f}'.format(total_price) }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
+                            <div style="display: flex; align-items: center;">
+                                <!-- <a href="/purchase/transaction?pe={{ event.id }}" class="btn btn-success">Back</a> -->
+                                {% if po_status.lower() == 'draft' %}
+                                <a href="/purchase/transaction/confirm?purchase_order={{ po.id }}" type="button"
+                                    id="confirmButton" class="btn btn-primary" onclick="">Confirm</a>
+                                {% endif %}
+
+                                <button onclick="btPrint()" class="btn btn-success">Print</button>
+
+                            </div>
+                        </div>
+
+
                     </div>
-                    <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" id="" value="{{ po.name }}"
-                               disabled>
-                        <label class="control-label" for="order">Order</label>
+                    <div class="tab-content" id="po-info">
+                        <div class="row" style="margin: 24px; margin-top: 0;">
+                            <div class="form-floating col-sm-12 col-lg">
+                                <input name="" class="form-control" id="" value="{{ event.purchase_order_odoo.name }}" disabled>
+                                <label class="control-label" for="purchase-order">Odoo PO#</label>
+                            </div>
+                            <div class="form-floating col-sm-12 col-lg">
+                                <input name="" class="form-control" value="{{ event.purchase_order_odoo.partner_name }}" disabled>
+                                <label class="control-label" for="purchase-event">Vendor</label>
+                    
+                            </div>
+                            <div class="form-floating col-sm-12 col-lg">
+                                <input name="" class="form-control" value="{{ event.purchase_order_odoo.partner_ref }}" disabled>
+                                <label class="control-label" for="purchase-event">Ref</label>
+                    
+                            </div>
+                    
+                    
+                            <div class="form-floating col-sm-12 col-lg">
+                                <input name="" class="form-control" id="" value="{{ event.fund}}" disabled>
+                                <label class="control-label" for="">Fund</label>
+                            </div>
+                    
+                        </div>
+
+        
+                        <div class="po-container">
+                            <table class="table">
+                                
+                                <tbody>
+                                    <tr>
+                                        <th>Product</td>
+                                        <th class="text-end">Qty</td>
+                                        <th class="text-end">Unit Price</td>
+                                        <th class="text-end">Subtotal</td>
+                                    </tr>
+                                    
+                                    {% if po_order_line %}
+                                        {% for order in po_order_line %}
+                                            <tr>
+                                                <td> {{ order.name }}</td>
+                                                <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
+                                                <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
+                                                <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>
+                                                
+                                            </tr>
+                                            
+        
+                                        {% endfor %}
+                                    
+                                    <tr>
+                                        <th colspan="3">Grand Total</th>
+                                        <td align="right">{{"Rp. {:,.2f}".format(grand_total)}}</td>
+                                    </tr>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+        
+                                </tbody>
+        
+                            </table>
+                        </div>
+                    
+                    
                     </div>
-                    <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" id="" value="{{ po.status }}" disabled>
-                        <label class="control-label" for="status">Status</label>
+                    <div class="tab-content" id="farmer">
+                        <div class="farmer-data">
+                            <div class="farmer-photo">
+                                <img width="200px" height="200px"
+                                    src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
+                                    alt="Farmer Photo" />
+                            </div>
+                            <table id="farmer-detail">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 180px;">Farmer Code</th>
+                                        <td>{{ farmer.code }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Farmer Name</th>
+                                        <td>{{ farmer.farmer_name }}</td>
+                                    </tr>
+        
+                                    <tr>
+                                        <th>Farmer Group</th>
+                                        <td>{{ farmer.parent_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Station</th>
+                                        <td>{{ farmer.station_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Certification Status</th>
+                                        <td>{{ farmer.certification_status_name }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+        
+                        </div>
+                        <div style="margin-bottom: 32px; margin-top: 24px;">
+                            <h5>Product Possible to Purchase from This farmer based on Certification Status</h5>
+                            <table>
+                                <tbody>
+                                    {% for commodity_item in commodity_items %}
+                                    [{{ commodity_item.product_id_code }}] {{ commodity_item.product_id_name }} <br />
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="form-floating col-sm-12 col-lg">
-                        <input name="" class="form-control" id="" value="{{ farmer_odoo.certification_status_id }}"
-                               disabled>
-                        <label class="control-label" for="status">Certification Status ID</label>
-                    </div>
-                </div>
-                <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
-                    <div style="display: flex; align-items: center;">
-                        {% if po_status.lower() == 'draft' %}
-                        <!--                        <button type="button" class="btn btn-primary" data-toggle="modal"-->
-                        <!--                                data-target="#addTransactionModal">-->
-                        <!--                            Add-->
-                        <!--                        </button>-->
-                        <a type="button" class="btn btn-primary"
-                           href="/purchase/transaction/create?purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}">
-                            Add
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-
-            </div>
-
-
-            <div class="event-container">
-
-                <table class="table event-table" style="width: 100%; margin-top: 32px;">
-                    <tr>
-                        <th style="width: 5%;">
-                            No
-                        </th>
-                        <th style="width: 12%;">
-                            Product
-                        </th>
-
-                        <th style="width: 12%;">
-                            Price Unit
-                        </th>
-                        <th style="width: 8%;">
-                            Qty
-                        </th>
-                        <th style="width: 16%;">
-                            Subtotal
-                        </th>
-                        <th style="width: 16%;">
-                            Barcode
-                        </th>
-                        <th style="width: 10%;">
-                            Action
-                        </th>
-                    </tr>
-                    {% set total_value = 0 %}
-
-                    {% for transaction in transaction_list %}
-
-                    <tr class="event-row">
-                        <td>
-                            {{ loop.index }}
-                        </td>
-                        <td>
-                            <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
-                                {{ transaction.product_odoo_id.id }}
-                            </div>
-                            {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
-                            {# {{transaction.product_odoo_id}}#}
-                        </td>
-                        <td class="price-column">
-                            <div class="transaction-info{{ transaction.id }}" id="price-info{{ transaction.id }}">
-                                {{ '{:,.2f}'.format(transaction.unit_price) }}
-                            </div>
-                        </td>
-                        <td class="qty-column">
-                            <div class="transaction-info{{ transaction.id }}" id="qty-info{{ transaction.id }}">
-                                {{ '{:,.0f}'.format(transaction.qty) }}
-                            </div>
-                        </td>
-                        <td>
-                            <div id="subtotal-info{{ transaction.id }}">
-
-                                {{ '{:,.2f}'.format(transaction.subtotal) }}
-
-                            </div>
-                        </td>
-                        <td>
-                            <div id="subtotal-info{{ transaction.id }}">
-
-                                {{ transaction.barcode }}
-
-                            </div>
-                        </td>
-                        <td>
-                            <span class="event-id" style="display: none;">{{ transaction.id }}</span>
-                            <a type="button"
-                               href="/purchase/transaction/detail?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
-                               class="btn btn-secondary">
-                                <span><i class='bx bxs-pencil'></i></span>
-                            </a>
-                            <!--                    <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"-->
-                            <!--                            id="edit-{{ transaction.id }}-btn" data-toggle="modal"-->
-                            <!--                            data-target="#editTransactionModal" data-transaction-id="{{ transaction.id }}">-->
-                            <!--                        <span><i class='bx bxs-pencil'></i></span>-->
-                            <!--                    </button>-->
-                            <a type="button"
-                               href="/purchase/transaction/delete?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
-                               class="btn btn-secondary">
-                                <span><i class='bx bxs-trash'></i></span>
-                            </a>
-                        </td>
-                    </tr>
-
-                    {% endfor %}
-
-
-                    <tr>
-                        <td colspan="4">
-                            <b>Total Price</b>
-                        </td>
-                        <td>
-                            <div id="total-price">
-                                {{ '{:,.2f}'.format(total_price) }}
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-                <table>
-                    <tr>
-                        <td>PO</td>
-                        <td>Commodity</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {% for po_line in po_line_product_arr %}
-                            <p>{{ ProductOdoo.query.filter_by(odoo_id=po_line).first().name }} </p>
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% for cmd in commodity_item_product_arr %}
-                            <p> {{ cmd['commodityitem_name'] }} / {{ cmd['product_name'] }}
-                                / {{ cmd['certStatus'] }} </p>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                </table>
-
-            </div>
-            <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
-                <div style="display: flex; align-items: center;">
-                    <a href="/purchase/transaction?pe={{ event.id }}" class="btn btn-success">Back</a>
-                    {% if po_status.lower() == 'draft' %}
-                    <a href="/purchase/transaction/confirm?purchase_order={{ po.id }}" type="button" id="confirmButton" class="btn btn-primary" onclick="">Confirm</a>
-                    {% endif %}
-
-                    <button onclick="btPrint()" class="btn btn-success">Print</button>
-
                 </div>
             </div>
         </div>
 
+
     </div>
     <script src="{{ url_for('static', filename='/js/tools/print.js') }}"></script>
+    <script src="{{ url_for('static', filename='/js/purchase/purchase.js') }}"></script>
+    
 
-</div>
-</div>
+    
 </body>
+
 </html>

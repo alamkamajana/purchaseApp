@@ -7,116 +7,177 @@ Purchase Event
 {% endblock %}
 
 {% block header %}
-<b>Purchase Event</b>
+<b>Odoo PO </b>
 {% endblock %}
 
 {% block content %}
+<style>
+    .active {
+        color: black;
+    }
+</style>
 <span id="selected-menu" style="display: none;">purchase_event</span>
 
+
+<!--<div class="breadcrumb flat">-->
+<!--    <a href="/server/master/purchase-order">Odoo PO List</a>-->
+<!--    <a href="">Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a>-->
+<!--</div>-->
+
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item active" aria-current="page"><p>Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</p></li>
+            </ol>
+        </nav>
+
+
+
+
+
+
 <div class="card">
-
-    <div class="card-body">
-        <div style="width:100%; display:flex; justify-content: flex-end; padding-right:20px;">
-            <div style="display: flex; align-items: center;">
-                <a type="button" class="btn btn-primary" href="/server/purchase-event/create">
-                    Add
-                </a>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist" style="padding-left:20px;padding-top:20px;flex-direction: row;justify-content: left">
+                <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+                        type="button"
+                        role="tab" aria-controls="nav-home" aria-selected="true">Purchase Event List
+                </button>
+                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                        type="button"
+                        role="tab" aria-controls="nav-profile" aria-selected="false">Odoo PO Info
+                </button>
             </div>
-        </div>
+
+ <div class="tab-content" id="nav-tabContent">
 
 
-        <div class="event-container">
-            <table class="table event-table" style="width: 100%; margin-top: 32px;">
-                <tr>
-                    <!--                    <th style="width: 15%;">-->
-                    <!--                        Id-->
-                    <!--                    </th>-->
-                    <th style="width: 10%;">
-                        Date
-                    </th>
-                    <th style="width: 15%;">
-                        Purchase Event
-                    </th>
-                    <th style="width: 12%;">
-                        Purchase Order
-                    </th>
-                    <!--                    <th style="width: 12%;">-->
-                    <!--                        Cashier-->
-                    <!--                    </th>-->
-                    <!--                    <th style="width: 15%;">-->
-                    <!--                        Purchaser-->
-                    <!--                    </th>-->
-                    <!--                    <th style="width: 10%;">-->
-                    <!--                        ICS-->
-                    <!--                    </th>-->
-                    <th style="width: 10%;">
-                        Note
-                    </th>
-                    <th style="width: 16%;">
-                        Fund
-                    </th>
-                    <th style="width: 5%;">
-                        Status
-                    </th>
-                    <th style="width: 10%;">
-                        Action
-                    </th>
-                </tr>
-                {% for event in events %}
-                <tr class="event-row">
-                    <td>
-                        {{ event.date_stamp }}
-                    </td>
-                    <td>
-                        {{ event.name }}
-                    </td>
-                    <td>
-                        <div class="event-info{{ event.id }}" id="po-info{{ event.id }}">
-                            {{ event.purchase_order_odoo.name }}
-                        </div>
-                    </td>
-                    <td>
-                        {{ event.note }}
-                    </td>
-                    <td>
-                        <div class="event-info{{ event.id }}" id="fund-info{{ event.id }}">
-                            {{ event.compute_fund }}
-                        </div>
-                    </td>
-                    <td class="check-update" id="checkUpdate-{{event.id}}" data-event-id="{{event.id}}">
+  <div class="card-body tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
 
-                    </td>
-                    <td>
-                        <span class="event-id" style="display: none;"></span>
-                        <a type="button" class="btn btn-secondary event-info{{ event.id }}"
-                           href="/server/purchase-event/details?pe={{ event.id }}"
-                           id="">
-                            <span><i class='bx bxs-pencil'></i></span>
-                        </a>
-                        <a href="/server/purchase-event/view?pe={{ event.id }}"
-                           class="btn btn-info"><i class="bx bx-table"></i></a>
-                        <a href="/server/purchase-event/payments?pe={{ event.id }}" target="_blank"
-                           class="btn btn-success"><i class="bx bx-money"></i></a>
-                        <a href="/purchase/transaction?pe={{ event.id }}" target="_blank" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
-                        <a href="/delivery/index?pe={{ event.id }}" target="_blank"
-                           class="btn btn-warning"><i class="bx bxs-truck"> </i></a>
-                        <a type="button" class="btn btn-danger event-info{{ event.id }}"
-                           href="/server/purchase-event/delete?pe={{ event.id }}">
-                            <span><i class='bx bxs-trash'></i></span>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            <span id="pagination-link" class="hidden">/purchase/event?page=</span>
-            <span id="current-page" class="hidden">{{ page }}</span>
-            <span id="total-page" class="hidden">{{ total_pages }}</span>
-            <div id="pagination" style="width:100%; display:flex; justify-content: center;"></div>
-        </div>
+
+          <a type="button" class="btn btn-primary" href="/server/purchase-event/create?po={{po}}">
+                    Add Purchase Event
+                </a>
+
+             <table class="table table-hovered event-table" style="width: 100%; margin-top: 32px;">
+                        <tr>
+                            <th >Date</th>
+                            <th >Purchase Event</th>
+                            <th >Note</th>
+                            <th >Fund</th>
+                            <th >Status</th>
+                            <th >Action</th>
+                        </tr>
+                        {% for event in events %}
+                        <tr class="event-row">
+                            <td>{{ event.date_stamp }}</td>
+                            <td>{{ event.name }}</td>
+
+                            <td>{{ event.note }}</td>
+                            <td>
+                                <div class="event-info{{ event.id }}" id="fund-info{{ event.id }}">
+                                    {{ event.compute_fund }}
+                                </div>
+                            </td>
+                            <td class="check-update" id="checkUpdate-{{event.id}}" data-event-id="{{event.id}}">
+
+                            </td>
+                            <td>
+                                <span class="event-id" style="display: none;"></span>
+
+                                <a href="/server/purchase-event/view?pe={{ event.id }}" class="btn btn-info">Open</a>
+                                <a href="/server/purchase-event/payments?pe={{ event.id }}" class="btn btn-success"><i
+                                        class="bx bx-money"></i></a>
+                                <a href="/purchase/transaction?pe={{ event.id }}" target="_blank"
+                                   class="btn btn-primary" type="button"> <i class="bx bxs-cart"></i></a>
+
+                                <a href="/delivery/index?pe={{ event.id }}" target="_blank" class="btn btn-warning"><i
+                                        class="bx bxs-truck"></i></a>
+                                <a type="button" class="btn btn-success " target="_blank"
+                                   href="/cashier/index?pe={{ event.id }}">
+                                    <span><i class='bx bx-dollar'></i></span>
+                                </a>
+                                <a type="button" class="btn btn-danger event-info{{ event.id }}"
+                                   href="/server/purchase-event/delete?pe={{ event.id }}">
+                                    <span><i class='bx bxs-trash'></i></span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+    </div>
+  <div class="card-body tab-pane fade show " id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+
+                       <div class="row" style="margin: 24px; margin-top: 0;">
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control"  value="{{ purchase_order.name }}" disabled>
+                        <label class="control-label" >Odoo PO#</label>
+                    </div>
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" value="{{ purchase_order.partner_name }}" disabled>
+                        <label class="control-label" >Vendor</label>
+
+                    </div>
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" value="{{ purchase_order.partner_ref }}" disabled>
+                        <label class="control-label" >Ref</label>
+
+                    </div>
+
+
+
+                </div>
+
+
+                <div class="po-container">
+                    <table class="table">
+
+                        <tbody>
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-end">Qty</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+
+                            {% if purchase_order_line %}
+                                {% for order in purchase_order_line %}
+                                    <tr>
+                                        <td> {{ order.name }}</td>
+                                        <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
+                                        <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
+                                        <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>
+
+                                    </tr>
+
+
+                                {% endfor %}
+
+                            <tr>
+                                <th colspan="3">Grand Total</th>
+                                <td align="right">{{"Rp. {:,.2f}".format(purchase_order.calculate_grand_total())}}</td>
+                            </tr>
+                            {% else %}
+                                N/A
+                            {% endif %}
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+
+    </div>
     </div>
 
-
 </div>
+
+
+
+
+
 
 
 {% endblock %}

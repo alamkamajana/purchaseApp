@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block header %}
-    <b>Master Data</b>
+    <b>Odoo PO List</b>
 {% endblock %}
 
 {% block content %}
@@ -18,41 +18,37 @@
 
         <div class="card-body">
             <div class="event-container">
-                <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                <table class="table" style="width: 100%; margin-top: 32px;">
                     <tr>
                         <th>
-                            PO
+                            Odoo PO#
+                        </th>
+                           <th>
+                            Ref
                         </th>
                            <th>
                             Vendor
                         </th>
+                           <th align="right">
+                            Total
+                        </th>
                         <th>
-                            Products
+                            Sync Date
                         </th>
                     </tr>
                     {% for data in purchase_data %}
                         <tr>
                             <td>{{ data.po.name }}</td>
+                             <td>{{ data.po.partner_ref }}</td>
                              <td>{{ data.po.partner_name }}</td>
-                              <td> {{ data.po.sync_date   }}</td>
+                                   <td align="right">{{"Rp. {:,.2f}".format(data.po.calculate_grand_total())}}</td>
+                              <td> {{ data.po.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
                             <td>
-                                <table class="table">
-                                         {% if data.order_lines %}
-                                            {% for order in data.order_lines %}
-                                            <tr>
-                                                <td> {{ order.order_line.product_name }}</td>
-                                                <td align="right"> {{ "{:,.2f}".format(order.order_line.product_qty) }}</td>
-                                                <td align="right"> {{ "Rp. {:,.2f}".format(order.order_line.price_unit) }}</td>
-                                                   <td> {{ order.order_line.sync_date   }}</td>
-                                            </tr>
-                                         {% endfor %}
-                                {% else %}
-                                    N/A
-                                {% endif %}
-                                </table>
 
+                                <a href="/server/purchase-event?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
 
                             </td>
+
                         </tr>
                     {% endfor %}
                 </table>

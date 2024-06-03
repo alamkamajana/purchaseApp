@@ -1,100 +1,339 @@
 {% extends 'server/base.html' %}
 {% block title %}
-PO Details
+Purchase Event
 {% endblock %}
 {% block plugin %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/event.css') }}">
+
 {% endblock %}
 
 {% block header %}
-<b>PO Details</b>
+<b>Cahier Order</b>
 {% endblock %}
 
 {% block content %}
-<span id="selected-menu" style="display: none;">PO Details</span>
-{% if purchase_order %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/cashier/breadcumb.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
+<style>
+    .active {
+        color: black;
+    }
+</style>
+<span id="selected-menu" style="display: none;">purchase_event</span>
+
+
+     <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
+                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{odoo_purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{odoo_purchase_order.name}},{{odoo_purchase_order.partner_ref}})</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                     <li class="breadcrumb-item"><a href="/cashier/index?pe={{purchase_event.id}}" style="color: #e27f34;"> Purchase Event {{purchase_event.name}}</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+
+                <li class="breadcrumb-item active" aria-current="page" ><p>Purchase {{purchase_order.name}}</p></li>
+            </ol>
+        </nav>
+
+
 <div class="card">
-    <table>
-        <tr>
-            <td> ORDER</td>
-            <td> TOTAL</td>
-        </tr>
-        <tr>
-            <input type="hidden" id="purchase" value="{{ purchase_order.id }}"/>
-            <td> {{ purchase_order.name }}</td>
-            <td> {{ purchase_order.amount_total }}</td>
-        </tr>
-    </table>
-    <div class="row">
-        <div class="col-3">
-            <button type="button" class="btn btn-primary" id="addMoneyButton">Add Money</button>
-        </div>
-    </div>
-</div>
-{% else %}
-<p>No Purchase Order</p>
-{% endif %}
-
-<div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
-     aria-labelledby="addMoneyModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addMoneyModalLabel">Add Money</h5>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist"
+                         style="flex-direction: row;justify-content: left;height: unset;">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
+                                data-bs-target="#nav-home"
+                                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Order Data
+                        </button>
+                        <!--                    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"-->
+                        <!--                            type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Order Product-->
+                        <!--                    </button>-->
+                        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
+                                type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Payments
+                        </button>
+                    </div>
+                </nav>
             </div>
-            <form action="/server/money/add" method="POST">
-                <div class="modal-body">
-                    <input type="hidden" name="purchase_order_id" value="{{ purchase_order.id }}">
-                    <input type="hidden" name="purchase_event_id" value="{{ purchase_order.purchase_event_id }}">
-                    <input type="hidden" name="type" value="credit">
-                    <div class="form-group">
-                        <label for="amount">Amount</label>
-                        <input type="number" class="form-control" value="{{ purchase_order.amount_total }}" id="amount" name="amount" step="0.01"
-                               required>
-                    </div>
-                    <div class="form-group">
-                        <label for="note">Note</label>
-                        <textarea class="form-control" id="note" name="note"></textarea>
-                    </div>
+        </div>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                     <div class="purchase-data row " style="padding:15px">
+                            <div class="farmer-photo">
+                                <img width="200px" height="200px"
+                                    src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
+                                    alt="Farmer Photo" />
+                            </div>
+                            <table id="farmer-detail" class="data-table">
+                                <tbody>
+                                    <tr>
+                                        <th style="">Farmer Code</th>
+                                        <td>{{ farmer.code }}</td>
+                                    </tr>  <tr>
+                                        <th style="">Farmer</th>
+                                        <td>{{ farmer.farmer_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Purchase Event</th>
+                                        <td>{{ purchase_event.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Odoo PO#</th>
+                                        <td>{{ odoo_purchase_order.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Order</th>
+                                        <td>{{ purchase_order.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>{{ purchase_order.status }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Certification Status</th>
+                                        <td>{{ farmer.certification_status_name }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                       <div class="event-container">
+
+                            <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                                <tr>
+                                    <th style="width: 5%;">
+                                        No
+                                    </th>
+                                    <th style="width: 12%;">
+                                        Product
+                                    </th>
+
+                                    <th class="text-right" style="width: 12%;">
+                                        Price Unit
+                                    </th>
+                                    <th class="text-right" style="width: 8%;">
+                                        Qty
+                                    </th>
+                                    <th class="text-right" style="width: 16%;">
+                                        Subtotal
+                                    </th>
+                                    <th style="width: 16%;">
+                                        Barcode
+                                    </th>
+                                    <th style="width: 16%;">
+                                        Note
+                                    </th>
+
+                                </tr>
+
+                                {% for transaction in order_line %}
+
+                                <tr class="event-row">
+                                    <td>
+                                        {{ loop.index }}
+                                    </td>
+                                    <td>
+                                        <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
+                                            {{ transaction.product_odoo_id.id }}
+                                        </div>
+                                        {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
+                                        {# {{transaction.product_odoo_id}}#}
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="transaction-info{{ transaction.id }} text-right"
+                                            id="price-info{{ transaction.id }}">
+                                            Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div class="transaction-info{{ transaction.id }} text-right"
+                                            id="qty-info{{ transaction.id }}">
+                                            {{ '{:,.0f}'.format(transaction.qty) }}
+                                        </div>
+                                    </td>
+                                    <td class="text-right">
+                                        <div id="subtotal-info{{ transaction.id }} text-right">
+
+                                            Rp {{ '{:,.2f}'.format(transaction.subtotal) }}
+
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subtotal-info{{ transaction.id }}">
+
+                                            {{ transaction.barcode }}
+
+                                        </div>
+                                    </td>
+                                      <td>
+                                        <div id="subtotal-info{{ transaction.id }}">
+
+                                            {{ transaction.note }}
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+
+                                <tr>
+                                    <td colspan="4">
+                                        <b>Grand Total</b>
+                                    </td>
+                                    <td>
+                                        <div id="total-price" class="text-right">
+                                            Rp {{ '{:,.2f}'.format(purchase_order.amount_total) }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+
+            </div>
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Product</th>
+                        <th> Quantity</th>
+                        <th style="text-align: right"> Price</th>
+                        <th style="text-align: right"> Amount Total</th>
+                        <th> Barcode</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in order_line %}
+                    <tr>
+                        <td> {{ order.purchase_order.name }}</td>
+                        <td>
+                            {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
+                        </td>
+                        <td> {{ order.qty }}</td>
+                        <td style="text-align: right;" class="currency" data-value="{{ order.unit_price }}">IDR {{
+                            order.unit_price }}
+                        </td>
+                        <td style="text-align: right;" class="currency" data-value="{{ order.subtotal }}">IDR {{
+                            order.subtotal }}
+                        </td>
+                        <td> {{ order.barcode }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Created</th>
+                        <th style="text-align: right;">Amount</th>
+                        <th> Order</th>
+                        <th> note</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for money in money_data %}
+                    <tr>
+                        <td> {{ money.created }}</td>
+                        <td style="text-align: right;" class="currency" data-value="{{ money.amount }}">IDR {{
+                            money.amount }}
+                        </td>
+                        <td>
+                            {{ PurchaseOrder.query.get(money.purchase_order_id).name }}
+                        </td>
+                        <td> {{ money.note }}</td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-3">
+                {% if payment_debt > 0 %}
+                <button type="button" class="btn btn-success" id="addMoneyButton">Pay</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addMoneyModal" tabindex="-1" role="dialog"
+         aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMoneyModalLabel">Add Payment</h5>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="addMoneyButtonClose" data-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">Add Money</button>
-                </div>
-            </form>
+                <form action="/server/money/add" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="purchase_order_id" value="{{ purchase_order.id }}">
+                        <input type="hidden" name="purchase_event_id" value="{{ purchase_order.purchase_event_id }}">
+                        <input type="hidden" name="type" value="credit">
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input type="number" class="form-control" value="{{ payment_debt }}" id="amount"
+                                   name="amount" step="0.01"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Note</label>
+                            <textarea class="form-control" id="note" name="note"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="addMoneyButtonClose" data-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="submit" class="btn btn-success">Pay</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
-
 <script>
-    document.getElementById('confirm-button').addEventListener('click', function () {
-        const purchaseOrderId = document.getElementById('purchase').value;
-
-        fetch('/confirm_purchase_order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({purchase_order_id: purchaseOrderId}),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Purchase order confirmed!');
-                    // Optionally, you can redirect or update the page here
-                } else {
-                    alert('Error confirming purchase order.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
+    $(document).ready(function () {
+        $('#addMoneyButton').click(function () {
+            $('#addMoneyModal').modal('show');
+        });
+        $('#addMoneyButtonClose').click(function () {
+            $('#addMoneyModal').modal('hide');
+        });
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let po_amount = document.getElementById('po_amount')
+        let po_amount_value = po_amount.value
+        po_amount.value = formatCurrency(po_amount_value);
+
+        let po_debt = document.getElementById('po_debt')
+        let po_debt_value = po_debt.value
+        po_debt.value = formatCurrency(po_debt_value);
+        const currencyElements = document.querySelectorAll('.currency');
+        currencyElements.forEach(function (element) {
+            const value = parseFloat(element.getAttribute('data-value'));
+            element.textContent = formatCurrency(value);
+        });
+    });
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'IDR'
+        }).format(value).replace('IDR', 'IDR ').trim();
+    }
 </script>
 
-
 {% endblock %}
-
 {% block script_plugin %}
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
 {% endblock %}

@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/purchase.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -17,63 +19,167 @@
 <body>
 <div class="container">
     <div class="card">
+        <div class="card-header d-flex align-items-center">
+            <span style="font-weight: bold; font-size: 20px; margin-left: 16px;">Purchase Event {{ purchase_event.name }}</span>
+        </div>
         <div class="card-body">
-            <div class="row">
-                <div class="form-floating col-sm-12 col-lg">
-                    {{ purchase_event.name }}
+            <div class="add-purchase-container">
+                
+            </div>
+            
+            <div class=tabs>
+                <ul class="tab-links tab-container">
+                    <a href="#list" class="active" type="button" id="list-tab-btn">Purchase List</a>
+                    <a href="#info"  type="button" id="info-tab-btn">Odoo PO Info</a>
+                    
+                </ul>
+                
+
+                <div class="tab-content active" id="list">
+                    <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary" style="margin:8px">
+                        Add Purchase
+                    </a>
+                    <div class="purchase-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Order#
+                                    </th>
+                                    <th>
+                                        Farmer Code
+                                    </th>
+                                    <th>
+                                        Farmer
+                                    </th>
+                                    <th class="text-end">
+                                        Grand Total
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="align-middle">
+                                {% for purchase in purchase_lists %}
+                                <tr>
+                                    <td>{{ purchase.name }}</td>
+                                    <td>
+                                        {% if purchase.farmer_id %}
+                                        {{ Farmer.query.filter_by(id=purchase.farmer_id).first().code }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if purchase.farmer_id %}
+                                        {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
+                                        {% else %}
+                                        No farmer associated
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        {% for price in price_list %}
+                                        {% if price.po_id == purchase.id %}
+                                        Rp {{ '{:,.2f}'.format(price.total) }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ purchase.status }}</td>
+                                    <td>
+                                        <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}"
+                                            class="btn btn-primary" title="Add Product">
+                                            <span><i class='bx bxs-cart-add'></i></span>
+                                        </a>
+                                        <a href="/purchase/payment-note?po={{ purchase.id }}" class="btn btn-success"
+                                            title="Payment Note">
+                                            <span><i class='bx bxs-notepad'></i></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                
+                                {% endfor %}
+                
+                
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div class="row col-3">
-                <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary">
-                    Add Purchase
-                </a>
-            </div>
 
-            <div class="row">
-                <div class="col-6">
+            <div class="tab-content" id="info">
+                <div class="row" style="margin: 24px; margin-top: 0;">
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" id="" value="{{ purchase_event.purchase_order_odoo.name }}" disabled>
+                        <label class="control-label" for="purchase-order">Odoo PO#</label>
+                    </div>
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" value="{{ purchase_event.purchase_order_odoo.partner_name }}" disabled>
+                        <label class="control-label" for="purchase-event">Vendor</label>
+            
+                    </div>
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" value="{{ purchase_event.purchase_order_odoo.partner_ref }}" disabled>
+                        <label class="control-label" for="purchase-event">Ref</label>
+            
+                    </div>
+            
+            
+                    <div class="form-floating col-sm-12 col-lg">
+                        <input name="" class="form-control" id="" value="{{ purchase_event.fund}}" disabled>
+                        <label class="control-label" for="">Fund</label>
+                    </div>
+            
+                </div>
+
+                <div class="po-container">
                     <table class="table">
-                        <thead>
-                        <tr>
-                            <td>
-                                Order
-                            </td>
-                            <td>
-                                Farmer
-                            </td>
-                            <td>
-                                Status
-                            </td>
-                            <td>Action</td>
-                        </tr>
-                        </thead>
+                        
                         <tbody>
-                        {% for purchase in purchase_lists %}
-                        <tr>
-                            <td>{{ purchase.id }}</td>
-                            <td>
-                                {% if purchase.farmer_id %}
-                                {{ Farmer.query.filter_by(id=purchase.farmer_id).first().farmer_name }}
-                                {% else %}
-                                No farmer associated
-                                {% endif %}
-                            </td>
-                            <td>{{ purchase.status }}</td>
-                            <td>
-                                <a href="/purchase/order?po={{ purchase.id }}&farmer={{ purchase.farmer_id }}">Add
-                                    Product</a>
-                                <a href="/purchase/payment-note?po={{ purchase.id }}">Payment Note</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                            <tr>
+                                <th>Product</td>
+                                <th class="text-end">Qty</td>
+                                <th class="text-end">Unit Price</td>
+                                <th class="text-end">Subtotal</td>
+                            </tr>
+                            
+                            {% if po_order_line %}
+                                {% for order in po_order_line %}
+                                    <tr>
+                                        <td> {{ order.name }}</td>
+                                        <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
+                                        <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
+                                        <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>
+                                        
+                                    </tr>
+                                    
+
+                                {% endfor %}
+                            
+                            <tr>
+                                <th colspan="3">Grand Total</th>
+                                <td align="right">{{"Rp. {:,.2f}".format(grand_total)}}</td>
+                            </tr>
+                            {% else %}
+                                N/A
+                            {% endif %}
 
                         </tbody>
+
                     </table>
                 </div>
+            
+            
+            
+            
             </div>
+            
+            
 
         </div>
 
     </div>
+    <script src="{{ url_for('static', filename='/js/purchase/purchase.js') }}"></script>
+    
 </div>
 </body>
 </html>
