@@ -8,6 +8,7 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
+          <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <style>
         body {
             background-color: #f8f9fa;
@@ -35,6 +36,10 @@
         .btn {
             font-size: 1rem;
             padding: 10px 20px;
+        }
+
+        .back-btn{
+            padding-left: 8px;  
         }
 
         .btn-success {
@@ -75,15 +80,15 @@
 <div class="container">
     <div class="row text-center">
         <div class="col">
-            <h1>Create Delivery Order</h1>
+            <h1>Tambah Surat Jalan</h1>
         </div>
     </div>
 </div>
 <div class="container">
     <div class="row">
         <div class="col text-left">
-            <a href="/delivery/index?pe={{ pe }}" class="btn btn-success">
-                Back
+            <a href="/delivery/index?pe={{ pe }}" class="btn btn-secondary back-btn">
+                <i class='bx bx-chevron-left'></i> Kembali
             </a>
         </div>
     </div>
@@ -93,37 +98,37 @@
         <input type="hidden" name="pe" value="{{ pe }}">
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Driver</label>
+                <label>Sopir</label>
                 <input type="text" class="form-control" name="driver"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Date</label>
+                <label>Tanggal</label>
                 <input type="date" id="date" class="form-control" name="date"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Destination</label>
+                <label>Tujuan</label>
                 <input type="text" class="form-control" name="destination"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Vehicle</label>
+                <label>Kendaraan</label>
                 <input type="text" class="form-control" name="vehicle"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Note</label>
+                <label>Catatan</label>
                 <textarea name="note" class="form-control" rows="4"></textarea>
             </div>
         </div>
         <div class="row mt-2">
             <div class="col text-center">
-                <button type="submit" class="btn btn-success">Submit</button>
+                <button type="submit" class="btn btn-success">Kirim</button>
             </div>
         </div>
     </form>

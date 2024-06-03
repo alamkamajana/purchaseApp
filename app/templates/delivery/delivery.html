@@ -37,55 +37,88 @@
             color: #fff;
             border: none;
         }
+
+        .btn-info{
+            color: #fff;
+        }
+
+        @media screen and (min-width: 768px){
+            .table-container{
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+        
+
+        @media screen and (max-width: 768px){
+            .row{
+                font-size: 0.6em;
+            }
+
+            h1{
+                font-size: 2em;
+            }
+
+            a{
+                font-size: 0.6em;
+            }
+            .table-container{
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8">
-            <h1 class="text-center mb-4">Delivery Order (Surat Jalan)</h1>
+    <div class="row mt-5">
+        <div class="">
+            <h1 class="text-center mb-4">Purchase Event {{pe.name}}</h1>
             <div class="d-flex justify-content-center mb-4">
-                <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom">Create Delivery Order</a>
+                <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom">Tambah Surat Jalan</a>
             </div>
             <input type="hidden" id="purchase_event_name" value="{{ pe.name }}">
             <input type="hidden" id="purchase_event_id" value="{{ pe.id }}">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>DO Name</th>
-                    <th>Date</th>
-                    <th>To</th>
-                    <th>Driver</th>
-                    <th>Vehicle</th>
-                    <th>Note</th>
-                    <th nowrap="nowrap">Purchase Event</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody id="do-list">
-                {% for do in do_list %}
-                <tr>
-                    <td nowrap="nowrap">{{ do.name }}</td>
-                    <td nowrap="nowrap">{{ do.date }}</td>
-                    <td>{{ do.destination }}</td>
-                    <td>{{ do.driver }}</td>
-                    <td>{{ do.vehicle_number }}</td>
-                    <td>{{ do.note }}</td>
-                    <td>{{ pe.name }}</td>
-                    <td nowrap="nowrap">
-                        <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}"
-                           class="btn btn-sm btn-success btn-add-goods"><i class="bx bxs-cart-add"></i></a>
-                        <a href="/delivery/edit?do={{ do.id }}&pe={{ pe.id }}" class="btn btn-sm btn-primary"><i
-                                class="bx bxs-pencil"></i></a>
-                        <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-danger"><i
-                                class="bx bxs-trash"></i></a>
-                        <a href="/delivery/letter?do={{ do.id }}" class="btn btn-sm btn-info"><i
-                                class="bx bxs-printer"></i></a>
-                    </td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Surat Jalan#</th>
+                        <th>Tanggal</th>
+                        <th>Tujuan</th>
+                        <th>Sopir</th>
+                        <th>Kendaraan</th>
+                        <th>Catatan</th>
+                        <!-- <th nowrap="nowrap">Purchase Event</th> -->
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="do-list">
+                    {% for do in do_list %}
+                    <tr>
+                        <td nowrap="nowrap">{{ do.name }}</td>
+                        <td nowrap="nowrap">{{ do.date }}</td>
+                        <td>{{ do.destination }}</td>
+                        <td>{{ do.driver }}</td>
+                        <td>{{ do.vehicle_number }}</td>
+                        <td>{{ do.note }}</td>
+                        <!-- <td>{{ pe.name }}</td> -->
+                        <td nowrap="nowrap">
+                            <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}"
+                               class="btn btn-sm btn-success btn-add-goods"><i class="bx bxs-cart-add"></i></a>
+                            <a href="/delivery/edit?do={{ do.id }}&pe={{ pe.id }}" class="btn btn-sm btn-primary"><i
+                                    class="bx bxs-pencil"></i></a>
+                            <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-danger"><i
+                                    class="bx bxs-trash"></i></a>
+                            <a href="/delivery/letter?do={{ do.id }}" class="btn btn-sm btn-info"><i
+                                    class="bx bxs-printer"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
 </div>

@@ -34,24 +34,11 @@ def expense_index():
     expenses = Expense.query.filter_by(purchase_event_id=purchase_event.id).all()
     return render_template('expense/index.html', expense_list=expenses, purchase_event=purchase_event)
 
-@bp.route('/list', methods=["POST","GET"])
-def expense_list():
-    event_id = request.args.get("pe")
-    purchase_event = PurchaseEvent.query.get(int(event_id))
-    expenses = Expense.query.filter_by(purchase_event_id=purchase_event.id).all()
-    return render_template('expense/expense_list.html',expense_list=expenses, purchase_event=purchase_event)
-
 @bp.route('/create', methods=["POST","GET"])
 def expense_create():
     event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(int(event_id))
-    return render_template('expense/expense_create.html',purchase_event=purchase_event)
-
-# @bp.route('/create', methods=["POST","GET"])
-# def expense_create():
-#     event_id = request.args.get("pe")
-#     purchase_event = PurchaseEvent.query.get(int(event_id))
-#     return render_template('expense/create.html', purchase_event=purchase_event)
+    return render_template('expense/create.html', purchase_event=purchase_event)
 
 @bp.route('/delete', methods=["POST","GET"])
 def expense_delete():

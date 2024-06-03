@@ -13,16 +13,19 @@ Purchase Event
 {% block content %}
 <span id="selected-menu" style="display: none;">purchase_event_create</span>
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List </a>
+        </li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item"><a href="/server/purchase-event?po={{purchase_event.purchase_order_odoo_id}}"
+                                       style="color: #e27f34;">
+            Odoo PO ({{purchase_order_odoo.name}},{{purchase_order_odoo.partner_ref}})</a></li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item active" aria-current="page"><p>Payments</p></li>
+    </ol>
+</nav>
 <div class="card">
-    <div class="card-header">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;">Purchase Order</a></li>
-                <li class="breadcrumb-item"><a href="/server/purchase-event?po={{purchase_event.purchase_order_odoo_id}}" style="color: #e27f34;">Purchase Event</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><p>Payments</p></li>
-            </ol>
-        </nav>
-    </div>
     <div class="card-body">
         <div class="container">
             <div class="row text-center">
@@ -34,24 +37,58 @@ Purchase Event
                 <div class="col">
                     <table class="table">
                         <thead>
-                        <th>Fund</th>
-                        <th>Amount</th>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Payment ID</th>
+                        <th>Source</th>
+<!--                        <th style="text-align: right;">Fund</th>-->
+                        <th style="text-align: right;">Amount</th>
                         <th>Type</th>
                         <th>Note</th>
                         </thead>
                         <tbody>
                         {% set ns = namespace(fund=0) %}
+                         {% set number = namespace(number=0) %}
                         {% for payment in payments %}
                         <tr>
+                            {% set number.number = number.number + 1 %}
                             {% set ns.fund = ns.fund + payment.amount %}
-                            <td>{{ ns.fund }}</td>
-                            <td>{{ payment.amount }}</td>
+                            <td>
+                                {{number.number}}
+                            </td>
+                            <td>
+                                {{payment.number}}
+                            </td>
+                            <td>
+                                {{payment.unique_id}}
+                            </td>
+                            <td>
+                                {% if payment.purchase_order_id %}
+                                PO : {{ PurchaseOrder.query.get(payment.purchase_order_id).name }}
+                                {% else %}
+                                PE : {{ purchase_event.name }}
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;" class="" data-value="{{ payment.amount }}">Rp {{
+                                "{:,.2f}".format(payment.amount) }}
+                            </td>
                             <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
                             <td>{{ payment.note }}</td>
                         </tr>
                         {% endfor %}
 
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total : </th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th style="text-align: right">Rp {{ "{:,.2f}".format(ns.fund) }}</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
 
                     </table>
                 </div>
@@ -62,6 +99,9 @@ Purchase Event
 
 
 </div>
+<script>
+
+</script>
 
 {% endblock %}
 {% block script_plugin %}

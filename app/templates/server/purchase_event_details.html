@@ -7,25 +7,25 @@ Purchase Event
 {% endblock %}
 
 {% block header %}
-<b>Purchase Event Details</b>
+<b>Edit Purchase Event</b>
 {% endblock %}
 
 {% block content %}
 <span id="selected-menu" style="display: none;">purchase_event_details</span>
 
-<div class="card">
-    <div class="card-header">
-        <nav aria-label="breadcrumb">
+
+     <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;">Purchase
-                    Order</a></li>
-                <li class="breadcrumb-item"><a
-                        href="/server/purchase-event?po={{purchase_event.purchase_order_odoo_id}}"
-                        style="color: #e27f34;">Purchase Event</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><p>Edit</p></li>
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
+                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}}</p></li>
             </ol>
         </nav>
-    </div>
+
+<div class="card">
+
 
     <div class="card-body">
         <div class="row">
@@ -58,10 +58,7 @@ Purchase Event
                     </div>
                     <br/>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" class="btn btn-primary" id="addMoneyButton">Add Money</button>
-                    <button type="button" class="btn btn-primary" id="getMoneyButton">Get Money</button>
-                    <a href="/server/purchase-event?po={{purchase_event.purchase_order_odoo_id}}"
-                       class="btn btn-primary">Back</a>
+
                 </form>
 
                 <!-- Modal for Adding Money -->

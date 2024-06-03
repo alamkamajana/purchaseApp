@@ -13,19 +13,20 @@ Purchase Event
 {% block content %}
 <span id="selected-menu" style="display: none;">purchase_event_create</span>
 
-<div class="card">
-    <div class="card-header">
-        <nav aria-label="breadcrumb">
+
+     <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;">Purchase
-                    Order</a></li>
-                <li class="breadcrumb-item"><a
-                        href="/server/purchase-event?po={{purchase_order.id}}"
-                        style="color: #e27f34;">Purchase Event</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><p>Create</p></li>
+                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
+                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
+                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+                <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event </p></li>
             </ol>
         </nav>
-    </div>
+
+
+<div class="card">
+
 
     <div class="card-body">
         <div class="row">

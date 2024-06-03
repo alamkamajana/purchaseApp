@@ -152,9 +152,10 @@ def purchase_event_list():
     po_id = request.args.get('po', 0, type=int)
     events = PurchaseEvent.query.filter_by(purchase_order_odoo_id=po_id).all()
     purchase_order = PurchaseOrderOdoo.query.get(po_id)
+    purchase_order_line = po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(purchase_order.odoo_id)).all()
     event_ids = [event.id for event in events]
     orders = PurchaseOrder.query.filter(PurchaseOrder.purchase_event_id.in_(event_ids)).all()
-    return render_template('server/purchase_event.html', events=events,po=po_id,purchase_order=purchase_order, orders=orders , PurchaseOrderLine=PurchaseOrderLine, NfcappFarmerOdoo=NfcappFarmerOdoo, ProductOdoo=ProductOdoo)
+    return render_template('server/purchase_event.html', events=events,po=po_id,purchase_order=purchase_order, orders=orders , purchase_order_line=purchase_order_line, NfcappFarmerOdoo=NfcappFarmerOdoo, ProductOdoo=ProductOdoo)
 
 
 
@@ -204,11 +205,18 @@ def purchase_event_view():
     local_ip = get_local_ip()
     data_purchase = f"{base_url}purchase/transaction?pe={purchase_event_id}"
     data_delivery = f"{base_url}delivery/index?pe={purchase_event_id}"
+    data_cashier = f"{base_url}cashier/index?pe={purchase_event_id}"
+
+
+
     qr_code_purchase = generate_qr_code(data_purchase)
     qr_code_delivery = generate_qr_code(data_delivery)
-    data_cashier = f"{base_url}delivery/index?pe={purchase_event_id}"
-    qr_code_cashier = generate_qr_code(data_delivery)
-    return render_template('server/purchase_event_view.html', purchase_event=purchase_event,base_url=base_url, qr_purchase=qr_code_purchase, qr_delivery=qr_code_delivery, qr_cashier=qr_code_cashier)
+    qr_code_cashier = generate_qr_code(data_cashier)
+
+
+
+    purchase_order = PurchaseOrderOdoo.query.get(purchase_event.purchase_order_odoo_id)
+    return render_template('server/purchase_event_view.html', qr_code_cashier=qr_code_cashier,qr_code_delivery=qr_code_delivery,qr_code_purchase=qr_code_purchase,data_cashier=data_cashier,data_delivery=data_delivery,data_purchase=data_purchase,purchase_event=purchase_event,base_url=base_url, purchase_order=purchase_order)
 
 
 @bp.route('/purchase-event/update', methods=["POST","GET"])
@@ -225,9 +233,9 @@ def purchase_event_update():
         event.date_stamp = datetime.strptime(date, '%Y-%m-%d').date()
         event.purchase_order_odoo_id = int(po) if po else None
         db.session.commit()
-        return redirect("/server/purchase-event?po="+str(event.purchase_order_odoo_id))
+        return redirect("/server/purchase-event/view?pe="+str(event.id))
     else:
-        return redirect("/server/purchase-event?po="+str(event.purchase_order_odoo_id))
+        return redirect("/server/purchase-event/view?pe="+str(event.id))
 
 
 @bp.route('/purchase-event/delete', methods=["POST","GET"])
@@ -255,7 +263,8 @@ def purchase_event_payments():
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
     payments = Money.query.filter_by(purchase_event_id=purchase_event.id).order_by(Money.created.asc())
-    return render_template('server/purchase_event_payments.html', purchase_event=purchase_event, payments=payments)
+    purchase_order_odoo = PurchaseOrderOdoo.query.get(purchase_event.purchase_order_odoo_id)
+    return render_template('server/purchase_event_payments.html', purchase_event=purchase_event, payments=payments, PurchaseOrder=PurchaseOrder,purchase_order_odoo=purchase_order_odoo)
 
 
 @bp.route('/money/add', methods=["POST","GET"])

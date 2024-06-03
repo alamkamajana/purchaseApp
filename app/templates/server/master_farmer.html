@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block header %}
-    <b>Farmer</b>
+    <b>Farmer List</b>
 {% endblock %}
 
 {% block content %}
@@ -62,12 +62,15 @@
                             Station
                         </th>
                         <th>
+                            Certification Status
 
                         </th>
                         <th>
+                            Sync Date
 
                         </th>
                         <th>
+                            Product
 
                         </th>
                     </tr>
@@ -81,17 +84,18 @@
                                     <td>{{ data.farmer.parent_name }}</td>
                                <td>{{ data.farmer.station_name }}</td>
                               <td>{{ data.farmer.certification_status_name }}</td>
+                               <td>
+                                      <td> {{ data.farmer.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
+                            </td>
                             <td>
 
                               {% for commodity_item in data.commodity_items %}
 
-                                      {{ commodity_item.product_id_code }}  {{ commodity_item.product_id_name }}  <br/>
+                                     [{{ commodity_item.product_id_code }}]  {{ commodity_item.product_id_name }}  <br/>
                                  {% endfor %}
 
                             </td>
-                            <td>
-                                   <td>{{ data.farmer.sync_date   }}</td>
-                            </td>
+
 
                         </tr>
                     {% endfor %}

@@ -4,7 +4,7 @@
 }
 
 .event-table{
-    min-width:920px;
+    min-width:880px;
 }
 
 .bootstrap-select .btn {
@@ -132,6 +132,14 @@
 
 .purchase-container table{
     min-width: 640px;
+}
+
+.po-container{
+    overflow-x : auto;
+}
+
+.po-container table{
+    min-width: 880px;
 }
 
 .add-purchase-container{

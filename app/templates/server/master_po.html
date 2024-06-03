@@ -1,62 +1,61 @@
 {% extends 'server/base.html' %}
 {% block title %}
-Purchase Order
+    Purchase Order
 {% endblock %}
 {% block plugin %}
-<link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
 
 {% endblock %}
 
 {% block header %}
-<b>Odoo Purchase Order</b>
+    <b>Odoo PO List</b>
 {% endblock %}
 
 {% block content %}
-<span id="selected-menu" style="display: none;">master_data</span>
+    <span id="selected-menu" style="display: none;">master_data</span>
 
-<div class="card">
+    <div class="card">
 
-    <div class="card-body">
-        <div class="event-container">
-            <table class="table event-table" style="width: 100%; margin-top: 32px;">
-                <tr>
-                    <th>
-                        Odoo PO
-                    </th>
-                    <th>
-                        Ref
-                    </th>
-                    <th>
-                        Vendor
-                    </th>
-                    <th>
-                        Sync Date
-                    </th>
-                    <th>
-                        Action
-                    </th>
-                </tr>
-                {% for data in purchase_data %}
-                <tr>
-                    <td>{{ data.po.name }}</td>
-                    <td>{{ data.po.partner_ref }}</td>
-                    <td>{{ data.po.partner_name }}</td>
-                    <td> {{ data.po.sync_date.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td>
-                        <!--                                <a href="/server/purchase-order/view?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i class="bx bxs-search"> </i></span></a>-->
+        <div class="card-body">
+            <div class="event-container">
+                <table class="table" style="width: 100%; margin-top: 32px;">
+                    <tr>
+                        <th>
+                            Odoo PO#
+                        </th>
+                           <th>
+                            Ref
+                        </th>
+                           <th>
+                            Vendor
+                        </th>
+                           <th align="right">
+                            Total
+                        </th>
+                        <th>
+                            Sync Date
+                        </th>
+                    </tr>
+                    {% for data in purchase_data %}
+                        <tr>
+                            <td>{{ data.po.name }}</td>
+                             <td>{{ data.po.partner_ref }}</td>
+                             <td>{{ data.po.partner_name }}</td>
+                                   <td align="right">{{"Rp. {:,.2f}".format(data.po.calculate_grand_total())}}</td>
+                              <td> {{ data.po.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
+                            <td>
 
-                        <a href="/server/purchase-event?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i
-                                class="bx bxs-cart"> </i></span></a>
+                                <a href="/server/purchase-event?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
 
-                    </td>
+                            </td>
 
-                </tr>
-                {% endfor %}
-            </table>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
 {% endblock %}
 
