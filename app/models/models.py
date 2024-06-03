@@ -162,6 +162,7 @@ class DeliveryOrder(db.Model):
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='delivery_order', lazy='dynamic')
     date = db.Column(db.Date)
+    origin = db.Column(db.String)
     destination = db.Column(db.String)
     note = db.Column(db.Text)
     created = db.Column(db.DateTime)
