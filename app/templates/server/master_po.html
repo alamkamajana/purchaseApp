@@ -29,9 +29,10 @@
                            <th>
                             Vendor
                         </th>
-                           <th align="right">
+                           <th class="text-end">
                             Total
                         </th>
+                        <td>sync</td>
                         <th>
                             Sync Date
                         </th>
@@ -41,8 +42,11 @@
                             <td>{{ data.po.name }}</td>
                              <td>{{ data.po.partner_ref }}</td>
                              <td>{{ data.po.partner_name }}</td>
-                                   <td align="right">{{"Rp. {:,.2f}".format(data.po.calculate_grand_total())}}</td>
-                              <td> {{ data.po.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
+                            <td align="right">{{"Rp. {:,.2f}".format(data.po.calculate_grand_total())}}</td>
+                            <td class="sync-po-id" data-po-id="{{ data.po.id }}" data-odoo-id="{{ data.po.odoo_id }}">
+                                syncing
+                            </td>
+                            <td> {{ data.po.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
                             <td>
 
                                 <a href="/server/purchase-event?po={{ data.po.id }}" class="btn btn-primary" type="button"> <i class="bx bxs-cart"> </i></span></a>
@@ -60,5 +64,52 @@
 {% endblock %}
 
 {% block script_plugin %}
-
+<script>
+    $(document).ready(function() {
+        if (navigator.onLine) {
+            // if online
+            $('.sync-po-id').each(function() {
+                var thisCheck = $(this);
+                var poId = $(thisCheck).attr('data-po-id');
+                var odooId = $(thisCheck).attr('data-odoo-id');
+                $.ajax({
+                    url: '/sync/check-update',
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        flask_id: poId,
+                        model: 'PurchaseOrderOdoo',
+                    },
+                    success: function(response) {
+                        if (response.update) {
+                            $.ajax({
+                                url: '/sync/get-purchase-order-odoo',
+                                type: 'GET',
+                                dataType: 'json',
+                                async: true,
+                                data: {
+                                    odoo_id: odooId,
+                                },
+                                success: function(response) {
+                                    $(thisCheck).html('Updated');
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error:', error);
+                                }
+                            });
+                        } else {
+                            $(thisCheck).html('No Update');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        } else {
+            $('.sync-farmer-td').html('no internet');
+        }
+    })
+</script>
 {% endblock %}
