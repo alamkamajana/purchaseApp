@@ -408,3 +408,31 @@ def sync_farmer_photo():
         "message": "Success",
         "status": 200
     }
+
+
+MAPPED_MODEL_ODOO_NAMES = {
+    "NfcappFarmerOdoo": NfcappFarmerOdoo,
+}
+
+
+@bp.route('/check-update', methods=['GET'])
+@login_required
+def check_update():
+    flask_id = int(request.args.get("flask_id"))
+    url = f"{odoo_base_url}/nfcapp-purchase/check-write-date"
+
+    model_name = 'NfcappFarmerOdoo'  # request.args.get('model')
+
+    model = MAPPED_MODEL_ODOO_NAMES.get(model_name)
+    model_odoo = model.query.get(flask_id)
+    data = {
+        'token': token,
+        'odoo_id': model_odoo.odoo_id,
+        'write_date': model_odoo.write_date,
+        'model': 'NfcappFarmerOdoo'
+    }
+
+    # GET Request
+    response = requests.get(url, data=data)
+    response_json = response.json()
+    return response_json
