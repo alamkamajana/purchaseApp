@@ -65,6 +65,7 @@
                             Certification Status
 
                         </th>
+                        <th>Write Date</th>
                         <th>
                             Sync Date
 
@@ -84,9 +85,10 @@
                                     <td>{{ data.farmer.parent_name }}</td>
                                <td>{{ data.farmer.station_name }}</td>
                               <td>{{ data.farmer.certification_status_name }}</td>
-                               <td>
-                                      <td> {{ data.farmer.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
+                            <td class="sync-farmer-id" data-farmer-id="{{ data.farmer.id }}" data-odoo-id="{{ data.farmer.odoo_id }}">
+                                syncing
                             </td>
+                                      <td> {{ data.farmer.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
                             <td>
 
                               {% for commodity_item in data.commodity_items %}
@@ -111,4 +113,52 @@
 
 {% block script_plugin %}
 <script src="{{ url_for('static', filename='/js/server/master_farmer.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        if (navigator.onLine) {
+            // if online
+            $('.sync-farmer-id').each(function() {
+                var thisCheck = $(this);
+                var farmerId = $(thisCheck).attr('data-farmer-id');
+                var odooId = $(thisCheck).attr('data-odoo-id');
+                $.ajax({
+                    url: '/sync/check-update',
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        flask_id: farmerId,
+                    },
+                    success: function(response) {
+                        if (response.update) {
+                            $.ajax({
+                                url: '/sync/get-farmer-odoo',
+                                type: 'GET',
+                                dataType: 'json',
+                                async: true,
+                                data: {
+                                    odoo_id: odooId,
+                                },
+                                success: function(response) {
+                                    $(thisCheck).html('Updated');
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error:', error);
+                                }
+                            });
+                        } else {
+                            $(thisCheck).html('No Update');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        } else {
+            $('.sync-farmer-td').html('no internet');
+        }
+    });
+</script>
 {% endblock %}
