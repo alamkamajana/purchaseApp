@@ -27,13 +27,17 @@
     }
     .card table{
         width: 100%;
-        margin-top: 10vh;
     }
 
     .farmer-photo{
         border: solid 1px black;
         margin:8px;
         margin-left: 0;
+        width: 140px;
+        height: 140px;
+    }
+
+    .farmer-photo img{
         width: 140px;
         height: 140px;
     }

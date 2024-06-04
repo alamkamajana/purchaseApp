@@ -1,12 +1,11 @@
-import base64
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for,send_file
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from sqlalchemy import and_, create_engine, or_
 
-from flask import jsonify
+from flask import jsonify, send_file
 from app.models.db import db
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.models.models_odoo import ResUserOdoo, ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, NfcappCommodityItemOdoo, NfcappCommodityOdoo, NfcappClusterOdoo, NfcappStationOdoo
@@ -25,6 +24,7 @@ import random
 import string
 import socket
 import io
+import base64
 
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
@@ -163,6 +163,31 @@ def transaction_order():
                            po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
                            po_order_line=po_order_line, grand_total=grand_total )
 
+@bp.route('/payment-note', methods=["GET"])
+@login_required
+def purchase_payment_note():
+    po = request.args.get('po', 1, type=int)
+    order = PurchaseOrder.query.get(po)
+
+    # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
+    return render_template('purchase/payment_note.html', purchase_order=order)
+
+@bp.route('/order/add', methods=["POST","GET"])
+@login_required
+def transaction_order_add():
+    if request.method.lower() == 'post' :
+        purchase_event = request.form['pe']
+        farmer = request.form['farmer']
+    else :
+        purchase_event = request.args.get('pe')
+        farmer = request.args.get('farmer')
+    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="ORDER-")
+    new_po = PurchaseOrder(name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft')
+    db.session.add(new_po)
+    db.session.commit()
+    url = f"/purchase/order?po={new_po.id}&farmer={farmer}"
+    return redirect(url)
+
 
 @bp.route('/order/add-signature', methods=["GET","POST"])
 @login_required
@@ -188,31 +213,6 @@ def order_get_signature():
         return send_file(io.BytesIO(purchase_order.signature), mimetype='image/png')
     else:
         return jsonify({"error": "Signature not found"}), 404
-
-@bp.route('/payment-note', methods=["GET"])
-@login_required
-def purchase_payment_note():
-    po = request.args.get('po', 1, type=int)
-    order = PurchaseOrder.query.get(po)
-
-    # transaction_list = Transaction.query.order_by(Transaction.id.desc()).all()
-    return render_template('purchase/payment_note.html', purchase_order=order)
-
-@bp.route('/order/add', methods=["POST","GET"])
-@login_required
-def transaction_order_add():
-    if request.method.lower() == 'post' :
-        purchase_event = request.form['pe']
-        farmer = request.form['farmer']
-    else :
-        purchase_event = request.args.get('pe')
-        farmer = request.args.get('farmer')
-    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="ORDER-")
-    new_po = PurchaseOrder(name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft')
-    db.session.add(new_po)
-    db.session.commit()
-    url = f"/purchase/order?po={new_po.id}&farmer={farmer}"
-    return redirect(url)
 
 
 @bp.route('/transaction', methods=["GET"])
@@ -310,6 +310,8 @@ def transaction_create():
             commodityitem_json['product_id_code'] = commodityitem.product_id_code
             commodityitem_json['product_name'] = commodityitem.product_name
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
+            commodityitem_json['commodity_name'] = commodityitem.commodity_name
+            commodityitem_json['variant'] = commodityitem.variant
             commodityitem_json['certStatus'] = commodityitem.certStatus
             commodity_item_product_arr.append(commodityitem_json)
 
@@ -390,6 +392,7 @@ def transaction_detail():
         po_line_product_arr.append(product.product_id)
 
     farmer_itemcodelist = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id).all()
+
     item_odoo_arr = []
     for i in farmer_itemcodelist:
         if i.odoo_id not in item_odoo_arr:

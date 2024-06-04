@@ -13,6 +13,10 @@ user_purchase_order_association = db.Table('user_purchase_order_association',
 )
 
 
+def get_change_id():
+    return str(uuid.uuid4())
+
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -60,6 +64,7 @@ class UserSession(db.Model):
 class PurchaseEvent(db.Model):
     __tablename__ = 'purchase_event'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     fund = db.Column(db.Float)
@@ -109,6 +114,7 @@ class PurchaseEvent(db.Model):
 class PurchaseOrder(db.Model):
     __tablename__ = 'purchase_order'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     receipt_number = db.Column(db.String(64))
@@ -149,6 +155,7 @@ class PurchaseOrder(db.Model):
 class PurchaseOrderLine(db.Model):
     __tablename__ = 'purchase_order_line'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     qty = db.Column(db.Float)
@@ -169,6 +176,7 @@ class PurchaseOrderLine(db.Model):
 class Payment(db.Model):
     __tablename__ = 'payment'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     purchase_order_id = db.Column(db.Integer, db.ForeignKey('purchase_order.id'))
     debit = db.Column(db.Float)
@@ -184,6 +192,7 @@ class Payment(db.Model):
 class DeliveryOrder(db.Model):
     __tablename__ = 'delivery_order'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     driver = db.Column(db.String)
@@ -191,6 +200,7 @@ class DeliveryOrder(db.Model):
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='delivery_order', lazy='dynamic')
     date = db.Column(db.Date)
+    origin = db.Column(db.String)
     destination = db.Column(db.String)
     note = db.Column(db.Text)
     created = db.Column(db.DateTime)
@@ -209,6 +219,7 @@ class DeliveryOrder(db.Model):
 class Money(db.Model):
     __tablename__ = 'money'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
