@@ -1,7 +1,8 @@
+import base64
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for,send_file
 )
 from sqlalchemy import and_, create_engine, or_
 
@@ -23,6 +24,7 @@ import ast
 import random
 import string
 import socket
+import io
 
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
@@ -160,6 +162,32 @@ def transaction_order():
                            ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
                            po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
                            po_order_line=po_order_line, grand_total=grand_total )
+
+
+@bp.route('/order/add-signature', methods=["GET","POST"])
+@login_required
+def transaction_add_signature():
+    po = request.form['po']
+    signature = request.form['signature']
+    purchase_order = PurchaseOrder.query.get(int(po))
+    siganture_binary = None
+    if signature:
+        signature_data = signature.split(',', 1)[1]
+        siganture_binary = signature_data
+        purchase_order.signature = base64.b64decode(siganture_binary)
+        db.session.commit()
+
+    return {"status" : 200, "message" : "success"}
+
+@bp.route('/order/get-signature')
+@login_required
+def order_get_signature():
+    po = request.args.get("po")
+    purchase_order = PurchaseOrder.query.get(int(po))
+    if purchase_order.signature:
+        return send_file(io.BytesIO(purchase_order.signature), mimetype='image/png')
+    else:
+        return jsonify({"error": "Signature not found"}), 404
 
 @bp.route('/payment-note', methods=["GET"])
 @login_required

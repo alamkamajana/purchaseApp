@@ -27,6 +27,7 @@
     }
     .card table{
         width: 100%;
+        margin-top: 10vh;
     }
 
     .farmer-photo{
