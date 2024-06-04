@@ -1,7 +1,10 @@
 import functools
+
+import psutil
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
+import socket
 from sqlalchemy import and_, create_engine
 from flask import jsonify
 from app.models.db import db
@@ -79,10 +82,17 @@ def generate_unique_sequence_number(model, column, length=8, prefix=""):
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
 
+
 def get_current_ip():
-    hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
-    return ip_address
+    ip_addresses = {}
+    for interface_name, interface_addresses in psutil.net_if_addrs().items():
+        for address in interface_addresses:
+            if address.family == socket.AF_INET:
+                ip_addresses[interface_name] = address.address
+
+    print(ip_addresses)
+    return ip_addresses.get('en0')
+
 
 @bp.route('/sync', methods=["GET"])
 @login_required
@@ -199,7 +209,7 @@ def purchase_event_details():
 @login_required
 def purchase_event_view():
     purchasers = ResUserOdoo.query.all()
-    base_url = request.url_root
+    base_url = "https://"+str(get_current_ip())+":5000/"
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
     local_ip = get_local_ip()

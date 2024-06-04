@@ -59,6 +59,18 @@ Purchase Event
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                      <div class="purchase-data row " style="padding:15px">
+
+                           <div class="status" style="text-align: right;">
+                        <div style="">
+                             <b><u> STATUS :     {% if purchase_order.compute_is_paid %}
+                                    <span>PAID</span>
+                                    {% else %}
+                                    <span>{{purchase_order.status.upper()}}</span>
+                                    {% endif %}
+
+                             </u></b>
+                        </div>
+                    </div>
                             <div class="farmer-photo">
                                 <img width="200px" height="200px"
                                     src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
@@ -86,9 +98,7 @@ Purchase Event
                                         <td>{{ purchase_order.name }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Status</th>
-                                        <td>{{ purchase_order.status }}</td>
-                                    </tr>
+
                                     <tr>
                                         <th>Certification Status</th>
                                         <td>{{ farmer.certification_status_name }}</td>

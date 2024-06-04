@@ -1,3 +1,4 @@
+import app
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
@@ -25,7 +26,7 @@ def generate_unique_sequence_number(model, column, length=8, prefix=""):
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
 @bp.route('/index', methods=["GET"])
-@login_required
+
 def delivery_index():
     pe = request.args.get("pe")
     purchase_event = PurchaseEvent.query.filter_by(id=int(pe)).first()
@@ -35,7 +36,7 @@ def delivery_index():
     return render_template('delivery/delivery.html', pe_list=pe_list, do_list=do_list, pe=purchase_event)
 
 @bp.route('/create', methods=["POST","GET"])
-@login_required
+
 def delivery_create():
     try :
         pe = request.args.get("pe")
@@ -45,7 +46,6 @@ def delivery_create():
 
 
 @bp.route('/add', methods=["POST","GET"])
-@login_required
 def delivery_add():
     try :
         pe = request.form['pe']
@@ -69,7 +69,6 @@ def delivery_add():
 
 
 @bp.route('/edit', methods=["POST","GET"])
-@login_required
 def delivery_edit():
     try :
         do = request.args.get("do")
@@ -81,7 +80,7 @@ def delivery_edit():
         return jsonify(status=400, text=5555555)
 
 @bp.route('/update', methods=["POST","GET"])
-@login_required
+
 def delivery_update():
     try :
         pe = request.form['pe']
@@ -111,7 +110,6 @@ def delivery_update():
         return jsonify(status=400, text=5555555)
 
 @bp.route('/confirm', methods=["POST","GET"])
-@login_required
 def delivery_confirm():
     delivery_order_id = request.args.get('do')
     do = DeliveryOrder.query.filter_by(id=int(delivery_order_id)).first()
@@ -120,7 +118,6 @@ def delivery_confirm():
     return redirect(request.referrer)
 
 @bp.route('/reset', methods=["POST","GET"])
-@login_required
 def delivery_reset():
     delivery_order_id = request.args.get('do')
     do = DeliveryOrder.query.filter_by(id=int(delivery_order_id)).first()
@@ -130,7 +127,7 @@ def delivery_reset():
 
 
 @bp.route('/detail', methods=["GET"])
-@login_required
+
 def delivery_detail():
     do = request.args.get("do")
     order_line = PurchaseOrderLine.query.filter_by(delivery_order_id=int(do)).all()
@@ -151,7 +148,6 @@ def delivery_detail():
     return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line, po_odoo=po_odoo)
 
 @bp.route('/detail/delete', methods=["GET"])
-@login_required
 def delivery_detail_delete():
     order_line = request.args.get("order_line")
     print(order_line)
@@ -162,7 +158,6 @@ def delivery_detail_delete():
     return redirect(request.referrer)
 
 @bp.route('/delete', methods=["GET"])
-@login_required
 def delivery_delete():
     do = request.args.get("do")
     delivery_order = DeliveryOrder.query.get(int(do))
@@ -171,7 +166,6 @@ def delivery_delete():
     return redirect(request.referrer)
 
 @bp.route('/detail/add', methods=["GET","POST"])
-@login_required
 def delivery_detail_add():
     do = request.form['do']
     barcode = request.form['barcode']
@@ -186,7 +180,6 @@ def delivery_detail_add():
     return redirect(f"/delivery/detail?do={delivery_order.id}")
 
 @bp.route('/letter', methods=["GET","POST"])
-@login_required
 def delivery_letter():
     do = request.args.get('do')
     delivery_order = DeliveryOrder.query.get(int(do))

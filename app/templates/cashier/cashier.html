@@ -114,19 +114,22 @@ Purchase Event
                         <table class="table">
                             <thead>
                             <tr>
-                                <td>Name</td>
-                                <td>Farmer</td>
-                                <td>Amount</td>
+                                     <td>Name</td>
+                                <td>Farmer Code</td>
+                                  <td>Farmer Name</td>
+                                <td align="right">Total</td>
                                 <td>Status</td>
-                                <td>Paid Status</td>
+                                <td>Payment Status</td>
+                                  <td>Action</td>
                             </tr>
                             </thead>
                             <tbody>
                             {% for po in purchase_order_paid %}
                             <tr>
                                 <td>{{ po.name }}</td>
-                                <td>{{ po.farmer_id }}</td>
-                                <td>{{ po.amount_total }}</td>
+                                <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).code }}</td>
+                                <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).farmer_name }}</td>
+                                <td align="right">Rp {{ "{:,.2f}".format(po.amount_total) }}</td>
                                 <td>{{ po.status }}</td>
                                 <td>
                                     {% if po.compute_is_paid %}
@@ -134,6 +137,10 @@ Purchase Event
                                     {% else %}
                                     <p>Not Paid</p>
                                     {% endif %}
+                                </td>
+                                   <td>
+                                    <a href="/cashier/po/detail?po={{ po.id }}"
+                                       class="btn btn-sm btn-success">Open</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -146,10 +153,11 @@ Purchase Event
                             <thead>
                             <tr>
                                 <td>Name</td>
-                                <td>Farmer</td>
-                                <td>Amount</td>
+                                <td>Farmer Code</td>
+                                  <td>Farmer Name</td>
+                                <td align="right">Total</td>
                                 <td>Status</td>
-                                <td>Paid Status</td>
+                                <td>Payment Status</td>
                                 <td>Action</td>
                             </tr>
                             </thead>
@@ -157,8 +165,9 @@ Purchase Event
                             {% for po in purchase_order_not_paid %}
                             <tr>
                                 <td>{{ po.name }}</td>
+                                <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).code }}</td>
                                 <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).farmer_name }}</td>
-                                <td>Rp {{ "{:,.2f}".format(po.amount_total) }}</td>
+                                <td align="right">Rp {{ "{:,.2f}".format(po.amount_total) }}</td>
                                 <td>{{ po.status }}</td>
                                 <td>
                                     {% if po.compute_is_paid %}

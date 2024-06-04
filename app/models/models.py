@@ -130,6 +130,7 @@ class PurchaseOrder(db.Model):
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
     money_entries = db.relationship('Money', backref='purchase_order', lazy='dynamic')
+    signature = db.Column(db.LargeBinary)
 
     @property
     def compute_payment(self):
