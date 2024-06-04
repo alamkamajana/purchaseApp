@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/html5-qrcode/js/html5-qrcode.min.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
@@ -158,6 +160,8 @@
         });
     });
 </script>
+
+<script src="{{ url_for('static', filename='/js/tools/scanner.js') }}"></script>
 
 </body>
 </html>

@@ -11,14 +11,10 @@ function btPrint() {
 
     // Format the date as needed (e.g., YYYY-MM-DD)
     var formattedDate = year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
-
     console.log(formattedDate);
 
     var code_petani = document.getElementById("farmer_code").value;
-    console.log(code_petani)
     var nama_petani = document.getElementById("farmer_name").value;
-    console.log(nama_petani)
-
 
     var DATA = ''
         + '\x1B' + '\x61' + '\x31'
@@ -69,6 +65,9 @@ async function btPrint2() {
     var nama_petani = document.getElementById("farmer_name").value;
     let order_id = document.getElementById("purchase_order_id").value;
     let order_name = document.getElementById("purchase_order_name").value;
+    let event_name = document.getElementById("purchase_event_id").value;
+    let odoo_name = document.getElementById("purchase_order_odoo_id").value;
+    let certification_status = document.getElementById("certification_status_id").value;
     const purchaseData = await fetchPurchaseData(order_id);
     // const purchaseData = [
     //   { product_name: "Kopi Arabica",price: 25000, quantity: 2, subtotal: 25000 },
@@ -88,9 +87,12 @@ async function btPrint2() {
         + '\x1D' + '\x21' + '\x00' + 'TRIPPER\nWE ADD VALUE AT ORIGIN\n\n'
         + '\x1D' + '\x21' + '\x00' + '\x1B' + '\x61' + '\x00'
         + `Order\t: ${order_name}`
+        + '\nPE\t: ' + event_name
+        + '\nPO\t: ' + odoo_name
         + '\nTanggal\t: ' + formattedDate
         + '\nID Petani\t: ' + code_petani
         + '\nNama\t: ' + nama_petani
+        + '\nCertification Status\t: ' + certification_status
         + '\n'
         + `\x1B\x21\x01${tableData}`
         + `\nTotal\tRp.${formattedTotalAmount}\n\n\x1B\x21\x00 `
@@ -119,7 +121,7 @@ async function btPrint2() {
 }
 
 function generateTable(purchaseData) {
-    let table = "\nProduk\nHarga\tJml\tSub\n";
+    let table = "\n";
     for (const item of purchaseData) {
         const productName = item.product_name.substring(0, 25);
 
@@ -136,7 +138,7 @@ function generateTable(purchaseData) {
             minimumFractionDigits: 0
         }).format(item.subtotal).replace(/Rp\s*/g, "");
 
-        table += `${productName}\nRp.${formattedPrice}\t${item.quantity}\tRp.${formattedSubtotal}\n`;
+        table += `\n${item.product_code}\n${productName}\nRp.${formattedPrice}\n${item.quantity}\nRp.${formattedSubtotal}\n`;
     }
     return table;
 }

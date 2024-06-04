@@ -74,10 +74,10 @@
                                         <th>Order</th>
                                         <td>{{ po.name }}</td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                         <th>Status</th>
                                         <td>{{ po.status }}</td>
-                                    </tr>
+                                    </tr> -->
                                     <tr>
                                         <th>Certification Status</th>
                                         <td>{{ farmer.certification_status_name }}</td>
@@ -114,13 +114,11 @@
 
 
 
-                        <div class="event-container">
+                        <div class="event-container responsive-table">
 
                             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                                 <tr>
-                                    <th style="width: 5%;">
-                                        No
-                                    </th>
+                    
                                     <th style="width: 12%;">
                                         Product
                                     </th>
@@ -149,15 +147,19 @@
                                 {% for transaction in transaction_list %}
 
                                 <tr class="event-row">
-                                    <td>
-                                        {{ loop.index }}
+                                    <td class="responsive-th">
+                                        <b>Product</b>
                                     </td>
-                                    <td>
+                                
+                                    <td class="overflow-container">
                                         <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                             {{ transaction.product_odoo_id.id }}
                                         </div>
                                         {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
                                         {# {{transaction.product_odoo_id}}#}
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Price Unit</b>
                                     </td>
                                     <td class="price-column text-right">
                                         <div class="transaction-info{{ transaction.id }} text-right"
@@ -165,11 +167,17 @@
                                             Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
                                         </div>
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Qty</b>
+                                    </td>
                                     <td class="qty-column ">
                                         <div class="transaction-info{{ transaction.id }} text-right"
                                             id="qty-info{{ transaction.id }}">
-                                            {{ '{:,.0f}'.format(transaction.qty) }}
+                                            {{ '{:,.2f}'.format(transaction.qty) }}
                                         </div>
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Subtotal</b>
                                     </td>
                                     <td class="text-right">
                                         <div id="subtotal-info{{ transaction.id }} text-right">
@@ -178,12 +186,18 @@
 
                                         </div>
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Barcode</b>
+                                    </td>
                                     <td>
                                         <div id="subtotal-info{{ transaction.id }}">
 
                                             {{ transaction.barcode }}
 
                                         </div>
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Note</b>
                                     </td>
                                       <td>
                                         <div id="subtotal-info{{ transaction.id }}">
@@ -196,7 +210,7 @@
                                         <span class="event-id" style="display: none;">{{ transaction.id }}</span>
                                         <a type="button"
                                             href="/purchase/transaction/detail?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
-                                            class="btn btn-secondary">
+                                            class="btn btn-primary">
                                             <span><i class='bx bxs-pencil'></i></span>
                                         </a>
                                         <!--                    <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"-->
@@ -206,7 +220,7 @@
                                         <!--                    </button>-->
                                         <a type="button"
                                             href="/purchase/transaction/delete?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
-                                            class="btn btn-secondary" onclick="return confirm('Are you sure you want to delete this item?');">
+                                            class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
                                             <span><i class='bx bxs-trash'></i></span>
                                         </a>
                                     </td>
@@ -215,8 +229,8 @@
                                 {% endfor %}
 
 
-                                <tr>
-                                    <td colspan="4">
+                                <tr class="total-price-container">
+                                    <td colspan="3">
                                         <b>Grand Total</b>
                                     </td>
                                     <td>
@@ -344,7 +358,7 @@
                             </table>
 
                         </div>
-                        <div style="margin-bottom: 32px; margin-top: 24px;">
+                        <!-- <div style="margin-bottom: 32px; margin-top: 24px;">
                             <h5>Product Possible to Purchase from This farmer based on Certification Status</h5>
                             <table>
                                 <tbody>
@@ -353,7 +367,7 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

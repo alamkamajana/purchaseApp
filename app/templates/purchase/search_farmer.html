@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/search_farmer.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
@@ -47,12 +48,12 @@
                         <div class="form-group">
                             <label for="farmer_code">Farmer Code</label>
                             <div class="row">
-                                <div class="col-11">
+                                <div class="col-10 col-sm-11">
                                     
                                     <input type="text" class="form-control" name="farmer_code" id="farmer_code" aria-describedby="emailHelp"
                                         placeholder="">
                                 </div>
-                                <div class="col-1">
+                                <div class="col-2 col-sm-1">
                                     <button type="button" class="btn btn-primary" onclick="startScan()">
                                         <span><i class="bx bx-scan"></i></i></span>
                                     </button>
@@ -137,13 +138,14 @@
                 </div>
     
                 {%if tab %}
-                <div style="padding: 24px;">
+                <div style="padding: 24px;" class="responsive-table">
                     <table class="table" >
                         <tbody>
                             <tr>
                                 <th></th>
                                 <th>Farmer Code</th>
                                 <th>Farmer Name</th>
+                                <th>Certification Status</th>
                                 <th style="width: 10%;"></th>
                             </tr>
                             {% if farmers %}
@@ -152,8 +154,18 @@
                                         <td>
                                             <img width="100px" height="100px" src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}" alt="Farmer Photo"/>
                                           </td>
+                                        <td class="responsive-th">
+                                            <b>Farmer Code</b>
+                                        </td>
                                         <td>{{farmer.code}}</td>
+                                        <td class="responsive-th">
+                                            <b>Farmer Name</b>
+                                        </td>
                                         <td>{{farmer.farmer_name}}</td>
+                                        <td class="responsive-th">
+                                            <b>Certification Status</b>
+                                        </td>
+                                        <td>{{farmer.certification_status_name}}</td>
                                         <td ><a href="/purchase/farmer/detail?pe={{pe}}&farmer_code={{farmer.code}}" class="btn btn-success">Submit</a></td>
                                     </tr>
                                 {% endfor %}
