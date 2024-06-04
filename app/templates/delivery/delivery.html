@@ -49,24 +49,150 @@
             }
         }
 
-        
 
-        @media screen and (max-width: 768px){
-            .row{
-                font-size: 0.6em;
-            }
 
-            h1{
-                font-size: 2em;
-            }
-
-            a{
-                font-size: 0.6em;
-            }
-            .table-container{
-                overflow-x: auto;
+        @media (min-width: 576px){
+            .responsive-th{
+                display:none;
             }
         }
+
+        @media (max-width: 576px) {
+
+
+            .event-container h1 {
+                font-size: 1.5em;
+            }
+
+            .event-container .btn {
+                width: 100%;
+            }
+
+            
+
+            .event-container .form-control {
+                margin-bottom: 10px;
+            }
+
+            .event-container .table-responsive {
+                border: 0;
+            }
+
+            .event-container table {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .event-container thead, .event-container th {
+                display: none;
+            }
+
+            .event-container tbody, .event-container td, .event-container tr {
+                display: block;
+                width: 100%;
+            }
+
+            /* .event-container tr {
+                margin-bottom: 10px;
+                border-bottom: 1px solid #ddd;
+            } */
+
+            .event-container td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                text-align: left;
+            }
+
+            /* .event-container td:before {
+                content: attr(data-label);
+                flex-basis: 50%;
+                text-align: left;
+                font-weight: bold;
+                color: #495057;
+            } */
+
+
+            .event-container td {
+                width: 40%;
+                box-sizing: border-box;
+                display: inline-block;
+            }
+
+            .event-container tr{
+                margin-bottom: 16px;
+            }
+
+            .responsive-table {
+                display: block;
+            }
+
+            .responsive-table th {
+                display: none;
+            }
+
+            .responsive-table tbody {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .responsive-table tr {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .responsive-table td {
+                width: 50%;
+                box-sizing: border-box;
+                display: flex;
+                align-items: center;
+                justify-content: right;
+            }
+
+            .responsive-table .responsive-th{
+                justify-content: left;
+            }
+
+            .responsive-table .overflow-container {
+                width: 50%;
+                box-sizing: border-box;
+                display: flex;
+                overflow-x: auto;
+                justify-content: left;
+                white-space: nowrap;
+            }
+
+            .responsive-table td:first-child, .responsive-table td:nth-child(2){
+                background-color: #f1f1f1;
+            }
+
+            .responsive-table td:last-child{
+                width:100% ;
+            }
+
+            
+            .responsive-table .total-price-container td{
+                width:50% !important;
+                justify-content: right !important;
+            }
+
+            .responsive-table .total-price-container td:first-child{
+                
+                justify-content: left !important;
+            }
+
+            .responsive-table td a{
+                width:100%;
+            }
+
+            .btn{
+                width: 100%;
+            }
+
+        }
+
     </style>
 </head>
 <body>
@@ -76,19 +202,22 @@
             <h1 class="text-center mb-4">Purchase Event {{pe.name}}</h1>
             <div class="d-flex justify-content-center mb-4">
                 <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom">Tambah Surat Jalan</a>
+                <button class="btn btn-primary btn-custom" type="button" onclick="btPrintTest()" style="margin-left: 16px;">Tes Print</button>
             </div>
             <input type="hidden" id="purchase_event_name" value="{{ pe.name }}">
             <input type="hidden" id="purchase_event_id" value="{{ pe.id }}">
-            <div class="table-container">
+            <div class="table-container responsive-table">
                 <table class="table table-hover">
                     <thead>
                     <tr>
                         <th>Surat Jalan#</th>
-                        <th>Tanggal</th>
-                        <th>Asal</th>
-                        <th>Tujuan</th>
-                        <th>Sopir</th>
-                        <th>Kendaraan</th>
+                        <th>Tanggal Kirim</th>
+                        <th>Tanggal Sampai</th>
+                        <th>Asal Barang</th>
+                        <th>Dikirim Ke</th>
+                        <th>Nama Sopir</th>
+                        <th>Jenis Transport & No. Polisi</th>
+                        <th>Status</th>
                         <th>Catatan</th>
                         <!-- <th nowrap="nowrap">Purchase Event</th> -->
                         <th>Action</th>
@@ -97,12 +226,41 @@
                     <tbody id="do-list">
                     {% for do in do_list %}
                     <tr>
+                        <td class="responsive-th">
+                            <b>Surat Jalan#</b>
+                        </td>
                         <td nowrap="nowrap">{{ do.name }}</td>
-                        <td nowrap="nowrap">{{ do.date }}</td>
+                        <td class="responsive-th">
+                            <b>Tanggal Kirim</b>
+                        </td>
+                        <td nowrap="nowrap">{{ do.sent_date }}</td>
+                        <td class="responsive-th">
+                            <b>Tanggal Sampai</b>
+                        </td>
+                        <td nowrap="nowrap">{{ do.received_date }}</td>
+                        <td class="responsive-th">
+                            <b>Asal Barang</b>
+                        </td>
                         <td>{{ do.origin }}</td>
+                        <td class="responsive-th">
+                            <b>Dikirim Ke</b>
+                        </td>
                         <td>{{ do.destination }}</td>
+                        <td class="responsive-th">
+                            <b>Nama Sopir</b>
+                        </td>
                         <td>{{ do.driver }}</td>
+                        <td class="responsive-th">
+                            <b>Jenis Transport & No. Polisi</b>
+                        </td>
                         <td>{{ do.vehicle_number }}</td>
+                        <td class="responsive-th">
+                            <b>Status</b>
+                        </td>
+                        <td>{{ do.status }}</td>
+                        <td class="responsive-th">
+                            <b>Catatan</b>
+                        </td>
                         <td>{{ do.note }}</td>
                         <!-- <td>{{ pe.name }}</td> -->
                         <td nowrap="nowrap">
@@ -110,10 +268,12 @@
                                class="btn btn-sm btn-success btn-add-goods"><i class="bx bxs-cart-add"></i></a>
                             <a href="/delivery/edit?do={{ do.id }}&pe={{ pe.id }}" class="btn btn-sm btn-primary"><i
                                     class="bx bxs-pencil"></i></a>
+                            {% if do.status != "Confirm" %}
                             <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-danger"><i
                                     class="bx bxs-trash"></i></a>
-                            <a href="/delivery/letter?do={{ do.id }}" class="btn btn-sm btn-info"><i
-                                    class="bx bxs-printer"></i></a>
+                            {% endif %}
+                            <!-- <a href="/delivery/letter?do={{ do.id }}" class="btn btn-sm btn-info"><i
+                                    class="bx bxs-printer"></i></a> -->
                         </td>
                     </tr>
                     {% endfor %}
@@ -126,5 +286,7 @@
 </div>
 
 <script src="{{ url_for('static', filename='/js/delivery/delivery.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/tools/print_test.js') }}"></script>
+
 </body>
 </html>

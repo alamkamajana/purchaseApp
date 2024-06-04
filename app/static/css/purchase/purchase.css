@@ -1,3 +1,69 @@
+.tab-content {
+    display: none;
+  }
+
+.tab-content.active {
+    display: block;
+}
+
+.tabs ul {
+    overflow: hidden;
+    border: none;
+    background-color: #eaeaea;
+    z-index: 7;
+    display: flex;
+}
+
+.tabs ul a{
+    background-color: #ffffff;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    border-top-left-radius: 8px;
+    /* Adjust as needed */
+    border-top-right-radius: 8px;
+    /* Adjust as needed */
+    width: 180px;
+    align-self: flex-end;
+    margin-right: 10px;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: gray;
+
+}
+
+.tabs ul .active{
+    background-color: #ffffff;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    border-top-left-radius: 8px;
+    /* Adjust as needed */
+    border-top-right-radius: 8px;
+    /* Adjust as needed */
+    width: 180px;
+    align-self: flex-end;
+    margin-right: 10px;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: black;
+
+}
+
+.farmer-form{
+    padding: 24px;
+}
+
+.code-form-btn{
+    margin-top: 24px;
+}
+
 .event-container {
     overflow-x: auto;
     white-space: nowrap;
@@ -245,10 +311,12 @@
         display: flex;
         align-items: center;
         justify-content: right;
+        text-align: end;
     }
 
     .responsive-table .responsive-th{
         justify-content: left;
+        text-align: start;
     }
 
     .responsive-table .overflow-container {
@@ -282,6 +350,11 @@
     .responsive-table td a{
         width:100%;
     }
+
+    .mobile-hidden{
+        display: none !important;
+    }
+
 
 }
 

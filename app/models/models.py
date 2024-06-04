@@ -130,6 +130,7 @@ class PurchaseOrder(db.Model):
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
     money_entries = db.relationship('Money', backref='purchase_order', lazy='dynamic')
+    signature = db.Column(db.LargeBinary)
 
     @property
     def compute_payment(self):
@@ -198,10 +199,12 @@ class DeliveryOrder(db.Model):
     vehicle_number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))
     purchase_order_lines = db.relationship('PurchaseOrderLine', back_populates='delivery_order', lazy='dynamic')
-    date = db.Column(db.Date)
+    sent_date = db.Column(db.DateTime)
+    received_date = db.Column(db.DateTime)
     origin = db.Column(db.String)
     destination = db.Column(db.String)
     note = db.Column(db.Text)
+    status = db.Column(db.String(64))
     created = db.Column(db.DateTime)
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)

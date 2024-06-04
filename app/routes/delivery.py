@@ -1,3 +1,4 @@
+import app
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
@@ -25,7 +26,7 @@ def generate_unique_sequence_number(model, column, length=8, prefix=""):
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
 @bp.route('/index', methods=["GET"])
-@login_required
+
 def delivery_index():
     pe = request.args.get("pe")
     purchase_event = PurchaseEvent.query.filter_by(id=int(pe)).first()
@@ -35,7 +36,7 @@ def delivery_index():
     return render_template('delivery/delivery.html', pe_list=pe_list, do_list=do_list, pe=purchase_event)
 
 @bp.route('/create', methods=["POST","GET"])
-@login_required
+
 def delivery_create():
     try :
         pe = request.args.get("pe")
@@ -45,19 +46,20 @@ def delivery_create():
 
 
 @bp.route('/add', methods=["POST","GET"])
-@login_required
 def delivery_add():
     try :
         pe = request.form['pe']
         driver = request.form['driver']
         vehicle = request.form['vehicle']
-        date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+        sent_date = datetime.strptime(request.form['sent_date'], '%Y-%m-%dT%H:%M')
+        received_date = datetime.strptime(request.form['received_date'], '%Y-%m-%dT%H:%M')
         origin = request.form['origin']
         destination = request.form['destination']
         note = request.form['note']
+        status = "Draft"
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
         today_datetime = datetime.now()
-        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,date=date,origin=origin,destination=destination,note=note)
+        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,sent_date=sent_date, received_date=received_date,origin=origin,destination=destination,note=note, status=status)
         db.session.add(new_do)
         db.session.commit()
         return redirect(f"/delivery/detail?do={new_do.id}")
@@ -67,7 +69,6 @@ def delivery_add():
 
 
 @bp.route('/edit', methods=["POST","GET"])
-@login_required
 def delivery_edit():
     try :
         do = request.args.get("do")
@@ -79,25 +80,26 @@ def delivery_edit():
         return jsonify(status=400, text=5555555)
 
 @bp.route('/update', methods=["POST","GET"])
-@login_required
+
 def delivery_update():
     try :
         pe = request.form['pe']
         do = request.form['do']
         vehicle = request.form['vehicle']
         driver = request.form['driver']
-        date = request.form['date']
+        sent_date = datetime.strptime(request.form['sent_date'], '%Y-%m-%dT%H:%M')
+        received_date = datetime.strptime(request.form['received_date'], '%Y-%m-%dT%H:%M')
         origin = request.form['origin']
         destination = request.form['destination']
         note = request.form['note']
         delivery_order = DeliveryOrder.query.get(int(do))
         today_datetime = datetime.now()
-        date_convert = datetime.strptime(date,"%Y-%m-%d").date()
 
         delivery_order.driver = driver
         delivery_order.vehicle_number = vehicle
         delivery_order.modified = today_datetime
-        delivery_order.date = date_convert
+        delivery_order.sent_date = sent_date
+        delivery_order.received_date = received_date
         delivery_order.origin = origin
         delivery_order.destination = destination
         delivery_order.note = note
@@ -107,9 +109,25 @@ def delivery_update():
         print(e)
         return jsonify(status=400, text=5555555)
 
+@bp.route('/confirm', methods=["POST","GET"])
+def delivery_confirm():
+    delivery_order_id = request.args.get('do')
+    do = DeliveryOrder.query.filter_by(id=int(delivery_order_id)).first()
+    do.status = 'Confirm'
+    db.session.commit()
+    return redirect(request.referrer)
+
+@bp.route('/reset', methods=["POST","GET"])
+def delivery_reset():
+    delivery_order_id = request.args.get('do')
+    do = DeliveryOrder.query.filter_by(id=int(delivery_order_id)).first()
+    do.status = 'Draft'
+    db.session.commit()
+    return redirect(request.referrer)
+
 
 @bp.route('/detail', methods=["GET"])
-@login_required
+
 def delivery_detail():
     do = request.args.get("do")
     order_line = PurchaseOrderLine.query.filter_by(delivery_order_id=int(do)).all()
@@ -130,7 +148,6 @@ def delivery_detail():
     return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line, po_odoo=po_odoo)
 
 @bp.route('/detail/delete', methods=["GET"])
-@login_required
 def delivery_detail_delete():
     order_line = request.args.get("order_line")
     print(order_line)
@@ -141,7 +158,6 @@ def delivery_detail_delete():
     return redirect(request.referrer)
 
 @bp.route('/delete', methods=["GET"])
-@login_required
 def delivery_delete():
     do = request.args.get("do")
     delivery_order = DeliveryOrder.query.get(int(do))
@@ -150,7 +166,6 @@ def delivery_delete():
     return redirect(request.referrer)
 
 @bp.route('/detail/add', methods=["GET","POST"])
-@login_required
 def delivery_detail_add():
     do = request.form['do']
     barcode = request.form['barcode']
@@ -165,7 +180,6 @@ def delivery_detail_add():
     return redirect(f"/delivery/detail?do={delivery_order.id}")
 
 @bp.route('/letter', methods=["GET","POST"])
-@login_required
 def delivery_letter():
     do = request.args.get('do')
     delivery_order = DeliveryOrder.query.get(int(do))

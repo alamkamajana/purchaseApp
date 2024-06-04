@@ -100,31 +100,37 @@
         <input type="hidden" name="do" value="{{ do.id }}">
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Sopir</label>
+                <label>Nama Sopir</label>
                 <input type="text" class="form-control" value="{{ do.driver }}" name="driver"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Tanggal</label>
-                <input type="date" id="date" class="form-control" value="{{ do.date }}" name="date"/>
+                <label>Tanggal Kirim</label>
+                <input type="datetime-local" id="send_date" class="form-control" value="{{ do.sent_date }}" name="sent_date"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Asal</label>
+                <label>Tanggal Terima</label>
+                <input type="datetime-local" id="received_date" class="form-control" value="{{ do.received_date }}" name="received_date"/>
+            </div>
+        </div>
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Asal Barang</label>
                 <input type="text" class="form-control" value="{{ do.origin }}" name="origin"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Tujuan</label>
+                <label>Dikirim Ke</label>
                 <input type="text" class="form-control" value="{{ do.destination }}" name="destination"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Kendaraan</label>
+                <label>Jenis Transport dan No. Polisi</label>
                 <input type="text" class="form-control" value="{{ do.vehicle_number }}" name="vehicle"/>
             </div>
         </div>
