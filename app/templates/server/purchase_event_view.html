@@ -18,15 +18,17 @@ Purchase Event
     }
 </style>
 
-     <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
-                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
-                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
-                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
-                <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}}</p></li>
-            </ol>
-        </nav>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a>
+        </li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;">
+            Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}}</p></li>
+    </ol>
+</nav>
 
 
 <div class="card">
@@ -49,6 +51,10 @@ Purchase Event
                 <button class="nav-link" id="nav-contact-tab2" data-bs-toggle="tab" data-bs-target="#nav-contact2"
                         type="button"
                         role="tab" aria-controls="nav-contact2" aria-selected="false">Cashier
+                </button>
+                <button class="nav-link" id="nav-contact-tab3" data-bs-toggle="tab" data-bs-target="#nav-contact3"
+                        type="button"
+                        role="tab" aria-controls="nav-contact3" aria-selected="false">Payments
                 </button>
             </div>
         </nav>
@@ -88,10 +94,10 @@ Purchase Event
                     <br/>
                     <div class="form-group">
 
-                          <a type="button" class="btn btn-secondary event-info"
-                                   href="/server/purchase-event/details?pe={{ purchase_event.id }}">
-                                    <span><i class='bx bxs-pencil'></i> EDIT</span>
-                                </a>
+                        <a type="button" class="btn btn-secondary event-info"
+                           href="/server/purchase-event/details?pe={{ purchase_event.id }}">
+                            <span><i class='bx bxs-pencil'></i> EDIT</span>
+                        </a>
 
 
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -100,7 +106,7 @@ Purchase Event
                         </button>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#exampleModal2">
-                             - Get Money
+                            - Get Money
                         </button>
                     </div>
 
@@ -184,19 +190,19 @@ Purchase Event
                 </form>
             </div>
             <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-<h1>for Purchaser</h1>
+                <h1>for Purchaser</h1>
 
 
-                                <a href="{{ data_purchase }}" target="_blank"
-                                   class="btn btn-primary" type="button"> <i class="bx bxs-cart"></i></a>
+                <a href="{{ data_purchase }}" target="_blank"
+                   class="btn btn-primary" type="button"> <i class="bx bxs-cart"></i></a>
 
 
                 <img src="data:image/png;base64,{{ qr_code_purchase }}">
             </div>
             <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
                 <h1>for Trucker</h1>
-                      <a href="{{data_delivery}}" target="_blank" class="btn btn-warning"><i
-                                        class="bx bxs-truck"></i></a>
+                <a href="{{data_delivery}}" target="_blank" class="btn btn-warning"><i
+                        class="bx bxs-truck"></i></a>
 
 
                 <img src="data:image/png;base64,{{ qr_code_delivery }}">
@@ -204,10 +210,80 @@ Purchase Event
             <div class="tab-pane fade" id="nav-contact2" role="tabpanel" aria-labelledby="nav-contact-tab2">
                 <h1>for Cashier</h1>
                 <a type="button" class="btn btn-success event-info"
-                                   href="{{ data_cashier}}" target="_blank">
-                                    <span><i class='bx bx-dollar'></i></span>
-                                </a>
+                   href="{{ data_cashier}}" target="_blank">
+                    <span><i class='bx bx-dollar'></i></span>
+                </a>
                 <img src="data:image/png;base64,{{ qr_code_cashier }}">
+            </div>
+            <div class="tab-pane fade" id="nav-contact3" role="tabpanel" aria-labelledby="nav-contact-tab3">
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1>Payments </h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <thead>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Payment ID</th>
+                                <th>Source</th>
+                                <!--                        <th style="text-align: right;">Fund</th>-->
+                                <th style="text-align: right;">Amount</th>
+                                <th>Type</th>
+                                <th>Note</th>
+                                </thead>
+                                <tbody>
+                                {% set ns = namespace(fund=0) %}
+                                {% set number = namespace(number=0) %}
+                                {% for payment in payments %}
+                                <tr>
+                                    {% set number.number = number.number + 1 %}
+                                    {% set ns.fund = ns.fund + payment.amount %}
+                                    <td>
+                                        {{number.number}}
+                                    </td>
+                                    <td>
+                                        {{payment.number}}
+                                    </td>
+                                    <td>
+                                        {{payment.unique_id}}
+                                    </td>
+                                    <td>
+                                        {% if payment.purchase_order_id %}
+                                        PO : {{ PurchaseOrder.query.get(payment.purchase_order_id).name }}
+                                        {% else %}
+                                        PE : {{ purchase_event.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align: right;" class="" data-value="{{ payment.amount }}">Rp {{
+                                        "{:,.2f}".format(payment.amount) }}
+                                    </td>
+                                    <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                                    <td>{{ payment.note }}</td>
+                                </tr>
+                                {% endfor %}
+
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>Total :</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align: right">Rp {{ "{:,.2f}".format(ns.fund) }}</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
         <script>

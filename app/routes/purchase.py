@@ -282,6 +282,8 @@ def transaction_create():
             commodityitem_json['product_id_code'] = commodityitem.product_id_code
             commodityitem_json['product_name'] = commodityitem.product_name
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
+            commodityitem_json['commodity_name'] = commodityitem.commodity_name
+            commodityitem_json['variant'] = commodityitem.variant
             commodityitem_json['certStatus'] = commodityitem.certStatus
             commodity_item_product_arr.append(commodityitem_json)
 
@@ -418,6 +420,7 @@ def transaction_items():
         product_name = ProductOdoo.query.get(line.product_odoo_id)
         commodity_item = NfcappCommodityItemOdoo.query.filter_by(product_id=product_name.odoo_id).first()
         data_json = {}
+        data_json['product_code'] = commodity_item.code
         data_json['product_name'] = commodity_item.desc
         data_json['price'] = line.unit_price
         data_json['quantity'] = line.qty
