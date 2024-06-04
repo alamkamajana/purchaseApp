@@ -82,11 +82,15 @@
     </div>
 
     <div class="" id="progress-container">
-        <div class="text-center">
+        <div class="text-center" id="progress-bar" style="display: none">
             <h1>Syncing</h1>
-            <div class="progress-bar" id="progress-bar" style="display: block;">
+            <div class="progress-bar" style="display: block;">
                 <div class="progress" style="width: 0%;"></div>
             </div>
+        </div>
+
+        <div id="upload-text" style="display: none;">
+            <h1>Uploading...</h1>
         </div>
     </div>
 
@@ -143,21 +147,34 @@
         }
 
 
-        const uploadButton = document.querySelector('.upload-button');
-        var url = '/nfcpurchase/upload/all';
-        uploadButton.addEventListener('click', () => {
-            callUploadApi(url);
+        $(document).ready(function() {
+            const uploadButton = $('.upload-button');
+            var urlUploadAll = '/nfcpurchase/upload/all';
+
+            uploadButton.click(function() {
+                $('#progress-container').css('display', 'flex');
+                $('#upload-text').show();
+
+                $.ajax({
+                    url: urlUploadAll,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response) {
+                            alert('Upload success');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Upload failed');
+                    },
+                    complete: function() {
+                        $('#upload-text').hide();
+                        $('#progress-container').hide();
+                    }
+                });
+            });
         });
-        function callUploadApi(url) {
-            try {
-                var response = fetch(url);
-                if (response) {
-                    console.log(response);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        };
+
     </script>
 
 {% endblock %}
