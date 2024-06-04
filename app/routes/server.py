@@ -328,6 +328,9 @@ def server_money_add2():
     except Exception as e :
         print(e)
 
+@bp.route('/test-print', methods=["GET"])
+def server_test_print():
+    return render_template('server/test_print.html')
 
 
 
