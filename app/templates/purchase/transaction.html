@@ -104,6 +104,12 @@
 
                     <input name="purchase-order-odoo" class="form-control" id="purchase-order-odoo"
                            value="{{ event.purchase_order_odoo.id }}" hidden>
+                    <input name="purchase-order-odoo" class="form-control" id="purchase_order_odoo_id"
+                           value="{{ event.purchase_order_odoo.name }}" hidden>
+                    <input name="purchase-order-odoo" class="form-control" id="certification_status_id"
+                           value="{{ farmer.certification_status_name }}" hidden>
+                    <input name="purchase-event-odoo" class="form-control" id="purchase_event_id"
+                           value="{{ event.name }}" hidden>
                     <input name="purchase-order" class="form-control" id="purchase-order" value="{{ po.id }}"
                            hidden>
                     <input name="farmer" class="form-control" id="farmer_code" value="{{ farmer.code }}" hidden>
@@ -327,7 +333,7 @@
 
                     <div style="padding:20px;">
                         <div style="display: flex; align-items: center;">
-                            <button onclick="btPrint2()" class="btn btn-success">Print</button>
+                            <button onclick="deliveryInfo()" class="btn btn-success">Print</button>
                         </div>
                     </div>
 
@@ -601,7 +607,7 @@
     })();
 
 </script>
-<script src="{{ url_for('static', filename='/js/tools/print.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/tools/print_purchase.js') }}"></script>
 <script src="{{ url_for('static', filename='/js/purchase/purchase.js') }}"></script>
 
 
