@@ -260,7 +260,7 @@ Purchase Event
 
         <div class="row mt-4">
             <div class="col-3">
-                {% if payment_debt > 0 %}
+                {% if purchase_order.compute_is_paid != True %}
                 <button type="button" class="btn btn-success" id="addMoneyButton">Pay</button>
                 {% endif %}
             </div>

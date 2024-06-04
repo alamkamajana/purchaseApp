@@ -23,7 +23,8 @@
 <body>
     <div class="container">
         <div class="card">
-
+            <input type="hidden" id="purchase_order_id" value="{{po.id}}">
+            <input type="hidden" id="purchase_order_name" value="{{po.name}}">
             <div class="card-header d-flex align-items-center">
                 <a href="/purchase/transaction?pe={{ event.id }}" class="btn back-btn"
                     style="width: fit-content;"><span><i class='bx bx-chevron-left bx-md'></i></span></a>
@@ -40,6 +41,11 @@
 
                     </ul>
                     <div class="tab-content active" id="purchase">
+                        <div class="status" style="text-align: right;">
+                            <div style="">
+                                <b><u>STATUS : {{po.status.upper()}}</u></b>
+                            </div>
+                        </div>
                         <div class="purchase-data">
                             <div class="farmer-photo">
                                 <img width="200px" height="200px"
@@ -68,10 +74,10 @@
                                         <th>Order</th>
                                         <td>{{ po.name }}</td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                         <th>Status</th>
                                         <td>{{ po.status }}</td>
-                                    </tr>
+                                    </tr> -->
                                     <tr>
                                         <th>Certification Status</th>
                                         <td>{{ farmer.certification_status_name }}</td>
@@ -108,13 +114,11 @@
 
 
 
-                        <div class="event-container">
+                        <div class="event-container responsive-table">
 
                             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                                 <tr>
-                                    <th style="width: 5%;">
-                                        No
-                                    </th>
+                    
                                     <th style="width: 12%;">
                                         Product
                                     </th>
@@ -143,15 +147,19 @@
                                 {% for transaction in transaction_list %}
 
                                 <tr class="event-row">
-                                    <td>
-                                        {{ loop.index }}
+                                    <td class="responsive-th">
+                                        <b>Product</b>
                                     </td>
-                                    <td>
+                                
+                                    <td class="overflow-container">
                                         <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                             {{ transaction.product_odoo_id.id }}
                                         </div>
                                         {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
                                         {# {{transaction.product_odoo_id}}#}
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Price Unit</b>
                                     </td>
                                     <td class="price-column text-right">
                                         <div class="transaction-info{{ transaction.id }} text-right"
@@ -159,11 +167,17 @@
                                             Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
                                         </div>
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Qty</b>
+                                    </td>
                                     <td class="qty-column ">
                                         <div class="transaction-info{{ transaction.id }} text-right"
                                             id="qty-info{{ transaction.id }}">
-                                            {{ '{:,.0f}'.format(transaction.qty) }}
+                                            {{ '{:,.2f}'.format(transaction.qty) }}
                                         </div>
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Subtotal</b>
                                     </td>
                                     <td class="text-right">
                                         <div id="subtotal-info{{ transaction.id }} text-right">
@@ -172,12 +186,18 @@
 
                                         </div>
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Barcode</b>
+                                    </td>
                                     <td>
                                         <div id="subtotal-info{{ transaction.id }}">
 
                                             {{ transaction.barcode }}
 
                                         </div>
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Note</b>
                                     </td>
                                       <td>
                                         <div id="subtotal-info{{ transaction.id }}">
@@ -190,7 +210,7 @@
                                         <span class="event-id" style="display: none;">{{ transaction.id }}</span>
                                         <a type="button"
                                             href="/purchase/transaction/detail?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
-                                            class="btn btn-secondary">
+                                            class="btn btn-primary">
                                             <span><i class='bx bxs-pencil'></i></span>
                                         </a>
                                         <!--                    <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"-->
@@ -200,7 +220,7 @@
                                         <!--                    </button>-->
                                         <a type="button"
                                             href="/purchase/transaction/delete?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
-                                            class="btn btn-secondary" onclick="return confirm('Are you sure you want to delete this item?');">
+                                            class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">
                                             <span><i class='bx bxs-trash'></i></span>
                                         </a>
                                     </td>
@@ -209,8 +229,8 @@
                                 {% endfor %}
 
 
-                                <tr>
-                                    <td colspan="4">
+                                <tr class="total-price-container">
+                                    <td colspan="3">
                                         <b>Grand Total</b>
                                     </td>
                                     <td>
@@ -218,6 +238,9 @@
                                             Rp {{ '{:,.2f}'.format(total_price) }}
                                         </div>
                                     </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                             </table>
 
@@ -225,13 +248,11 @@
                         <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
                             <div style="display: flex; align-items: center;">
                                 <!-- <a href="/purchase/transaction?pe={{ event.id }}" class="btn btn-success">Back</a> -->
-                                {% if po_status.lower() == 'draft' %}
-                                <a href="/purchase/transaction/confirm?purchase_order={{ po.id }}" type="button"
-                                    id="confirmButton" class="btn btn-primary" onclick="">Confirm</a>
-                                {% endif %}
-
-                                <button onclick="btPrint()" class="btn btn-success">Print</button>
-
+<!--                                {% if po_status.lower() == 'draft' %}-->
+<!--                                <a href="/purchase/transaction/confirm?purchase_order={{ po.id }}" type="button"-->
+<!--                                    id="confirmButton" class="btn btn-primary" onclick="">Confirm</a>-->
+<!--                                {% endif %}-->
+                                <button onclick="btPrint2()" class="btn btn-success">Print</button>
                             </div>
                         </div>
 
@@ -246,26 +267,26 @@
                             <div class="form-floating col-sm-12 col-lg">
                                 <input name="" class="form-control" value="{{ event.purchase_order_odoo.partner_name }}" disabled>
                                 <label class="control-label" for="purchase-event">Vendor</label>
-                    
+
                             </div>
                             <div class="form-floating col-sm-12 col-lg">
                                 <input name="" class="form-control" value="{{ event.purchase_order_odoo.partner_ref }}" disabled>
                                 <label class="control-label" for="purchase-event">Ref</label>
-                    
+
                             </div>
-                    
-                    
+
+
                             <div class="form-floating col-sm-12 col-lg">
                                 <input name="" class="form-control" id="" value="{{ event.fund}}" disabled>
                                 <label class="control-label" for="">Fund</label>
                             </div>
-                    
+
                         </div>
 
-        
+
                         <div class="po-container">
                             <table class="table">
-                                
+
                                 <tbody>
                                     <tr>
                                         <th>Product</td>
@@ -273,7 +294,7 @@
                                         <th class="text-end">Unit Price</td>
                                         <th class="text-end">Subtotal</td>
                                     </tr>
-                                    
+
                                     {% if po_order_line %}
                                         {% for order in po_order_line %}
                                             <tr>
@@ -281,12 +302,12 @@
                                                 <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
                                                 <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
                                                 <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>
-                                                
+
                                             </tr>
-                                            
-        
+
+
                                         {% endfor %}
-                                    
+
                                     <tr>
                                         <th colspan="3">Grand Total</th>
                                         <td align="right">{{"Rp. {:,.2f}".format(grand_total)}}</td>
@@ -294,13 +315,13 @@
                                     {% else %}
                                         N/A
                                     {% endif %}
-        
+
                                 </tbody>
-        
+
                             </table>
                         </div>
-                    
-                    
+
+
                     </div>
                     <div class="tab-content" id="farmer">
                         <div class="farmer-data">
@@ -318,8 +339,9 @@
                                     <tr>
                                         <th>Farmer Name</th>
                                         <td>{{ farmer.farmer_name }}</td>
+                                        <input type="hidden" id="farmer_name" value="{{farmer.farmer_name}}">
                                     </tr>
-        
+
                                     <tr>
                                         <th>Farmer Group</th>
                                         <td>{{ farmer.parent_name }}</td>
@@ -334,9 +356,9 @@
                                     </tr>
                                 </tbody>
                             </table>
-        
+
                         </div>
-                        <div style="margin-bottom: 32px; margin-top: 24px;">
+                        <!-- <div style="margin-bottom: 32px; margin-top: 24px;">
                             <h5>Product Possible to Purchase from This farmer based on Certification Status</h5>
                             <table>
                                 <tbody>
@@ -345,7 +367,7 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -355,9 +377,9 @@
     </div>
     <script src="{{ url_for('static', filename='/js/tools/print.js') }}"></script>
     <script src="{{ url_for('static', filename='/js/purchase/purchase.js') }}"></script>
-    
 
-    
+
+
 </body>
 
 </html>

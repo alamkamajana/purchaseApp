@@ -39,7 +39,7 @@
                     <a type="button" href="/purchase/search/farmer?pe={{ purchase_event.id }}" class="btn btn-primary" style="margin:8px">
                         Add Purchase
                     </a>
-                    <div class="purchase-container">
+                    <div class="purchase-container responsive-table">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -64,11 +64,20 @@
                             <tbody class="align-middle">
                                 {% for purchase in purchase_lists %}
                                 <tr>
+                                    <td class="responsive-th">
+                                        <b>Order#</b>
+                                    </td>
                                     <td>{{ purchase.name }}</td>
+                                    <td class="responsive-th">
+                                        <b>Farmer Code</b>
+                                    </td>
                                     <td>
                                         {% if purchase.farmer_id %}
                                         {{ Farmer.query.filter_by(id=purchase.farmer_id).first().code }}
                                         {% endif %}
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Farmer</b>
                                     </td>
                                     <td>
                                         {% if purchase.farmer_id %}
@@ -77,12 +86,18 @@
                                         No farmer associated
                                         {% endif %}
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Grand Total</b>
+                                    </td>
                                     <td class="text-end">
                                         {% for price in price_list %}
                                         {% if price.po_id == purchase.id %}
                                         Rp {{ '{:,.2f}'.format(price.total) }}
                                         {% endif %}
                                         {% endfor %}
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Status</b>
                                     </td>
                                     <td>{{ purchase.status }}</td>
                                     <td>
@@ -149,10 +164,7 @@
                                         <td align="right"> {{ "{:,.2f}".format(order.product_qty) }}</td>
                                         <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit) }}</td>
                                         <td align="right"> {{ "Rp. {:,.2f}".format(order.price_unit*order.product_qty) }}</td>
-                                        
                                     </tr>
-                                    
-
                                 {% endfor %}
                             
                             <tr>

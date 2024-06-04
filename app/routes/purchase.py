@@ -398,3 +398,31 @@ def transaction_confirm():
     po.status = 'confirm'
     db.session.commit()
     return redirect(request.referrer)
+
+@bp.route('/transaction/confirm2', methods=["POST","GET"])
+@login_required
+def transaction_confirm2():
+    purchase_order = request.args.get('purchase_order')
+    po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
+    po.status = 'confirm'
+    db.session.commit()
+    return {"status" : 200, "message" : True}
+
+@bp.route('/transaction/items', methods=["POST","GET"])
+@login_required
+def transaction_items():
+    purchase_order = request.args.get('purchase_order')
+    po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
+    data_arr = []
+    for line in po.purchase_order_lines :
+        product_name = ProductOdoo.query.get(line.product_odoo_id)
+        commodity_item = NfcappCommodityItemOdoo.query.filter_by(product_id=product_name.odoo_id).first()
+        data_json = {}
+        data_json['product_name'] = commodity_item.desc
+        data_json['price'] = line.unit_price
+        data_json['quantity'] = line.qty
+        data_json['subtotal'] = line.subtotal
+        data_arr.append(data_json)
+
+    return data_arr
+

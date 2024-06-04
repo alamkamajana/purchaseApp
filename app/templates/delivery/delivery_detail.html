@@ -226,7 +226,7 @@
             <div class="form-floating col-sm-12 col-lg">
                 <input name="" id="order_origin" class="form-control" value="{{delivery_order.origin}}" disabled>
                 <label class="control-label" for="">Asal</label>
-    
+
             </div>
             <div class="form-floating col-sm-12 col-lg">
                 <input name="" id="order_destination" class="form-control" value="{{delivery_order.destination}}" disabled>
@@ -333,10 +333,10 @@
                         <tr>
                             <td style="display: none;" class="product-id">{{order.product_odoo_id}}</td>
                             <td style="display: none;" class="product-farmer">{{order.product_odoo_id}}</td>
-                            
+
                             <td> {{ order.purchase_order.name }}</td>
                             <td class="product-name">
-                                
+
                                 [{{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().default_code }}] {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
                             </td>
                             <td class="text-end order-qty"> {{ order.qty }}</td>

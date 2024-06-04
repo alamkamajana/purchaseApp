@@ -13,6 +13,10 @@ user_purchase_order_association = db.Table('user_purchase_order_association',
 )
 
 
+def get_change_id():
+    return str(uuid.uuid4())
+
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -60,6 +64,7 @@ class UserSession(db.Model):
 class PurchaseEvent(db.Model):
     __tablename__ = 'purchase_event'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     fund = db.Column(db.Float)
@@ -83,21 +88,33 @@ class PurchaseEvent(db.Model):
     date_stamp = db.Column(db.Date)
     money_entries = db.relationship('Money', backref='purchase_event', lazy='dynamic')
 
-
-
-
-
     @property
-    def compute_fund(self):
+    def compute_balance(self):
         total_fund = sum(m.amount for m in self.money_entries)
         return total_fund
 
+    @property
+    def compute_money_out(self):
+        money_out = 0
+        for money in self.money_entries :
+            if money.amount < 0 :
+                money_out += money.amount
+        return money_out
+
+    @property
+    def compute_money_in(self):
+        money_in = 0
+        for money in self.money_entries:
+            if money.amount > 0:
+                money_in += money.amount
+        return money_in
 
 
 
 class PurchaseOrder(db.Model):
     __tablename__ = 'purchase_order'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     receipt_number = db.Column(db.String(64))
@@ -112,14 +129,32 @@ class PurchaseOrder(db.Model):
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+    money_entries = db.relationship('Money', backref='purchase_order', lazy='dynamic')
 
+    @property
+    def compute_payment(self):
+        total_payment = sum(m.amount for m in self.money_entries)
+        return total_payment
     @property
     def amount_total(self):
         return sum(line.subtotal for line in self.purchase_order_lines)
 
+    @property
+    def compute_is_paid(self):
+        calculation = self.amount_total + self.compute_payment
+        payment_positive = abs(self.compute_payment)
+        if payment_positive == self.amount_total and int(self.compute_payment) != 0 :
+            return True
+        elif int(calculation) > 0 :
+            return False
+        else :
+            return False
+
+
 class PurchaseOrderLine(db.Model):
     __tablename__ = 'purchase_order_line'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
     qty = db.Column(db.Float)
@@ -140,6 +175,7 @@ class PurchaseOrderLine(db.Model):
 class Payment(db.Model):
     __tablename__ = 'payment'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     purchase_order_id = db.Column(db.Integer, db.ForeignKey('purchase_order.id'))
     debit = db.Column(db.Float)
@@ -155,6 +191,7 @@ class Payment(db.Model):
 class DeliveryOrder(db.Model):
     __tablename__ = 'delivery_order'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     driver = db.Column(db.String)
@@ -181,6 +218,7 @@ class DeliveryOrder(db.Model):
 class Money(db.Model):
     __tablename__ = 'money'
     uniq_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String)
     purchase_event_id = db.Column(db.Integer, db.ForeignKey('purchase_event.id'))

@@ -263,7 +263,8 @@ def purchase_event_payments():
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
     payments = Money.query.filter_by(purchase_event_id=purchase_event.id).order_by(Money.created.asc())
-    return render_template('server/purchase_event_payments.html', purchase_event=purchase_event, payments=payments)
+    purchase_order_odoo = PurchaseOrderOdoo.query.get(purchase_event.purchase_order_odoo_id)
+    return render_template('server/purchase_event_payments.html', purchase_event=purchase_event, payments=payments, PurchaseOrder=PurchaseOrder,purchase_order_odoo=purchase_order_odoo)
 
 
 @bp.route('/money/add', methods=["POST","GET"])
