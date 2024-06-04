@@ -9,7 +9,7 @@
         type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
         type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/farmer_detail.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/purchase.css') }}">
@@ -116,7 +116,7 @@
 
                         <div class="event-container responsive-table">
 
-                            <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                            <table class="table event-table table-hover" style="width: 100%; margin-top: 32px;">
                                 <tr>
                     
                                     <th style="width: 12%;">
@@ -151,11 +151,11 @@
                                         <b>Product</b>
                                     </td>
                                 
-                                    <td class="overflow-container">
+                                    <td class="text-wrap">
                                         <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                             {{ transaction.product_odoo_id.id }}
                                         </div>
-                                        {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
+                                        [{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}] {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
                                         {# {{transaction.product_odoo_id}}#}
                                     </td>
                                     <td class="responsive-th">
@@ -199,7 +199,7 @@
                                     <td class="responsive-th">
                                         <b>Note</b>
                                     </td>
-                                      <td>
+                                      <td class="text-wrap">
                                         <div id="subtotal-info{{ transaction.id }}">
 
                                             {{ transaction.note }}
@@ -238,9 +238,9 @@
                                             Rp {{ '{:,.2f}'.format(total_price) }}
                                         </div>
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td class="mobile-hidden"></td>
+                                    <td class="mobile-hidden"></td>
+                                    <td class="mobile-hidden"></td>
                                 </tr>
                             </table>
 

@@ -58,16 +58,11 @@
 
         @media (max-width: 576px) {
             h1 {
-                font-size: 2rem;
-            }
-
-            .form-control {
-                font-size: 0.9rem;
+                font-size: 1.5em;
             }
 
             .btn {
-                font-size: 0.9rem;
-                padding: 8px 16px;
+                width: 100%;
             }
         }
     </style>
@@ -98,31 +93,37 @@
         <input type="hidden" name="pe" value="{{ pe }}">
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Sopir</label>
+                <label>Nama Sopir</label>
                 <input type="text" class="form-control" name="driver"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Tanggal</label>
-                <input type="date" id="date" class="form-control" name="date"/>
+                <label>Tanggal Kirim</label>
+                <input type="datetime-local" id="sent_date" class="form-control" name="sent_date"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Asal</label>
+                <label>Tanggal Sampai</label>
+                <input type="datetime-local" id="received_date" class="form-control" name="received_date"/>
+            </div>
+        </div>
+        <div class="row menu-container text-left">
+            <div class="col">
+                <label>Asal Barang</label>
                 <input type="text" class="form-control" name="origin"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Tujuan</label>
+                <label>Dikirim Ke</label>
                 <input type="text" class="form-control" name="destination"/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
-                <label>Kendaraan</label>
+                <label>Jenis Transport dan No. Polisi</label>
                 <input type="text" class="form-control" name="vehicle"/>
             </div>
         </div>

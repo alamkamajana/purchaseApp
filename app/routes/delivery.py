@@ -51,13 +51,15 @@ def delivery_add():
         pe = request.form['pe']
         driver = request.form['driver']
         vehicle = request.form['vehicle']
-        date = datetime.strptime(request.form['date'], '%Y-%m-%d').date()
+        sent_date = datetime.strptime(request.form['sent_date'], '%Y-%m-%dT%H:%M')
+        received_date = datetime.strptime(request.form['received_date'], '%Y-%m-%dT%H:%M')
         origin = request.form['origin']
         destination = request.form['destination']
         note = request.form['note']
+        status = "Draft"
         do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
         today_datetime = datetime.now()
-        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,date=date,origin=origin,destination=destination,note=note)
+        new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,sent_date=sent_date, received_date=received_date,origin=origin,destination=destination,note=note, status=status)
         db.session.add(new_do)
         db.session.commit()
         return redirect(f"/delivery/detail?do={new_do.id}")
@@ -86,18 +88,19 @@ def delivery_update():
         do = request.form['do']
         vehicle = request.form['vehicle']
         driver = request.form['driver']
-        date = request.form['date']
+        sent_date = datetime.strptime(request.form['sent_date'], '%Y-%m-%dT%H:%M')
+        received_date = datetime.strptime(request.form['received_date'], '%Y-%m-%dT%H:%M')
         origin = request.form['origin']
         destination = request.form['destination']
         note = request.form['note']
         delivery_order = DeliveryOrder.query.get(int(do))
         today_datetime = datetime.now()
-        date_convert = datetime.strptime(date,"%Y-%m-%d").date()
 
         delivery_order.driver = driver
         delivery_order.vehicle_number = vehicle
         delivery_order.modified = today_datetime
-        delivery_order.date = date_convert
+        delivery_order.sent_date = sent_date
+        delivery_order.received_date = received_date
         delivery_order.origin = origin
         delivery_order.destination = destination
         delivery_order.note = note
@@ -106,6 +109,24 @@ def delivery_update():
     except Exception as e :
         print(e)
         return jsonify(status=400, text=5555555)
+
+@bp.route('/confirm', methods=["POST","GET"])
+@login_required
+def delivery_confirm():
+    delivery_order_id = request.args.get('do')
+    do = DeliveryOrder.query.filter_by(id=int(delivery_order_id)).first()
+    do.status = 'Confirm'
+    db.session.commit()
+    return redirect(request.referrer)
+
+@bp.route('/reset', methods=["POST","GET"])
+@login_required
+def delivery_reset():
+    delivery_order_id = request.args.get('do')
+    do = DeliveryOrder.query.filter_by(id=int(delivery_order_id)).first()
+    do.status = 'Draft'
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 @bp.route('/detail', methods=["GET"])
