@@ -82,6 +82,7 @@ async function btPrint2() {
         minimumFractionDigits: 0
     }).format(totalAmount).replace(/Rp\s*/g, "");
 
+
     var DATA = ''
         + '\x1B' + '\x61' + '\x31'
         + '\x1D' + '\x21' + '\x00' + 'TRIPPER\nWE ADD VALUE AT ORIGIN\n\n'
@@ -96,7 +97,7 @@ async function btPrint2() {
         + '\n'
         + `\x1B\x21\x01${tableData}`
         + `\nTotal\tRp.${formattedTotalAmount}\n\n\x1B\x21\x00 `
-        + '\n\n';
+        + '\n\n'
 
     console.log(DATA)
     let deviceHandle;
@@ -156,4 +157,28 @@ async function fetchPurchaseData(orderId) {
         // Handle the error appropriately (e.g., display an error message to the user)
         return null; // Or return an empty array []
     }
+}
+
+
+async function fetchImageData(imgSrc) {
+    try {
+        const response = await fetch(imgSrc);
+        const blob = await response.blob();
+        const binaryData = await readBlobAsArrayBuffer(blob);
+        return binaryData;
+    } catch (error) {
+        console.error('Error fetching image:', error);
+        return null; // or handle the error as needed
+    }
+}
+
+function readBlobAsArrayBuffer(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+    });
 }

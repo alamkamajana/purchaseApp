@@ -231,7 +231,7 @@ function sendTextKriteria2() {
     + '\n(  )Produk dibungkus kemasan\n    yang disetujui, bersih dan\n    bebas dari benda asing'
     + '\n(  )Truk bersih dan bebas dari\n    segala resiko kontaminasi'
     + '\n(  )Hanya material\n    tersertifikasi/NFC yang di\n    dalam truk/kontainer'
-    + '\n\n\n\n'
+    + '\n'
     + '--------------------------------'
     ;    
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
