@@ -8,7 +8,6 @@ from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrder
     NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.db import db
 from app.models.models import User, PurchaseOrder, PurchaseOrderLine, Money, PurchaseEvent
-from .auth import login_required
 import ast
 from flask import jsonify
 from sqlalchemy import and_
@@ -20,7 +19,6 @@ token = os.getenv('TOKEN')
 
 
 @bp.route('/index', methods=["GET"])
-@login_required
 def cashier_index():
     pe = request.args.get("pe")
     purchase_orders = PurchaseOrder.query.filter(
@@ -39,7 +37,6 @@ def cashier_index():
 
 
 @bp.route('/search/po', methods=["GET", "POST"])
-@login_required
 def cashier_search_po():
     if request.method.lower() == 'post':
         po = request.form['po']
@@ -51,7 +48,6 @@ def cashier_search_po():
 
 
 @bp.route('/po/detail', methods=["GET"])
-@login_required
 def cashier_po_detail():
     try:
         po = request.args.get('po')
@@ -75,7 +71,6 @@ def cashier_po_detail():
 
 
 @bp.route('/payment/add', methods=["GET"])
-@login_required
 def cashier_payment_add():
     try:
         po = request.args.get('po')

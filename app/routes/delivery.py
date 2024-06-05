@@ -8,7 +8,6 @@ import requests
 from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrderLineOdoo, NfcappFarmerOdoo, ResUserOdoo, NfcappCommodityOdoo, NfcappCommodityItemOdoo, NfcappStationOdoo, NfcappClusterOdoo
 from app.models.db import db
 from app.models.models import User, PurchaseOrder, PurchaseEvent, DeliveryOrder, PurchaseOrderLine
-from .auth import login_required
 import ast
 from flask import jsonify
 import random
@@ -104,7 +103,7 @@ def delivery_update():
         delivery_order.destination = destination
         delivery_order.note = note
         db.session.commit()
-        return redirect(f"/delivery/index?pe={pe}")
+        return redirect(f"/delivery/detail?do={do}")
     except Exception as e :
         print(e)
         return jsonify(status=400, text=5555555)

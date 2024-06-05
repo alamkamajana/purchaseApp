@@ -67,6 +67,10 @@
                         </div>
                         <table id="farmer-detail" class="data-table">
                             <tbody>
+                              <tr>
+                                <th style="width: 50%;">Date</th>
+                                <td>{{ po.date }}</td>
+                            </tr>
                             <tr>
                                 <th style="width: 50%;">Farmer Code</th>
                                 <td>{{ farmer.code }}</td>
@@ -104,6 +108,12 @@
 
                     <input name="purchase-order-odoo" class="form-control" id="purchase-order-odoo"
                            value="{{ event.purchase_order_odoo.id }}" hidden>
+                    <input name="purchase-order-odoo" class="form-control" id="purchase_order_odoo_id"
+                           value="{{ event.purchase_order_odoo.name }}" hidden>
+                    <input name="purchase-order-odoo" class="form-control" id="certification_status_id"
+                           value="{{ farmer.certification_status_name }}" hidden>
+                    <input name="purchase-event-odoo" class="form-control" id="purchase_event_id"
+                           value="{{ event.name }}" hidden>
                     <input name="purchase-order" class="form-control" id="purchase-order" value="{{ po.id }}"
                            hidden>
                     <input name="farmer" class="form-control" id="farmer_code" value="{{ farmer.code }}" hidden>
@@ -166,8 +176,14 @@
                                     <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                         {{ transaction.product_odoo_id.id }}
                                     </div>
-                                    {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
-                                    {# {{transaction.product_odoo_id}}#}
+
+                                            <span> {{transaction.commodity_name}} {{transaction.variant}}</span><br/>
+                                    <span style="font-size:8px;">{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}</span>
+
+
+
+
+
                                 </td>
                                 <td class="responsive-th">
                                     <b>Price Unit</b>
@@ -219,22 +235,27 @@
                                 </td>
                                 <td>
                                     <span class="event-id" style="display: none;">{{ transaction.id }}</span>
-                                    <a type="button"
+
+                                     {% if po.status == 'draft' %}
+
+                                            <a type="button"
                                        href="/purchase/transaction/detail?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
                                        class="btn btn-primary">
                                         <span><i class='bx bxs-pencil'></i></span>
                                     </a>
-                                    <!--                    <button type="button" class="btn btn-secondary transaction-info{{ transaction.id }}"-->
-                                    <!--                            id="edit-{{ transaction.id }}-btn" data-toggle="modal"-->
-                                    <!--                            data-target="#editTransactionModal" data-transaction-id="{{ transaction.id }}">-->
-                                    <!--                        <span><i class='bx bxs-pencil'></i></span>-->
-                                    <!--                    </button>-->
+
                                     <a type="button"
                                        href="/purchase/transaction/delete?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
                                        class="btn btn-danger"
                                        onclick="return confirm('Are you sure you want to delete this item?');">
                                         <span><i class='bx bxs-trash'></i></span>
                                     </a>
+
+                                    {% endif %}
+
+
+
+
                                 </td>
                             </tr>
 
@@ -258,6 +279,8 @@
 
                     </div>
 
+
+
                     <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
                         <div class="container">
                             <div class="row">
@@ -265,8 +288,11 @@
                                     <img id="sig-image" src="/purchase/order/get-signature?po={{po.id}}" alt=""/>
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="col-md-12 col-lg-3" style="padding: 0;">
+
+
                                     {% if po.signature %}
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#exampleModal">
@@ -278,6 +304,7 @@
                                         Add Signature
                                     </button>
                                     {% endif %}
+
 
                                     <!-- Modal -->
                                     <div class="modal fade" id="exampleModal" tabindex="-1"
@@ -322,15 +349,18 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
+
+  {% if po.signature %}
 
                     <div style="padding:20px;">
                         <div style="display: flex; align-items: center;">
-                            <button onclick="btPrint2()" class="btn btn-success">Print</button>
+                            <button onclick="deliveryInfo()" class="btn btn-success">Print</button>
                         </div>
                     </div>
-
+          {% endif %}
 
                 </div>
                 <div class="tab-content" id="po-info">
@@ -601,7 +631,7 @@
     })();
 
 </script>
-<script src="{{ url_for('static', filename='/js/tools/print.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/tools/print_purchase.js') }}"></script>
 <script src="{{ url_for('static', filename='/js/purchase/purchase.js') }}"></script>
 
 

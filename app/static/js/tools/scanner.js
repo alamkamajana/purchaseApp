@@ -76,11 +76,11 @@
     html5QrcodeScanner.render(
         function (decodedText) {
             document.getElementById(element_id).value = decodedText;
-            
+
             // Stop scanning after successfully decoding a QR code
-        }, 
+        },
         function (errorMessage) {
-            
+
         }
     );
   }
