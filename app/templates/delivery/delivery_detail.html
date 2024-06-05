@@ -83,9 +83,28 @@
             padding : 16px;
         }
 
+        .scanned-table td{
+            background-color: #dfffef;
+        }
+
+
+
+        .unscanned-table td{
+            background-color: #ffdfdf;
+        }
+
+
         @media (min-width: 576px){
             .responsive-th{
                 display:none;
+            }
+
+            .scanned-table thead{
+                background-color: #bff8dc;
+            }
+
+            .unscanned-table thead{
+                background-color: #f8bfbf;
             }
         }
 
@@ -197,9 +216,7 @@
                 white-space: nowrap;
             }
 
-            .responsive-table td:first-child, .responsive-table td:nth-child(2){
-                background-color: #f1f1f1;
-            }
+
 
             .responsive-table td:last-child{
                 width:100% ;
@@ -224,8 +241,21 @@
                 width:100%;
             }
 
+            .scanned-table td:first-child, .scanned-table td:nth-child(2){
+                background-color: #bff8dc;
+            }
+
+            .unscanned-table td:first-child, .unscanned-table td:nth-child(2){
+                background-color: #f8bfbf;
+            }
+
 
         }
+
+
+
+
+
 
         .form-control:disabled{
             background-color: inherit;
@@ -289,6 +319,25 @@
 </div>
 <div class="container">
     <div class="card">
+        <div class="row">
+            <div class="col">
+                {% if delivery_order.status!="Confirm"%}
+                <a href="/delivery/edit?do={{do}}&pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
+                    class="btn full-btn btn-primary">Ubah</a>
+                {% endif %}
+            </div>
+            <div class="col">
+                {% if order_line %}
+                <button onclick="deliveryInfo()"
+                    class="btn full-btn btn-success">Print</button>
+                {% endif %}
+                {% if delivery_order.status=="Confirm"%}
+                <a href="/delivery/reset?do={{do}}"
+                    class="btn full-btn btn-danger">Reset to Draft</a>
+                {% endif %}
+            </div>
+
+        </div>
         <div class="row" style="margin: 24px; margin-top: 0;">
             <div id="do_id" style="display: none;">{{delivery_order.id}}</div>
             <div id="po_name" style="display: none">{{po_odoo.name}}</div>
@@ -345,23 +394,7 @@
                 <p>{{delivery_order.note}}</p>
             </div>
         </div>
-    <div class="row">
-        <div class="col">
-            <a href="/delivery/edit?do={{do}}&pe={{ DeliveryOrder.query.filter_by(id=do).first().purchase_event_id }}"
-                class="btn full-btn btn-primary">Ubah</a>
-        </div>
-        <div class="col">
-            {% if order_line %}
-            <button onclick="deliveryInfo()"
-                class="btn full-btn btn-success">Print</button>
-            {% endif %}
-            {% if delivery_order.status=="Confirm"%}
-            <a href="/delivery/reset?do={{do}}"
-                class="btn full-btn btn-danger">Reset to Draft</a>
-            {% endif %}
-        </div>
-        
-    </div>
+
     </div>
 </div>
 <div class="container">
@@ -415,7 +448,7 @@
                 </form>
                 <div class="row mt-1 responsive-table">
                     <input type="hidden" id="do" value="{{ do }}">
-                    <table class="table table-hover">
+                    <table class="table table-hover scanned-table">
                         <thead>
                         <tr>
                             
@@ -500,7 +533,7 @@
             <div class="tab-content active" id="unscanned">
                 <div class="row mt-1 responsive-table">
                     <input type="hidden" id="do" value="{{ do }}">
-                    <table class="table table-hover">
+                    <table class="table table-hover unscanned-table">
                         <thead>
                         <tr>
                             

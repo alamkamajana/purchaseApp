@@ -56,7 +56,8 @@ def delivery_add():
         destination = request.form['destination']
         note = request.form['note']
         status = "Draft"
-        do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
+        purchase_event = PurchaseEvent.query.get(int(pe))
+        do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=4, prefix=purchase_event.name+"-")
         today_datetime = datetime.now()
         new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,sent_date=sent_date, received_date=received_date,origin=origin,destination=destination,note=note, status=status)
         db.session.add(new_do)
@@ -103,7 +104,7 @@ def delivery_update():
         delivery_order.destination = destination
         delivery_order.note = note
         db.session.commit()
-        return redirect(f"/delivery/index?pe={pe}")
+        return redirect(f"/delivery/detail?do={do}")
     except Exception as e :
         print(e)
         return jsonify(status=400, text=5555555)

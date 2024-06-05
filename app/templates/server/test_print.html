@@ -4,11 +4,13 @@
 {% endblock %}
 {% block plugin %}
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/sync.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
+    <script src="{{ url_for('static', filename='/assets/html5-qrcode/js/html5-qrcode.min.js') }}"></script>
 
 {% endblock %}
 
 {% block header %}
-    <b>Test Print</b>
+    <b>Test</b>
     <style>
         .test-button{
             border: none;
@@ -37,6 +39,47 @@
                     </div>
                 </button>
             </div>
+            <div class="col-6">
+                <button class="test-button" onclick="startScanTest('test-input')">
+                    <div style="color: blue">
+                        <i class='bx bx-scan bx-lg'></i>
+                    </div>
+                    <div>
+                        Test Camera
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="scannerModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+
+                        <h5 class="modal-title">QR Scanner</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="stopScan()">
+                            <span><i class='bx bx-x bx-md'></i></span>
+                        </button>
+
+
+                    </div>
+                    <div class="modal-body">
+                        <div style="width: 100%;" id="reader"></div>
+                        <div>
+                            <label for="test-input">Result</label>
+                            <input type="text" name="test-input" id="test-input" style="width: 100%;">
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-danger" onclick="stopScan()">Stop Scan</button>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>
@@ -45,4 +88,5 @@
 
 {% block script_plugin %}
 <script src="{{ url_for('static', filename='/js/tools/print_test.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/tools/scanner.js') }}"></script>
 {% endblock %}
