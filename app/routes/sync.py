@@ -74,7 +74,6 @@ def sync_get_purchase_order():
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()
-        print(response_json)
         for po in response_json:
             oid = po['odoo_id']
             po_json = {k: v for k, v in po.items() if k != 'id'}
