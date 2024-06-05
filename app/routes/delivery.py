@@ -165,10 +165,10 @@ def delivery_delete():
     db.session.commit()
     return redirect(request.referrer)
 
-@bp.route('/detail/add', methods=["GET","POST"])
+@bp.route('/detail/add', methods=["GET"])
 def delivery_detail_add():
-    do = request.form['do']
-    barcode = request.form['barcode']
+    do = request.args.get('do')
+    barcode = request.args.get('barcode')
 
     delivery_order = DeliveryOrder.query.filter_by(id=int(do)).first()
     order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).first()

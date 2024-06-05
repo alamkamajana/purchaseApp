@@ -130,9 +130,12 @@
                                href="/purchase/transaction/create?purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}">
                                 Add
                             </a>
+                            
                             {% endif %}
                         </div>
                     </div>
+
+                    
 
 
                     <div class="event-container responsive-table">
@@ -153,8 +156,14 @@
                                 <th class="text-right" style="width: 16%;">
                                     Subtotal
                                 </th>
+                                <th class="text-right" style="width: 16%;">
+                                    Premium
+                                </th>
                                 <th style="width: 16%;">
-                                    Barcode
+                                    Pokok
+                                </th>
+                                <th style="width: 16%;">
+                                    QR Code
                                 </th>
                                 <th style="width: 16%;">
                                     Note
@@ -172,13 +181,14 @@
                                     <b>Product</b>
                                 </td>
 
-                                <td class="overflow-container">
+                                <td>
                                     <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                         {{ transaction.product_odoo_id.id }}
                                     </div>
 
-                                            <span> {{transaction.commodity_name}} {{transaction.variant}}</span><br/>
-                                    <span style="font-size:8px;">{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}</span>
+                                            <div> {{transaction.commodity_name}} {{transaction.variant}}</div>
+                                        
+                                    <div class="mobile-hidden" style="font-size:8px;">{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}</div>
 
 
 
@@ -214,7 +224,25 @@
                                     </div>
                                 </td>
                                 <td class="responsive-th">
-                                    <b>Barcode</b>
+                                    <b>Premium</b>
+                                </td>
+                                <td class="text-right">
+                                    <div id="subtotal-info{{ transaction.id }} text-right">
+                                        Rp {{ '{:,.2f}'.format(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100) }}
+
+                                    </div>
+                                </td>
+                                <td class="responsive-th">
+                                    <b>Pokok</b>
+                                </td>
+                                <td class="text-right">
+                                    <div id="subtotal-info{{ transaction.id }} text-right">
+                                        Rp {{ '{:,.2f}'.format(transaction.subtotal-(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100)) }}
+
+                                    </div>
+                                </td>
+                                <td class="responsive-th">
+                                    <b>QR Code</b>
                                 </td>
                                 <td>
                                     <div id="subtotal-info{{ transaction.id }}">
@@ -270,9 +298,26 @@
                                     <div id="total-price" class="text-right">
                                         Rp {{ '{:,.2f}'.format(total_price) }}
                                     </div>
+                                    
                                 </td>
-                                <td></td>
-                                <td></td>
+                                <td class="responsive-th">
+                                    <b>Total Premium</b>
+                                </td>
+                                <td>
+                                    <div id="total-premium-data" style="display: none;">{{total_premium}}</div>
+                                    <div id="total-price" class="text-right">
+                                        Rp {{ '{:,.2f}'.format(total_premium) }}
+                                    </div>
+                                </td>
+                                <td class="responsive-th">
+                                    <b>Total Pokok</b>
+                                </td>
+                                <td>
+                                    <div id="total-pokok-data" style="display: none;">{{total_price-total_premium}}</div>
+                                    <div id="total-price" class="text-right">
+                                        Rp {{ '{:,.2f}'.format(total_price-total_premium) }}
+                                    </div>
+                                </td>
                                 <td></td>
                             </tr>
                         </table>
@@ -358,9 +403,24 @@
                     <div style="padding:20px;">
                         <div style="display: flex; align-items: center;">
                             <button onclick="deliveryInfo()" class="btn btn-success">Print</button>
+                            {% if po_status.lower() == 'confirm' %}
+                            <a type="button" class="btn btn-primary" style="margin-left: 16px ;"
+                                href="/purchase/search/farmer?pe={{ event.id }}">
+                                Purchase Again
+                            </a>
+                            <a type="button" class="btn btn-danger" style="margin-left: 16px ;"
+                                href="/purchase/transaction/reset-to-draft?purchase_order={{ po.id }}">
+                                Reset to Draft
+                            </a>
+                            {% endif %}
+                            
                         </div>
+
+                        
                     </div>
           {% endif %}
+
+        
 
                 </div>
                 <div class="tab-content" id="po-info">

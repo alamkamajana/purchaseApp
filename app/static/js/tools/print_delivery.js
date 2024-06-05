@@ -113,9 +113,9 @@ function sendTextData(product) {
     let text = ''
     + '\x1B' + '\x61' + '\x31'                                              
     + '\x1D' + '\x21' + '\x00' + 'SURAT JALAN PT. TRIPPER NATURE\n'
-    + eventName + '/' + orderName + '\n'
+    +  orderName + '\n'
     + 'PRODUK\n'+product.name+'\n'
-    + 'CERTIFIED ORGANIC BY CONTROL UNION\n\n'
+    + product.organic_message +'\n\n'
     + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
     + 'Nama Sopir\t: '+orderDriver
     + '\nJenis Kendaraan & No. Polisi: \n'+orderVehicle 
@@ -124,9 +124,8 @@ function sendTextData(product) {
     + '\nTgl Kirim\t: '+ orderDate
     + '\nTgl Sampai\t: '+ receivedDate
     + '\n'
-    + '\nNomor CU\t: '
+    + '\nNomor CU\t: '+ product.cu_number
     + '\nNomor PO\t: '+ poName
-    + '\nNomor LOT\t: '
     + '\nKode Petani\t: '+ poPartner
     + '\nJumlah Box\t: '+ product.amount
     + '\nBerat Barang: '+ product.qty
@@ -313,12 +312,23 @@ function deliveryInfo(){
         
 
         if (!found){
+            
             let product_array = {};
+            
             product_array.id = element.innerHTML;
             row = element.closest('tr');
+            let is_organic = row.querySelector('.is-organic').textContent.trim();
+            
             product_array.name = row.querySelector('.product-name').textContent.trim();
             product_array.amount = 1
             product_array.qty = parseFloat(row.querySelector('.order-qty').textContent);
+            product_array.cu_number = row.querySelector('.cu-number').textContent.trim();
+            if(is_organic=="True"){
+                product_array.organic_message = "CERTIFIED ORGANIC BY CONTROL UNION"
+            }else{
+                product_array.organic_message = ""
+            }
+            console.log(product_array.organic_message)
             
             products.push(product_array);
         }else{
@@ -334,18 +344,6 @@ function deliveryInfo(){
 
     });
 
-    products.forEach(product =>{
-        console.log(product.name)
-        console.log(orderDriver)
-        console.log(orderVehicle)
-        console.log(orderDestination)
-        console.log(orderDate)
-        console.log(poName)
-        console.log(poPartner)
-        console.log(product.amount)
-        console.log(product.qty)
-        
-    })
     printDelivery(products)
     // processAllItems(products)
     

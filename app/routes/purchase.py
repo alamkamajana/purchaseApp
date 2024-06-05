@@ -94,6 +94,7 @@ def transaction_order():
     transaction_list = pagination
     po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
     total_price = 0
+    total_premium = 0
     product_list = ProductOdoo.query.all()
 
     purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
@@ -136,6 +137,9 @@ def transaction_order():
 
     for po_line in po_lines:
         total_price += po_line.subtotal
+        total_premium += po_line.subtotal*po_line.nfcapp_commodity_item_odoo.total_premium/100
+
+        
 
     po_status = po.status if po else None
     # print(po_line_product_arr)
@@ -147,6 +151,7 @@ def transaction_order():
     grand_total=0
     for order in po_order_line:
         grand_total=grand_total+(order.price_unit*order.product_qty)
+        
 
     commodity_items = NfcappCommodityItemOdoo.query.filter(
             NfcappCommodityItemOdoo.farmer_id == farmer.odoo_id,
@@ -155,9 +160,9 @@ def transaction_order():
 
     return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
                            product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price,
-                           ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
+                           ProductOdoo=ProductOdoo, NfcappCommodityItemOdoo=NfcappCommodityItemOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
                            po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
-                           po_order_line=po_order_line, grand_total=grand_total )
+                           po_order_line=po_order_line, grand_total=grand_total, total_premium=total_premium )
 
 @bp.route('/payment-note', methods=["GET"])
 def purchase_payment_note():
@@ -453,6 +458,15 @@ def transaction_confirm():
     purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     po.status = 'confirm'
+    po.date = datetime.today()
+    db.session.commit()
+    return redirect(request.referrer)
+
+@bp.route('/transaction/reset-to-draft', methods=["POST","GET"])
+def transaction_reset():
+    purchase_order = request.args.get('purchase_order')
+    po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
+    po.status = 'draft'
     po.date = datetime.today()
     db.session.commit()
     return redirect(request.referrer)

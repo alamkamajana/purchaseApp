@@ -337,8 +337,12 @@
     }
 
     
-    .responsive-table .total-price-container td{
+    .responsive-table .total-price-container td {
         width:50% !important;
+        
+    }
+
+    .text-right{
         justify-content: right !important;
     }
 
@@ -353,6 +357,10 @@
 
     .mobile-hidden{
         display: none !important;
+    }
+
+    .responsive-table .product-code{
+        width:100%
     }
 
 

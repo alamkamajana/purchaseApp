@@ -59,6 +59,38 @@
       );
   }
 
+  function startScanDelivery(){
+    let do_id = document.getElementById('qr-do').value
+    console.log(do_id)
+    $('#scannerModal').modal('show');
+    html5QrcodeScanner.render(
+        function (decodedText) {
+            document.getElementById('barcode').value = decodedText;
+            
+            // Stop scanning after successfully decoding a QR code
+            html5QrcodeScanner.clear().then(_ => {
+                
+                // the UI should be cleared here 
+                $('.modal').modal('hide');
+                let add_url = '/delivery/detail/add?do='+do_id+'&barcode='+decodedText
+                window.location.href = add_url  
+                
+              })
+              // .then(() => {
+              //   let add_url = '/delivery/detail/add?do='+do_id+'&barcode='+decodedText
+              //   window.location.href = add_url
+              // })
+              .catch(error => {
+                // Could not stop scanning for reasons specified in `error`.
+                // This conditions should ideally not happen.
+              });
+        }, 
+        function (errorMessage) {
+            
+        }
+    );
+}
+
   function stopScanQR(){
       html5QrcodeScanner.clear().then(_ => {
                   
