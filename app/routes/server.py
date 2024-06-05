@@ -77,7 +77,7 @@ def generate_qr_code(data):
     return img_str
 
 
-def generate_unique_sequence_number(model, column, length=8, prefix=""):
+def generate_unique_sequence_number(model, column, length=4, prefix=""):
     sequence_number = prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
@@ -175,7 +175,8 @@ def purchase_event_add():
     date = request.form['date']
     note = request.form['note']
     purchase_order = request.form['purchase-order']
-    pe_name = generate_unique_sequence_number(PurchaseEvent, PurchaseEvent.name, length=8, prefix="PE-")
+    po = PurchaseOrderOdoo.query.get(int(purchase_order))
+    pe_name = generate_unique_sequence_number(PurchaseEvent, PurchaseEvent.name, length=4, prefix=po.name+"-")
     today_datetime = datetime.now()
     date = datetime.strptime(date, '%Y-%m-%d').date()
     purchase_event = PurchaseEvent(name=pe_name, note=note,created=today_datetime, date_stamp=date,purchase_order_odoo_id=purchase_order)
