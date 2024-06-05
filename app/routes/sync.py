@@ -160,8 +160,9 @@ def sync_get_farmer_odoo():
 
             check_data = NfcappFarmerOdoo.query.filter_by(odoo_id=oid).first()
             if check_data:
-                for key, value in farmer_json.items():
-                    setattr(check_data, key, value)
+                if check_data.write_date != farmer_json['write_date']:
+                    for key, value in farmer_json.items():
+                        setattr(check_data, key, value)
             else:
                 new_data = NfcappFarmerOdoo(**farmer_json)
                 db.session.add(new_data)
@@ -170,13 +171,14 @@ def sync_get_farmer_odoo():
                     commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
                     # print(commodity_json)
 
-                    commodity_json['write_date'] = None
+                    commodity_json['write_date'] = format_date_obj(commodity_json['write_date'])
 
                     check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,
                                                                           farmer_id=farmer['odoo_id']).first()
                     if check_data2:
-                        for key, value in commodity_json.items():
-                            setattr(check_data2, key, value)
+                        if check_data2.write_date != commodity_json['write_date']:
+                            for key, value in commodity_json.items():
+                                setattr(check_data2, key, value)
                     else:
                         new_data2 = NfcappCommodityItemOdoo(**commodity_json)
                         db.session.add(new_data2)

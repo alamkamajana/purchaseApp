@@ -46,9 +46,6 @@ Purchase Event
                                 data-bs-target="#nav-home"
                                 type="button" role="tab" aria-controls="nav-home" aria-selected="true">Order Data
                         </button>
-                        <!--                    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"-->
-                        <!--                            type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Order Product-->
-                        <!--                    </button>-->
                         <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
                                 type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Payments
                         </button>
@@ -78,6 +75,10 @@ Purchase Event
                             </div>
                             <table id="farmer-detail" class="data-table">
                                 <tbody>
+                                     <tr>
+                                <th style="width: 50%;">Date</th>
+                                <td>{{ purchase_order.date }}</td>
+                            </tr>
                                     <tr>
                                         <th style="">Farmer Code</th>
                                         <td>{{ farmer.code }}</td>
@@ -203,62 +204,57 @@ Purchase Event
 
 
             </div>
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
 
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Order</th>
-                        <th>Product</th>
-                        <th> Quantity</th>
-                        <th style="text-align: right"> Price</th>
-                        <th style="text-align: right"> Amount Total</th>
-                        <th> Barcode</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for order in order_line %}
-                    <tr>
-                        <td> {{ order.purchase_order.name }}</td>
-                        <td>
-                            {{ ProductOdoo.query.filter_by(id=order.product_odoo_id).first().name }}
-                        </td>
-                        <td> {{ order.qty }}</td>
-                        <td style="text-align: right;" class="currency" data-value="{{ order.unit_price }}">IDR {{
-                            order.unit_price }}
-                        </td>
-                        <td style="text-align: right;" class="currency" data-value="{{ order.subtotal }}">IDR {{
-                            order.subtotal }}
-                        </td>
-                        <td> {{ order.barcode }}</td>
-                    </tr>
-                    {% endfor %}
-
-                    </tbody>
-
-                </table>
-            </div>
             <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Created</th>
-                        <th style="text-align: right;">Amount</th>
-                        <th> Order</th>
-                        <th> note</th>
+                          <th>No</th>
+                                <th>Name</th>
+                                <th>Kind</th>
+                                <th>Source</th>
+                                <th style="text-align: right;">Amount</th>
+                                <th>Type</th>
+                                <th>Note</th>
+
                     </tr>
                     </thead>
                     <tbody>
-                    {% for money in money_data %}
+                          {% set ns = namespace(fund=0) %}
+                                {% set number = namespace(number=0) %}
+                                {% for payment in money_data %}
+
                     <tr>
-                        <td> {{ money.created }}</td>
-                        <td style="text-align: right;" class="currency" data-value="{{ money.amount }}">IDR {{
-                            money.amount }}
-                        </td>
-                        <td>
-                            {{ PurchaseOrder.query.get(money.purchase_order_id).name }}
-                        </td>
-                        <td> {{ money.note }}</td>
+                         {% set number.number = number.number + 1 %}
+                                    {% set ns.fund = ns.fund + payment.amount %}
+                                    <td>
+                                        {{number.number}}
+                                    </td>
+                                    <td>
+                                        {{payment.number}}
+                                    </td>
+
+                                    <td>
+                                        {% if payment.purchase_order_id %}
+                                        Purchase
+                                        {% else %}
+                                        Cash
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if payment.purchase_order_id %}
+                                        {{ PurchaseOrder.query.get(payment.purchase_order_id).name }}
+                                        {% else %}
+                                        {{ purchase_event.name }}
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align: right;" class="" data-value="{{ payment.amount }}">Rp {{
+                                        "{:,.2f}".format(payment.amount) }}
+                                    </td>
+                                    <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                                    <td>{{ payment.note }}</td>
+
                     </tr>
                     {% endfor %}
 

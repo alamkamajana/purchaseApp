@@ -18,7 +18,6 @@ from datetime import datetime
 import os
 import uuid
 import re
-from .auth import login_required
 import ast
 import random
 import string
@@ -245,6 +244,8 @@ def transaction_add():
 
     product = request.form['product']
     price_unit = request.form['price-unit']
+    commodity_name = request.form['commodity_name']
+    variant = request.form['variant']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -255,6 +256,8 @@ def transaction_add():
     new_transaction = PurchaseOrderLine(
         purchase_order_id=purchase_order_id,
         unit_price = price_unit,
+        commodity_name=commodity_name,
+        variant=variant,
         qty = qty,
         barcode = barcode,
         note=note,
@@ -309,6 +312,8 @@ def transaction_create():
     product_can_purchase_arr = []
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
+            commodity_data['commodityitem_price'] = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo,product_id=commodity_data['product_id']).first().price_unit
+            print(commodity_data)
             product_can_purchase_arr.append(commodity_data)
 
     datas = {
@@ -339,6 +344,8 @@ def transaction_update():
     transaction_id = request.form['transaction']
     product = request.form['product']
     price_unit = request.form['price-unit']
+    commodity_name = request.form['commodity_name']
+    variant = request.form['variant']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -351,6 +358,8 @@ def transaction_update():
     if transaction:
 
         transaction.unit_price = price_unit
+        transaction.commodity_name = commodity_name
+        transaction.variant = variant
         transaction.qty = qty
         transaction.product_odoo_id = product_odoo.id
         transaction.barcode = barcode
@@ -399,11 +408,14 @@ def transaction_detail():
             commodityitem_json['product_id_code'] = commodityitem.product_id_code
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
             commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodityitem_json['commodity_name'] = commodityitem.commodity_name
+            commodityitem_json['variant'] = commodityitem.variant
             commodity_item_product_arr.append(commodityitem_json)
 
     product_can_purchase_arr = []
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
+            commodity_data['commodityitem_price'] = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo,product_id=commodity_data['product_id']).first().price_unit
             product_can_purchase_arr.append(commodity_data)
     return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr, ProductOdoo=ProductOdoo, farmer_id=farmer_id)
 
@@ -413,6 +425,7 @@ def transaction_confirm():
     purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     po.status = 'confirm'
+    po.date = datetime.today()
     db.session.commit()
     return redirect(request.referrer)
 
@@ -421,6 +434,7 @@ def transaction_confirm2():
     purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     po.status = 'confirm'
+    po.date = datetime.now().date()
     db.session.commit()
     return {"status" : 200, "message" : True}
 

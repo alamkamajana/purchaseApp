@@ -156,6 +156,8 @@ async function sendImageData() {
 }
 
 function printDelivery(products) {
+
+   let order_id = document.getElementById("purchase_order_id").value;
     if (printCharacteristic == null) {
         navigator.bluetooth.requestDevice({
             filters: [{
@@ -173,8 +175,12 @@ function printDelivery(products) {
                 // Cache the characteristic
                 printCharacteristic = characteristic;
                 processItem(products);
-            })
-            .catch(handleError);
+            }).then(channel => {
+        const xhr = new XMLHttpRequest();
+        const url = `/purchase/transaction/confirm2?purchase_order=${order_id}`;
+        xhr.open("GET", url);
+        xhr.send();
+    }).catch(handleError);
     } else {
         processItem(products);
     }

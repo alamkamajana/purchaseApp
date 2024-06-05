@@ -1,0 +1,48 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Test Print
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/sync.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Test Print</b>
+    <style>
+        .test-button{
+            border: none;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 240px;
+            height: 160px;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-end;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">test_print</span>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <button class="test-button" onclick="btPrintTest()">
+                    <div style="color: blue">
+                        <i class='bx bxs-printer bx-lg'></i>
+                    </div>
+                    <div>
+                        Test Print
+                    </div>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+<script src="{{ url_for('static', filename='/js/tools/print_test.js') }}"></script>
+{% endblock %}
