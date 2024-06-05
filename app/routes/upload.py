@@ -39,11 +39,12 @@ def serialize_model(model_instance):
     """
     serialized_data = {}
     for column in model_instance.__table__.columns:
+        if column.name == 'signature':
+            continue  # Skip the 'signature' column, (problem with json)
         value = getattr(model_instance, column.name)
         if isinstance(value, (datetime, date)):
             value = value.strftime('%Y-%m-%d %H:%M:%S')
         serialized_data[column.name] = value
-
     return serialized_data
 
 
@@ -55,7 +56,6 @@ def get_query_data(flask_model, uniq_ids):
 async def async_post_data(session, url, data):
     headers = {"Content-Type": "application/json"}
     async with session.post(url, json=data, headers=headers) as response:
-        print('qwer', response)
         response.raise_for_status()
         return await response.json()
 
@@ -65,15 +65,12 @@ async def async_upload_ids(session, nfcpurchase):
     nfcpurchase_ids = model.query.with_entities(model.uniq_id, model.change_id).all()
     nfcpurchase_dict = [{'uniq_id': item[0], 'change_id': item[1]} for item in nfcpurchase_ids]
     data = {"model": nfcpurchase, "token": TOKEN, "nfcpurchase_dict": nfcpurchase_dict}
-    print("data", data)
     url = f"{ODOO_BASE_URL}/nfcpurchase/upload/all/get_ids/"
 
     try:
         response = await async_post_data(session, url, data)
-        print(response)
         return response
     except aiohttp.ClientError as e:
-        print('asdf')
         print(e)
         return False
 
@@ -86,14 +83,11 @@ async def async_upload_all():
 
     async with aiohttp.ClientSession() as session:
         for model_name, flask_model in MODEL_NAMES.items():
-            print("model_name", model_name)
             get_ids_list = await async_upload_ids(session, model_name)
-            print("get_ids_list", get_ids_list)
             if not get_ids_list:
                 continue
 
             if "result" not in get_ids_list:
-                print(get_ids_list)
                 continue
 
             result = json.loads(get_ids_list["result"])
@@ -163,7 +157,6 @@ def update_with_update_type():
         url = f"{ODOO_BASE_URL}/nfcpurchase/upload/all/{update_type}/"
         query_data = [serialize_model(query_model)]
         data = {"model": model_name, "token": TOKEN, "data": query_data}
-        print(data)
         headers = {"Content-Type": "application/json"}
         response = requests.post(url, json=data, headers=headers)
         # response = post_data(url, data)
