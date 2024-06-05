@@ -198,7 +198,6 @@ def transaction_add_signature():
     return {"status" : 200, "message" : "success"}
 
 @bp.route('/order/get-signature')
-
 def order_get_signature():
     po = request.args.get("po")
     purchase_order = PurchaseOrder.query.get(int(po))
