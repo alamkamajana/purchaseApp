@@ -18,7 +18,6 @@ from datetime import datetime
 import os
 import uuid
 import re
-from .auth import login_required
 import ast
 import random
 import string
@@ -51,7 +50,6 @@ def transaction_search_farmer():
     return jsonify(farmers=farmer_data)
 
 @bp.route('/search/farmer', methods=["GET"])
-@login_required
 def purchase_search_farmer_bycode():
     query = request.args.get('q', 0)
     group_id = request.args.get('farmer_group', 0, type=int)
@@ -71,7 +69,6 @@ def purchase_search_farmer_bycode():
     return render_template('purchase/search_farmer.html', pe=pe, farmer_groups=farmer_groups, stations=stations)
 
 @bp.route('/farmer/detail', methods=["GET"])
-@login_required
 def purchase_farmer_detail():
     pe = request.args.get('pe', 1, type=int)
     farmer_code = request.args.get('farmer_code')
@@ -86,7 +83,6 @@ def purchase_farmer_detail():
 
 
 @bp.route('/order', methods=["GET"])
-@login_required
 def transaction_order():
     purchase_orders = request.args.get('po', 0, type=int)
     po = PurchaseOrder.query.filter_by(id=purchase_orders).first()
@@ -164,7 +160,6 @@ def transaction_order():
                            po_order_line=po_order_line, grand_total=grand_total )
 
 @bp.route('/payment-note', methods=["GET"])
-@login_required
 def purchase_payment_note():
     po = request.args.get('po', 1, type=int)
     order = PurchaseOrder.query.get(po)
@@ -173,7 +168,6 @@ def purchase_payment_note():
     return render_template('purchase/payment_note.html', purchase_order=order)
 
 @bp.route('/order/add', methods=["POST","GET"])
-@login_required
 def transaction_order_add():
     if request.method.lower() == 'post' :
         purchase_event = request.form['pe']
@@ -190,7 +184,6 @@ def transaction_order_add():
 
 
 @bp.route('/order/add-signature', methods=["GET","POST"])
-@login_required
 def transaction_add_signature():
     po = request.form['po']
     signature = request.form['signature']
@@ -205,7 +198,6 @@ def transaction_add_signature():
     return {"status" : 200, "message" : "success"}
 
 @bp.route('/order/get-signature')
-@login_required
 def order_get_signature():
     po = request.args.get("po")
     purchase_order = PurchaseOrder.query.get(int(po))
@@ -215,8 +207,17 @@ def order_get_signature():
         return jsonify({"error": "Signature not found"}), 404
 
 
+@bp.route('/order/set-to-draft')
+def order_set_to_draft():
+    po = request.args.get("po")
+    farmer = request.args.get("farmer")
+    purchase_order = PurchaseOrder.query.get(int(po))
+    purchase_order.status = 'draft'
+    db.session.commit()
+    return redirect(request.referrer)
+
+
 @bp.route('/transaction', methods=["GET"])
-@login_required
 def transaction_list():
     try :
         event_id = request.args.get('pe', 0, type=int)
@@ -237,15 +238,12 @@ def transaction_list():
             price_data_json['po_id'] = purchase.id
             price_data_json['total'] = total_price
             price_list.append(price_data_json)
-
-
         return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo, price_list=price_list, po_order_line=po_order_line, grand_total=grand_total)
 
     except Exception as e :
         print(e)
 
 @bp.route('/transaction/add', methods=["POST","GET"])
-@login_required
 def transaction_add():
     purchase_order_id = request.form['po']
     purchase_event_id = request.form['pe']
@@ -253,6 +251,8 @@ def transaction_add():
 
     product = request.form['product']
     price_unit = request.form['price-unit']
+    commodity_name = request.form['commodity_name']
+    variant = request.form['variant']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -263,6 +263,8 @@ def transaction_add():
     new_transaction = PurchaseOrderLine(
         purchase_order_id=purchase_order_id,
         unit_price = price_unit,
+        commodity_name=commodity_name,
+        variant=variant,
         qty = qty,
         barcode = barcode,
         note=note,
@@ -276,7 +278,6 @@ def transaction_add():
     return redirect(url)
 
 @bp.route('/transaction/create', methods=["POST","GET"])
-@login_required
 def transaction_create():
     purchase_event_id = request.args.get("purchase-event")
     purchase_order_id = request.args.get("purchase-order")
@@ -318,6 +319,8 @@ def transaction_create():
     product_can_purchase_arr = []
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
+            commodity_data['commodityitem_price'] = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo,product_id=commodity_data['product_id']).first().price_unit
+            print(commodity_data)
             product_can_purchase_arr.append(commodity_data)
 
     datas = {
@@ -331,7 +334,6 @@ def transaction_create():
 
 
 @bp.route('/transaction/delete', methods=["POST","GET"])
-@login_required
 def transaction_delete():
     transaction = request.args.get("transaction")
     purchase_order_id = request.args.get("purchase-order")
@@ -345,11 +347,12 @@ def transaction_delete():
 
 
 @bp.route('/transaction/update', methods=["POST"])
-@login_required
 def transaction_update():
     transaction_id = request.form['transaction']
     product = request.form['product']
     price_unit = request.form['price-unit']
+    commodity_name = request.form['commodity_name']
+    variant = request.form['variant']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -362,6 +365,8 @@ def transaction_update():
     if transaction:
 
         transaction.unit_price = price_unit
+        transaction.commodity_name = commodity_name
+        transaction.variant = variant
         transaction.qty = qty
         transaction.product_odoo_id = product_odoo.id
         transaction.barcode = barcode
@@ -375,7 +380,6 @@ def transaction_update():
 
 
 @bp.route('/transaction/detail', methods=["POST","GET"])
-@login_required
 def transaction_detail():
     transaction = request.args.get("transaction")
     purchase_event_id = request.args.get("purchase-event")
@@ -411,35 +415,37 @@ def transaction_detail():
             commodityitem_json['product_id_code'] = commodityitem.product_id_code
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
             commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodityitem_json['commodity_name'] = commodityitem.commodity_name
+            commodityitem_json['variant'] = commodityitem.variant
             commodity_item_product_arr.append(commodityitem_json)
 
     product_can_purchase_arr = []
     for commodity_data in commodity_item_product_arr:
         if commodity_data['product_id'] in po_line_product_arr:
+            commodity_data['commodityitem_price'] = PurchaseOrderLineOdoo.query.filter_by(order_id=purchase_order_odoo,product_id=commodity_data['product_id']).first().price_unit
             product_can_purchase_arr.append(commodity_data)
     return render_template('purchase/transaction_detail.html', purchase_order_line=order_line, product_can_purchase = product_can_purchase_arr, ProductOdoo=ProductOdoo, farmer_id=farmer_id)
 
 
 @bp.route('/transaction/confirm', methods=["POST","GET"])
-@login_required
 def transaction_confirm():
     purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     po.status = 'confirm'
+    po.date = datetime.today()
     db.session.commit()
     return redirect(request.referrer)
 
 @bp.route('/transaction/confirm2', methods=["POST","GET"])
-@login_required
 def transaction_confirm2():
     purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     po.status = 'confirm'
+    po.date = datetime.now().date()
     db.session.commit()
     return {"status" : 200, "message" : True}
 
 @bp.route('/transaction/items', methods=["POST","GET"])
-@login_required
 def transaction_items():
     purchase_order = request.args.get('purchase_order')
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()

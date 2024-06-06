@@ -1,7 +1,10 @@
 import functools
+
+import psutil
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
+import socket
 from sqlalchemy import and_, create_engine
 from flask import jsonify
 from app.models.db import db
@@ -79,10 +82,17 @@ def generate_unique_sequence_number(model, column, length=8, prefix=""):
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
 
+
 def get_current_ip():
-    hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
-    return ip_address
+    ip_addresses = {}
+    for interface_name, interface_addresses in psutil.net_if_addrs().items():
+        for address in interface_addresses:
+            if address.family == socket.AF_INET:
+                ip_addresses[interface_name] = address.address
+
+    print(ip_addresses)
+    return ip_addresses.get('en0')
+
 
 @bp.route('/sync', methods=["GET"])
 @login_required
@@ -90,7 +100,6 @@ def sync_menu():
     return render_template('server/sync.html')
 
 @bp.route('/master/farmer', methods=["GET"])
-@login_required
 def master_data_farmer():
     parent_id = request.args.get('parent_id',0, type=int)
     station_id = request.args.get('station_id', 0 , type=int)
@@ -115,13 +124,8 @@ def master_data_farmer():
 
 
 @bp.route('/master/purchase-order', methods=["GET"])
-@login_required
 def master_data_purchase_order():
-    user = session['user_odoo_id']
-    user_odoo = User.query.filter_by(user_odoo_id=int(user)).first()
-    purchase_orders = PurchaseOrderOdoo.query.order_by(PurchaseOrderOdoo.odoo_id.desc()).all()
-    purchase_orders2 = user_odoo.purchase_orders if user else []
-
+    purchase_orders2 = PurchaseOrderOdoo.query.order_by(PurchaseOrderOdoo.odoo_id.desc()).all()
     data = []
     for po in purchase_orders2 :
         po_json = {}
@@ -138,7 +142,6 @@ def master_data_purchase_order():
 
 
 @bp.route('/purchase-order/view', methods=["POST","GET"])
-@login_required
 def purchase_order_view():
     print(request)
     po_id = request.args.get("po")
@@ -147,7 +150,6 @@ def purchase_order_view():
 
 
 @bp.route('/purchase-event/', methods=["GET"])
-@login_required
 def purchase_event_list():
     po_id = request.args.get('po', 0, type=int)
     events = PurchaseEvent.query.filter_by(purchase_order_odoo_id=po_id).all()
@@ -160,19 +162,15 @@ def purchase_event_list():
 
 
 @bp.route('/purchase-event/create', methods=["POST","GET"])
-@login_required
 def purchase_event_create_new():
     po_id = request.args.get('po', 0, type=int)
 
     po_list = PurchaseOrderOdoo.query.filter_by(id=po_id).first()
 
-    user_odoo = session['user_odoo_id']
-    user = User.query.filter_by(user_odoo_id=user_odoo).first()
     return render_template('server/purchase_event_create.html', purchase_order=po_list)
 
 
 @bp.route('/purchase-event/add', methods=["POST","GET"])
-@login_required
 def purchase_event_add():
     date = request.form['date']
     note = request.form['note']
@@ -187,7 +185,6 @@ def purchase_event_add():
     return redirect(url_for('routes.server.purchase_event_view', pe=purchase_event.id))
 
 @bp.route('/purchase-event/details', methods=["POST","GET"])
-@login_required
 def purchase_event_details():
     purchasers = ResUserOdoo.query.all()
     purchase_event_id = request.args.get("pe")
@@ -196,10 +193,9 @@ def purchase_event_details():
     return render_template('server/purchase_event_details.html', purchase_event=purchase_event, purchase_order=purchase_order)
 
 @bp.route('/purchase-event/view', methods=["POST","GET"])
-@login_required
 def purchase_event_view():
     purchasers = ResUserOdoo.query.all()
-    base_url = request.url_root
+    base_url = "https://"+str(get_current_ip())+":5000/"
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
     local_ip = get_local_ip()
@@ -217,7 +213,6 @@ def purchase_event_view():
 
 
 @bp.route('/purchase-event/update', methods=["POST","GET"])
-@login_required
 def purchase_event_update():
     # Retrieve updated data from the POST request
     id = request.form['event_id']
@@ -236,7 +231,6 @@ def purchase_event_update():
 
 
 @bp.route('/purchase-event/delete', methods=["POST","GET"])
-@login_required
 def purchase_event_delete():
     purchase_event_id = request.args.get("pe")
     print(purchase_event_id)
@@ -255,7 +249,6 @@ def purchase_event_delete():
 
 
 @bp.route('/purchase-event/payments', methods=["POST","GET"])
-@login_required
 def purchase_event_payments():
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
@@ -265,7 +258,6 @@ def purchase_event_payments():
 
 
 @bp.route('/money/add', methods=["POST","GET"])
-@login_required
 def server_money_add():
     try :
         purchase_event_id = request.form.get('purchase_event_id')
@@ -280,11 +272,9 @@ def server_money_add():
         purchase_event_id = int(purchase_event_id)
         money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
         today_datetime = datetime.now()
-        current_user_session = session['user_odoo_id']
-        current_user = User.query.filter_by(
-            user_odoo_id=int(current_user_session) if current_user_session else None).first()
-        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime, create_uid=current_user.id if current_user else None)
-        print(money)
+
+        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
+
         db.session.add(money)
         db.session.commit()
         return redirect(request.referrer)
@@ -292,7 +282,6 @@ def server_money_add():
         print(e)
 
 @bp.route('/money/add2', methods=["GET"])
-@login_required
 def server_money_add2():
     try :
         purchase_event_id = request.args.get('purchase_event_id')
@@ -307,10 +296,7 @@ def server_money_add2():
         purchase_event_id = int(purchase_event_id)
         money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
         today_datetime = datetime.now()
-        current_user_session = session['user_odoo_id']
-        current_user = User.query.filter_by(
-            user_odoo_id=int(current_user_session) if current_user_session else None).first()
-        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime, create_uid=current_user.id if current_user else None)
+        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
         print(money)
         db.session.add(money)
         db.session.commit()
@@ -318,6 +304,9 @@ def server_money_add2():
     except Exception as e :
         print(e)
 
+@bp.route('/test-print', methods=["GET"])
+def server_test_print():
+    return render_template('server/test_print.html')
 
 
 

@@ -1,15 +1,8 @@
-// let progress = document.querySelector('#progress');
-// let dialog = document.querySelector('#dialog');
-// let message = document.querySelector('#message');
-// let printButton = document.querySelector('#print');
 let printCharacteristic;
 let index = 0;
 let data;
-
 let image = document.querySelector('#sig-image');
-// Use the canvas to get image data
 let canvas = document.createElement('canvas');
-// Canvas dimensions need to be a multiple of 40 for this printer
 canvas.width = 360;
 canvas.height = 190;
 imageWidth = canvas.width / 2;
@@ -59,14 +52,7 @@ function getImagePrintData() {
     return printData;
 }
 
-function handleError(error) {
-    console.log(error);
-    printCharacteristic = null;
-}
-
 function sendNextImageDataBatch(resolve, reject) {
-    // Can only write 512 bytes at a time to the characteristic
-    // Need to send the image data in 512 byte batches
     if (index + 512 < data.length) {
         printCharacteristic.writeValue(data.slice(index, index + 512)).then(() => {
             index += 512;
@@ -74,7 +60,6 @@ function sendNextImageDataBatch(resolve, reject) {
         })
             .catch(error => reject(error));
     } else {
-        // Send the last bytes
         if (index < data.length) {
             printCharacteristic.writeValue(data.slice(index, data.length)).then(() => {
                 resolve();
@@ -85,46 +70,3 @@ function sendNextImageDataBatch(resolve, reject) {
         }
     }
 }
-
-function sendImageData() {
-    data = getImagePrintData();
-    return new Promise(function (resolve, reject) {
-        sendNextImageDataBatch(resolve, reject);
-    });
-}
-
-
-function processItem() {
-    return new Promise((resolve, reject) => {
-        sendImageData()
-            .then(() => {
-                resolve();
-            })
-            .catch(handleError);
-    });
-}
-
-function printDelivery() {
-    if (printCharacteristic == null) {
-        navigator.bluetooth.requestDevice({
-            filters: [{
-                services: ['000018f0-0000-1000-8000-00805f9b34fb']
-            }]
-        })
-            .then(device => {
-                console.log('> Found ' + device.name);
-                console.log('Connecting to GATT Server...');
-                return device.gatt.connect();
-            })
-            .then(server => server.getPrimaryService("000018f0-0000-1000-8000-00805f9b34fb"))
-            .then(service => service.getCharacteristic("00002af1-0000-1000-8000-00805f9b34fb"))
-            .then(characteristic => {
-                // Cache the characteristic
-                printCharacteristic = characteristic;
-                processItem()
-            })
-            .catch(handleError);
-    } else {
-        processItem()
-    }
-};

@@ -8,11 +8,15 @@ let index = 0;
 let data;
 let poName = document.getElementById('po_name').innerHTML.trim()
 let poPartner = document.getElementById('po_partner').innerHTML.trim()
+let eventName = document.getElementById('event_name').value
+let orderName = document.getElementById('order_name').value
 let orderDriver = document.getElementById('order_driver').innerHTML.trim()
 let orderVehicle = document.getElementById('order_vehicle').value
 let orderOrigin = document.getElementById('order_origin').value
 let orderDestination = document.getElementById('order_destination').value
 let orderDate = document.getElementById('order_date').value
+let receivedDate = document.getElementById('received_date').value
+let doId = document.getElementById('do_id').innerHTML.trim()
 
 let image = document.querySelector('#tripper-logo-black');
 // Use the canvas to get image data
@@ -109,14 +113,16 @@ function sendTextData(product) {
     let text = ''
     + '\x1B' + '\x61' + '\x31'                                              
     + '\x1D' + '\x21' + '\x00' + 'SURAT JALAN PT. TRIPPER NATURE\n'
+    + eventName + '/' + orderName + '\n'
     + 'PRODUK\n'+product.name+'\n'
     + 'CERTIFIED ORGANIC BY CONTROL UNION\n\n'
     + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
     + 'Nama Sopir\t: '+orderDriver
-    + '\nNomor Polisi: '+orderVehicle 
+    + '\nJenis Kendaraan & No. Polisi: \n'+orderVehicle 
     + '\nAlamat Asal\t: '+orderOrigin
     + '\nDikirim Ke\t: '+orderDestination
     + '\nTgl Kirim\t: '+ orderDate
+    + '\nTgl Sampai\t: '+ receivedDate
     + '\n'
     + '\nNomor CU\t: '
     + '\nNomor PO\t: '+ poName
@@ -231,7 +237,29 @@ function sendTextKriteria2() {
     + '\n(  )Produk dibungkus kemasan\n    yang disetujui, bersih dan\n    bebas dari benda asing'
     + '\n(  )Truk bersih dan bebas dari\n    segala resiko kontaminasi'
     + '\n(  )Hanya material\n    tersertifikasi/NFC yang di\n    dalam truk/kontainer'
-    + '\n'
+    + '\n\n'
+    + '* beri tanda V jika sesuai'
+    + '\n\n'
+    + '--------------------------------'
+    ;    
+    return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
+}
+
+function sendTextTTD() {
+    // Get the bytes for the text
+    let encoder = new TextEncoder("utf-8");
+    // Add line feed + carriage return chars to text
+    let text = ''
+    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
+    + 'Pengirim:'
+    + '\n\n\n\n\n'
+    + '(                              )'
+    + '\n\n'
+    + 'Tanggal Terima : \n'
+    + 'Penerima:'
+    + '\n\n\n\n\n'
+    + '(                              )'
+    + '\n\n'
     + '--------------------------------'
     ;    
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
@@ -319,6 +347,7 @@ function deliveryInfo(){
         
     })
     printDelivery(products)
+    // processAllItems(products)
     
 }
 
@@ -329,6 +358,8 @@ async function processItem(product) {
 
         .then(() => sendTextKriteria1())
         .then(() => sendTextKriteria2())
+        .then(() => sendTextTTD())
+        
         .then(()=>{resolve();})
         .catch(handleError);
     });
@@ -340,6 +371,9 @@ async function processAllItems(products) {
         await processItem(product)
         console.log("finish--")
     }
+    
     console.log('All items processed');
+    window.location.href = '/delivery/confirm?do='+doId;
+
 }
 

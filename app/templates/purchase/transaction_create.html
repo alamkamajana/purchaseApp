@@ -8,7 +8,7 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
           type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
@@ -48,11 +48,11 @@
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="product"
                                                     id="product-{{ product.product_id }}" value="{{ product.product_id }}"
-                                                    data-price="{{ product.commodityitem_price }}" onchange="updatePrice(this)" required>
+                                                    data-price="{{ product.commodityitem_price }}" data-commodity_name="{{ product.commodity_name }}" data-variant="{{ product.variant }}" onchange="updatePrice(this)" required>
             
                                                 <label class="form-check-label" for="product-{{ product.product_id }}"
                                                     style="width:80%">
-                                                    [{{ product.product_id_code }}] {{ product.product_name }}
+                                                    <h5>{{ product.commodity_name }} {{ product.variant }}</h5> <p style="font-size:8px"> {{ product.product_id_code }}</p>
                                                 </label>
                                             </div>
                                         </td>
@@ -63,6 +63,8 @@
                                 </table>
                             </div>
                         </div>
+                         <input type="hidden" class="form-control" id="commodity_name" name="commodity_name" value="" required>
+                        <input type="hidden" class="form-control" id="variant" name="variant" value="" required>
                         <div class="form-group">
                             <label for="qty">Quantity</label>
                             <input type="number" class="form-control" id="qty" name="qty" value="" step="0.01" required>
@@ -82,7 +84,7 @@
                             <div class="row">
                                 <div class="col-9 col-sm-11">
                                     <label for="barcode">Barcode</label>
-                                    <input type="text" class="form-control" id="barcode" name="barcode" value="" >
+                                    <input type="text" class="form-control" id="barcode" name="barcode" value="" required>
                                 </div>
                                 <div class="col-3 col-sm-1 d-flex justify-content-right">
                                     <button type="button" class="btn btn-primary" onclick="startScanQR('barcode')" style="margin-top: 23px;">
@@ -129,7 +131,11 @@
 <script>
     function updatePrice(radio) {
         let price = radio.getAttribute('data-price');
+        let commodity_name = radio.getAttribute('data-commodity_name');
+        let variant = radio.getAttribute('data-variant');
         document.getElementById('price-unit').value = price;
+        document.getElementById('commodity_name').value = commodity_name;
+        document.getElementById('variant').value = variant;
         calculateSubtotal();
     }
 
