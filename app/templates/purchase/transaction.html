@@ -669,7 +669,7 @@ Certification : ${certification_status}
                     // Start sending data chunks and then image data chunks
                     return sendNextChunk().then(() => {
                         let imageData = getImagePrintData();
-                        let imageChunks = splitImageDataIntoChunks(imageData, 512);
+                        let imageChunks = splitImageDataIntoChunks(imageData, 128);
                         return sendImageDataChunks(characteristic, imageChunks);
                     }).then(() => {
                         console.log('Data and image sent successfully');
