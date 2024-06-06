@@ -198,7 +198,6 @@ def transaction_add_signature():
     return {"status" : 200, "message" : "success"}
 
 @bp.route('/order/get-signature')
-
 def order_get_signature():
     po = request.args.get("po")
     purchase_order = PurchaseOrder.query.get(int(po))
@@ -206,6 +205,16 @@ def order_get_signature():
         return send_file(io.BytesIO(purchase_order.signature), mimetype='image/png')
     else:
         return jsonify({"error": "Signature not found"}), 404
+
+
+@bp.route('/order/set-to-draft')
+def order_set_to_draft():
+    po = request.args.get("po")
+    farmer = request.args.get("farmer")
+    purchase_order = PurchaseOrder.query.get(int(po))
+    purchase_order.status = 'draft'
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 @bp.route('/transaction', methods=["GET"])
@@ -229,8 +238,6 @@ def transaction_list():
             price_data_json['po_id'] = purchase.id
             price_data_json['total'] = total_price
             price_list.append(price_data_json)
-
-
         return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo, price_list=price_list, po_order_line=po_order_line, grand_total=grand_total)
 
     except Exception as e :
