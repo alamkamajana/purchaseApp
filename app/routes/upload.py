@@ -15,6 +15,7 @@ from app.models.db import db
 from .auth import login_required
 import json
 import logging
+import base64
 
 
 load_dotenv()
@@ -32,8 +33,6 @@ MODEL_NAMES = {
     "Money": Money,
 }
 
-
-import base64
 
 def serialize_model(model_instance):
     """
