@@ -488,7 +488,6 @@
 
 
 </div>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
     function btPrint3() {
         var SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
@@ -595,127 +594,107 @@ Certification : ${certification_status}
                         });
                     }
 
-                    // Start sending chunks and then write the additional data
-                    return sendNextChunk().then(() => {
-                        // let progress = document.querySelector('#progress');
-// let dialog = document.querySelector('#dialog');
-// let message = document.querySelector('#message');
-// let printButton = document.querySelector('#print');
-                        let printCharacteristic;
-                        let index = 0;
-                        let data;
+                    // Function to split image data into chunks
+                    function splitImageDataIntoChunks(data, chunkSize) {
+                        let chunks = [];
+                        for (let i = 0; i < data.length; i += chunkSize) {
+                            chunks.push(data.slice(i, i + chunkSize));
+                        }
+                        return chunks;
+                    }
 
+                    // Function to get image print data
+                    function getImagePrintData() {
                         let image = document.querySelector('#sig-image');
-// Use the canvas to get image data
                         let canvas = document.createElement('canvas');
-// Canvas dimensions need to be a multiple of 40 for this printer
                         canvas.width = 360;
                         canvas.height = 190;
-                        imageWidth = canvas.width / 2;
-                        imageHeight = imageWidth / 966 * 950;
                         let context = canvas.getContext("2d");
+                        let imageWidth = canvas.width / 2;
+                        let imageHeight = imageWidth / 966 * 950;
                         let offsetX = (canvas.width - imageWidth) / 2 + 1;
                         context.drawImage(image, offsetX, 0, imageWidth, imageHeight);
                         let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
 
                         function getDarkPixel(x, y) {
-                            // Return the pixels that will be printed black
                             let red = imageData[((canvas.width * y) + x) * 4];
                             let green = imageData[((canvas.width * y) + x) * 4 + 1];
                             let blue = imageData[((canvas.width * y) + x) * 4 + 2];
                             return (red + green + blue) > 0 ? 1 : 0;
                         }
 
-                        function getImagePrintData() {
-                            if (imageData == null) {
-                                console.log('No image to print!');
-                                return new Uint8Array([]);
+                        let printData = new Uint8Array(canvas.width / 8 * canvas.height + 8);
+                        let offset = 0;
+                        printData[0] = 29;
+                        printData[1] = 118;
+                        printData[2] = 48;
+                        printData[3] = 0;
+                        printData[4] = canvas.width / 8;
+                        printData[5] = 0;
+                        printData[6] = canvas.height % 256;
+                        printData[7] = canvas.height / 256;
+                        offset = 7;
+                        for (let i = 0; i < canvas.height; ++i) {
+                            for (let k = 0; k < canvas.width / 8; ++k) {
+                                let k8 = k * 8;
+                                printData[++offset] = getDarkPixel(k8 + 0, i) * 128 + getDarkPixel(k8 + 1, i) * 64 +
+                                    getDarkPixel(k8 + 2, i) * 32 + getDarkPixel(k8 + 3, i) * 16 +
+                                    getDarkPixel(k8 + 4, i) * 8 + getDarkPixel(k8 + 5, i) * 4 +
+                                    getDarkPixel(k8 + 6, i) * 2 + getDarkPixel(k8 + 7, i);
                             }
-                            // Each 8 pixels in a row is represented by a byte
-                            let printData = new Uint8Array(canvas.width / 8 * canvas.height + 8);
-                            let offset = 0;
-                            // Set the header bytes for printing the image
-                            printData[0] = 29;  // Print raster bitmap
-                            printData[1] = 118; // Print raster bitmap
-                            printData[2] = 48; // Print raster bitmap
-                            printData[3] = 0;  // Normal 203.2 DPI
-                            printData[4] = canvas.width / 8; // Number of horizontal data bits (LSB)
-                            printData[5] = 0; // Number of horizontal data bits (MSB)
-                            printData[6] = canvas.height % 256; // Number of vertical data bits (LSB)
-                            printData[7] = canvas.height / 256;  // Number of vertical data bits (MSB)
-                            offset = 7;
-                            // Loop through image rows in bytes
-                            for (let i = 0; i < canvas.height; ++i) {
-                                for (let k = 0; k < canvas.width / 8; ++k) {
-                                    let k8 = k * 8;
-                                    //  Pixel to bit position mapping
-                                    printData[++offset] = getDarkPixel(k8 + 0, i) * 128 + getDarkPixel(k8 + 1, i) * 64 +
-                                        getDarkPixel(k8 + 2, i) * 32 + getDarkPixel(k8 + 3, i) * 16 +
-                                        getDarkPixel(k8 + 4, i) * 8 + getDarkPixel(k8 + 5, i) * 4 +
-                                        getDarkPixel(k8 + 6, i) * 2 + getDarkPixel(k8 + 7, i);
-                                }
-                            }
-                            return printData;
                         }
+                        return printData;
+                    }
 
-                        function handleError(error) {
-                            console.log(error);
-                            printCharacteristic = null;
-                        }
-
-                        function sendNextImageDataBatch(resolve, reject) {
-                            // Can only write 512 bytes at a time to the characteristic
-                            // Need to send the image data in 512 byte batches
-                            if (index + 512 < data.length) {
-                                printCharacteristic.writeValue(data.slice(index, index + 512)).then(() => {
-                                    index += 512;
-                                    sendNextImageDataBatch(resolve, reject);
-                                })
-                                    .catch(error => reject(error));
-                            } else {
-                                // Send the last bytes
-                                if (index < data.length) {
-                                    printCharacteristic.writeValue(data.slice(index, data.length)).then(() => {
-                                        resolve();
-                                    })
-                                        .catch(error => reject(error));
+                    // Function to send image data chunks sequentially
+                    function sendImageDataChunks(characteristic, chunks) {
+                        return new Promise((resolve, reject) => {
+                            function sendNextChunk() {
+                                if (chunks.length > 0) {
+                                    let chunk = chunks.shift();
+                                    characteristic.writeValue(chunk).then(() => {
+                                        sendNextChunk(); // Send the next chunk
+                                    }).catch(error => {
+                                        reject(error);
+                                    });
                                 } else {
                                     resolve();
                                 }
                             }
-                        }
 
-                        function sendImageData() {
-                            data = getImagePrintData();
-                            return new Promise(function (resolve, reject) {
-                                sendNextImageDataBatch(resolve, reject);
-                            });
-                        }
+                            sendNextChunk(); // Start sending chunks
+                        });
+                    }
 
-
-                        function processItem() {
-                            return new Promise((resolve, reject) => {
-                                sendImageData()
-                                    .then(() => {
-                                        resolve();
-                                    })
-                                    .catch(handleError);
-                            });
-                        }
-
-                        function printDelivery() {
-                            if (printCharacteristic == null) {
-                                // Cache the characteristic
-                                printCharacteristic = characteristic;
-                                processItem()
-
-                            } else {
-                                processItem()
-                            }
-                        };
-
-                        return printDelivery();
+                    // Start sending data chunks and then image data chunks
+                    return sendNextChunk().then(() => {
+                        let imageData = getImagePrintData();
+                        let imageChunks = splitImageDataIntoChunks(imageData, 512);
+                        return sendImageDataChunks(characteristic, imageChunks);
+                    }).then(() => {
+                        console.log('Data and image sent successfully');
+                    }).catch(error => {
+                        console.error('Error:', error);
                     });
+                }).catch(error => {
+                    console.error('Error connecting to device:', error);
+                }).then(() => {
+                    let purchaseOrderId = document.getElementById("purchase_order_id").value;
+
+                    fetch(`/purchase/transaction/confirm2?purchase_order=${purchaseOrderId}`, {
+                        method: 'GET',
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 200) {
+                                window.location.reload();
+                            } else {
+                                console.error('Failed to confirm transaction:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
                 }).catch(error => {
                     console.error('Error connecting to device:', error);
                 });
