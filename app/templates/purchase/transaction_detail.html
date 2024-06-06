@@ -101,7 +101,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-9 col-sm-11">
-                                    <label for="barcode">Barcode</label>
+                                    <label for="barcode">QR Code : <span id=qrcode-color style="color: {{ purchase_order_line.color_hex }};">{{ purchase_order_line.color_name }}</span></label>
                                     <input type="text" class="form-control" id="barcode" name="barcode" value="{{ purchase_order_line.barcode }}" required>
                                 </div>
                                 <div class="col-3 col-sm-1 d-flex justify-content-right">
@@ -165,6 +165,8 @@
         document.getElementById('is_ra_cert').value = is_ra_cert;
         document.getElementById('color_hex').value = color_hex;
         document.getElementById('color_name').value = color_name;
+        document.getElementById('qrcode-color').innerHTML = color_name;
+        document.getElementById('qrcode-color').style.color = color_hex;
         document.getElementById('nfcapp_commodity_item_odoo_id').value = nfcapp_commodity_item_odoo_id;
         calculateSubtotal();
     }
