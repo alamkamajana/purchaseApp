@@ -1,68 +1,10 @@
-@media screen and (min-width: 768px){
-    .purchase-data{
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-    }
-
-    .data-table{
-        height: 200px;
-        width: 60%;
-    }
-
-    .farmer-photo{
-        width: 200px;
-        height: 200px;
-        border: solid 1px black;
-        margin: 20px;
-        margin-left: 0;
-        max-width: 30%;
-        max-height: auto;
-    }
-
-    .event-container{
-        max-width:100%;
+@media (min-width: 576px){
+    .responsive-th{
+        display:none;
     }
 }
 
-
-
-@media screen and (max-width: 768px){
-    .purchase-data{
-        width: 100%;
-    }
-    .data-table{
-        width: 100%;
-    }
-
-    .farmer-photo{
-        border: solid 1px black;
-        margin:8px;
-        margin-left: 0;
-        width: 140px;
-        height: 140px;
-    }
-
-    .farmer-photo img{
-        width:140px;
-        height:140px;
-    }
-
-    .commodity-table{
-        width:100%;
-        position: sticky;
-        left: 0;
-    }
-
-    /* .event-table{
-        min-width:960px;
-    } */
-}
-
-
-
-/* @media (max-width: 576px) {
+@media (max-width: 576px) {
 
 
     .event-container h1 {
@@ -97,7 +39,11 @@
         width: 100%;
     }
 
-  
+    /* .event-container tr {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+    } */
+
     .event-container td {
         display: flex;
         justify-content: space-between;
@@ -105,6 +51,13 @@
         text-align: left;
     }
 
+    /* .event-container td:before {
+        content: attr(data-label);
+        flex-basis: 50%;
+        text-align: left;
+        font-weight: bold;
+        color: #495057;
+    } */
 
 
     .event-container td {
@@ -121,7 +74,7 @@
         display: block;
     }
 
-    .responsive-table th {
+    .responsive-table th, .responsive-table thead {
         display: none;
     }
 
@@ -143,13 +96,15 @@
         display: flex;
         align-items: center;
         justify-content: right;
+        text-align: end;
     }
 
     .responsive-table .responsive-th{
         justify-content: left;
+        text-align: start;
     }
 
-    .responsive-table td:nth-child(2) {
+    .responsive-table .overflow-container {
         width: 50%;
         box-sizing: border-box;
         display: flex;
@@ -158,17 +113,17 @@
         white-space: nowrap;
     }
 
-    .responsive-table td:first-child, .responsive-table td:nth-child(2){
-        background-color: #f1f1f1;
-    }
-
     .responsive-table td:last-child{
         width:100% ;
     }
 
     
-    .responsive-table .total-price-container td{
+    .responsive-table .total-price-container td {
         width:50% !important;
+        
+    }
+
+    .text-right{
         justify-content: right !important;
     }
 
@@ -177,32 +132,31 @@
         justify-content: left !important;
     }
 
-} */
+    .responsive-table td a{
+        width:100%;
+    }
 
-.data-table td{
-    vertical-align: middle;
+    .mobile-hidden{
+        display: none !important;
+    }
+
+    .responsive-table .product-code{
+        width:100%
+    }
+
+    .responsive-table  .mobile-first-tr{
+        background-color: #f1f1f1;
+    }
+
+    .responsive-table  .grand-total-title{
+        justify-content: left;
+    }
+
+
 }
 
 
-.back-btn{
-    padding:0;
-}
-
-.text-right{
-    text-align: right;
-}
-
-.event-container{
-    overflow-x : auto;
-}
-
-#product-options{
-    vertical-align: middle;
-}
-
-#po-info{
-    padding: 16px;
-}
-
-
+    .farmer-photo{
+        padding : 0;
+    }
 
