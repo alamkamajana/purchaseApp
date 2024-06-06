@@ -33,6 +33,8 @@ MODEL_NAMES = {
 }
 
 
+import base64
+
 def serialize_model(model_instance):
     """
     Serialize a SQLAlchemy model instance to a dictionary.
@@ -40,10 +42,13 @@ def serialize_model(model_instance):
     serialized_data = {}
     for column in model_instance.__table__.columns:
         if column.name == 'signature':
-            continue  # Skip the 'signature' column, (problem with json)
-        value = getattr(model_instance, column.name)
-        if isinstance(value, (datetime, date)):
-            value = value.strftime('%Y-%m-%d %H:%M:%S')
+            value = getattr(model_instance, column.name)
+            if value is not None:
+                value = base64.b64encode(value).decode('utf-8')  # Convert binary data to base64 string
+        else:
+            value = getattr(model_instance, column.name)
+            if isinstance(value, (datetime, date)):
+                value = value.strftime('%Y-%m-%d %H:%M:%S')
         serialized_data[column.name] = value
     return serialized_data
 
