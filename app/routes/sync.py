@@ -166,22 +166,23 @@ def sync_get_farmer_odoo():
             else:
                 new_data = NfcappFarmerOdoo(**farmer_json)
                 db.session.add(new_data)
-                for commodity in farmer['commodity_items']:
-                    oid = commodity['odoo_id']
-                    commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
-                    # print(commodity_json)
 
-                    commodity_json['write_date'] = format_date_obj(commodity_json['write_date'])
+            for commodity in farmer['commodity_items']:
+                oid = commodity['odoo_id']
+                commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
+                # print(commodity_json)
 
-                    check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,
-                                                                          farmer_id=farmer['odoo_id']).first()
-                    if check_data2:
-                        if check_data2.write_date != commodity_json['write_date']:
-                            for key, value in commodity_json.items():
-                                setattr(check_data2, key, value)
-                    else:
-                        new_data2 = NfcappCommodityItemOdoo(**commodity_json)
-                        db.session.add(new_data2)
+                commodity_json['write_date'] = format_date_obj(commodity_json['write_date'])
+
+                check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,
+                                                                      farmer_id=farmer['odoo_id']).first()
+                if check_data2:
+                    if check_data2.write_date != commodity_json['write_date']:
+                        for key, value in commodity_json.items():
+                            setattr(check_data2, key, value)
+                else:
+                    new_data2 = NfcappCommodityItemOdoo(**commodity_json)
+                    db.session.add(new_data2)
 
         db.session.commit()
 

@@ -198,7 +198,6 @@ def transaction_add_signature():
     return {"status" : 200, "message" : "success"}
 
 @bp.route('/order/get-signature')
-
 def order_get_signature():
     po = request.args.get("po")
     purchase_order = PurchaseOrder.query.get(int(po))
@@ -246,6 +245,11 @@ def transaction_add():
     price_unit = request.form['price-unit']
     commodity_name = request.form['commodity_name']
     variant = request.form['variant']
+    is_organic = request.form['is_organic']
+    is_ra_cert = request.form['is_ra_cert']
+    color_hex = request.form['color_hex']
+    color_name = request.form['color_name']
+    nfcapp_commodity_item_odoo_id = request.form['nfcapp_commodity_item_odoo_id']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -258,6 +262,11 @@ def transaction_add():
         unit_price = price_unit,
         commodity_name=commodity_name,
         variant=variant,
+        is_organic = bool(is_organic),
+        is_ra_cert = bool(is_ra_cert),
+        color_name = color_name,
+        color_hex = color_hex,
+        nfcapp_commodity_item_odoo_id=nfcapp_commodity_item_odoo_id,
         qty = qty,
         barcode = barcode,
         note=note,
@@ -294,7 +303,7 @@ def transaction_create():
 
     commodity_item_product_arr = []
     for item in item_odoo_arr:
-        commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+        commodityitem = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id,odoo_id=int(item)).first()
         if commodityitem.product_id:
             commodityitem_json = {}
             commodityitem_json['commodityitem_id'] = commodityitem.id
@@ -307,6 +316,10 @@ def transaction_create():
             commodityitem_json['commodity_name'] = commodityitem.commodity_name
             commodityitem_json['variant'] = commodityitem.variant
             commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodityitem_json['is_organic'] = commodityitem.is_organic
+            commodityitem_json['is_ra_cert'] = commodityitem.is_ra_cert
+            commodityitem_json['color_hex'] = commodityitem.color_hex
+            commodityitem_json['color_name'] = commodityitem.color_name
             commodity_item_product_arr.append(commodityitem_json)
 
     product_can_purchase_arr = []
@@ -346,6 +359,11 @@ def transaction_update():
     price_unit = request.form['price-unit']
     commodity_name = request.form['commodity_name']
     variant = request.form['variant']
+    is_organic = request.form['is_organic']
+    is_ra_cert = request.form['is_ra_cert']
+    color_hex = request.form['color_hex']
+    color_name = request.form['color_name']
+    nfcapp_commodity_item_odoo_id = request.form['nfcapp_commodity_item_odoo_id']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -360,6 +378,12 @@ def transaction_update():
         transaction.unit_price = price_unit
         transaction.commodity_name = commodity_name
         transaction.variant = variant
+        transaction.is_organic = bool(is_organic)
+        transaction.is_ra_cert = bool(is_ra_cert)
+        transaction.color_name = color_name
+        transaction.color_hex = color_hex
+        transaction.nfcapp_commodity_item_odoo_id = nfcapp_commodity_item_odoo_id
+
         transaction.qty = qty
         transaction.product_odoo_id = product_odoo.id
         transaction.barcode = barcode
@@ -410,6 +434,10 @@ def transaction_detail():
             commodityitem_json['certStatus'] = commodityitem.certStatus
             commodityitem_json['commodity_name'] = commodityitem.commodity_name
             commodityitem_json['variant'] = commodityitem.variant
+            commodityitem_json['is_organic'] = commodityitem.is_organic
+            commodityitem_json['is_ra_cert'] = commodityitem.is_ra_cert
+            commodityitem_json['color_hex'] = commodityitem.color_hex
+            commodityitem_json['color_name'] = commodityitem.color_name
             commodity_item_product_arr.append(commodityitem_json)
 
     product_can_purchase_arr = []

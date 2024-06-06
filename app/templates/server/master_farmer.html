@@ -32,7 +32,7 @@
                             <label for="parent_id">Farmer Group</label>
                             <select name="parent_id" id="parent_id">
                                 {% for cluster in clusters %}
-                                    <option value="{{cluster.odoo_id}}" {% if cluster.odoo_id==parent_id %} selected {% endif %} data-category="{{cluster.station_id}}">{{cluster.name}}</option>
+                                    <option value="{{cluster.odoo_id}}"  data-category="{{cluster.station_id}}" {% if cluster.odoo_id==parent_id %} selected {% endif %}>{{cluster.name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
