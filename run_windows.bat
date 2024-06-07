@@ -10,5 +10,5 @@ call venv\Scripts\activate
 set FLASK_APP=run.py
 
 start "" http://%ip%:5001
-flask run --host=%ip%
+flask run
 pause
