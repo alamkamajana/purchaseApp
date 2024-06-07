@@ -14,6 +14,7 @@ from app.models.models_odoo import ProductOdoo, PurchaseOrderOdoo, PurchaseOrder
 from app.models.models import User
 from app.models.db import db
 from .auth import login_required
+import json
 
 load_dotenv()
 bp = Blueprint('sync', __name__, url_prefix='/sync')
@@ -71,6 +72,11 @@ def sync_get_purchase_order():
     try:
         url = f"{odoo_base_url}/nfcapp-purchase/get-purchase-order"
         data = {'token': token, 'odoo_user_id': session['user_odoo_id']}
+
+        odoo_id = request.args.get("odoo_id")
+        if odoo_id:
+            # get only this odoo id
+            data["odoo_id"] = int(odoo_id)
 
         # GET Request
         response = requests.get(url, data=data)
@@ -144,6 +150,11 @@ def sync_get_farmer_odoo():
     try:
         url = f"{odoo_base_url}/nfcapp-purchase/get-nfcapp-farmer"
         data = {'token': token}
+
+        odoo_id = request.args.get("odoo_id")
+        if odoo_id:
+            # get only this odoo id
+            data["odoo_id"] = int(odoo_id)
 
         # GET Request
         response = requests.get(url, data=data)
@@ -418,3 +429,36 @@ def sync_farmer_photo():
         "message": "Success",
         "status": 200
     }
+
+
+MAPPED_MODEL_ODOO_NAMES = {
+    "NfcappFarmerOdoo": NfcappFarmerOdoo,
+    "PurchaseOrderOdoo": PurchaseOrderOdoo,
+}
+
+
+@bp.route('/check-update', methods=['GET'])
+@login_required
+def check_update():
+    flask_id = int(request.args.get("flask_id"))
+    url = f"{odoo_base_url}/nfcapp-purchase/check-write-date"
+
+    model_name = request.args.get('model')
+    model = MAPPED_MODEL_ODOO_NAMES.get(model_name)
+    model_odoo = model.query.get(flask_id)
+    data = {
+        'token': token,
+        'odoo_id': model_odoo.odoo_id,
+        'write_date': model_odoo.write_date,
+        'model': model_name,
+    }
+
+    # GET Request
+    response = requests.get(url, data=data)
+    if response.status_code == 200:
+        response_json = response.json()
+        return response_json
+    elif response.status_code == 404:
+        return json.dumps({"status": 404, "message": "Record not found"})
+    else:
+        return json.dumps({"status": 401, "message": "Unauthorized"})
