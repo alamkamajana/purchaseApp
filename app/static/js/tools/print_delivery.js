@@ -18,16 +18,17 @@ let orderDate = document.getElementById('order_date').value
 let receivedDate = document.getElementById('received_date').value
 let doId = document.getElementById('do_id').innerHTML.trim()
 
+
 let image = document.querySelector('#tripper-logo-black');
 // Use the canvas to get image data
 let canvas = document.createElement('canvas');
 // Canvas dimensions need to be a multiple of 40 for this printer
 canvas.width = 360;
 canvas.height = 60;
-imageWidth = canvas.width/2;
-imageHeight = imageWidth/966*277;
+imageWidth = canvas.width / 2;
+imageHeight = imageWidth / 966 * 277;
 let context = canvas.getContext("2d");
-let offsetX = (canvas.width - imageWidth) / 2 + 10;
+let offsetX = (canvas.width - imageWidth) / 2 + 1;
 context.drawImage(image, offsetX, 0, imageWidth, imageHeight);
 let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
 
@@ -99,12 +100,29 @@ function sendNextImageDataBatch(resolve, reject) {
 }
 
 function sendImageData() {
-    index = 0;
+    index = 0
     data = getImagePrintData();
     return new Promise(function (resolve, reject) {
         sendNextImageDataBatch(resolve, reject);
     });
 }
+
+function processImage() {
+    return new Promise((resolve, reject) => {
+        sendImageData()
+    });
+}
+
+function printLogo() {
+    if (printCharacteristic == null) {
+        // Cache the characteristic
+        printCharacteristic = characteristic;
+        processImage()
+
+    } else {
+        processImage()
+    }
+};
 
 function sendTextData(product) {
     // Get the bytes for the text
@@ -267,7 +285,7 @@ function sendTextTTD() {
 
 async function sendPrinterData(product) {
     // Print an image followed by the text
-    return sendImageData()
+    return printLogo()
         .then(() => sendTextData(product))
         // .then(() => sendTextKriteria1())
         // .then(() => sendTextKriteria2())
@@ -351,8 +369,7 @@ function deliveryInfo(){
 
 async function processItem(product) {
     return new Promise((resolve, reject) => {
-        sendImageData()
-        .then(() => sendTextData(product))
+        sendTextData(product)
 
         .then(() => sendTextKriteria1())
         .then(() => sendTextKriteria2())
