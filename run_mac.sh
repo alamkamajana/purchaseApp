@@ -11,6 +11,6 @@ source venv/bin/activate
 export FLASK_APP=run.py
 
 # Open the URL in the default browser
-xdg-open "http://$ip:5000" &
+xdg-open "http://$ip:5001" &
 flask run --host="$ip"
 read -rp "Press any key to continue..."   # Pause the script until a key is pressed
