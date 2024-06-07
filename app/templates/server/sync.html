@@ -107,7 +107,7 @@
             <div class="col-6">
                 <button class="upload-button">
                     <div style="color: blue">
-                        <i class='bx bx-sync bx-lg'></i>
+                        <i class='bx bx-cloud-upload bx-lg'></i>
                     </div>
                     <div>
                         Upload Data
@@ -177,6 +177,7 @@
                     throw new Error(`Error calling ${urls[index]}: ${response.status}`);
                 }
             } catch (error) {
+                progressContainer.style.display = 'none';
                 progressBar.style.display = 'none'; // Hide progress bar on error
                 alert(`Synchronization failed: ${error.message}`);
             }
