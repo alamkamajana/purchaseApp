@@ -15,6 +15,19 @@ Purchase Event
     .active {
         color: black;
     }
+
+    .rotate-this-icon {
+        display: inline-block;
+        animation: rotation 2s infinite linear;
+    }
+    @keyframes rotation {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(-360deg);
+        }
+    }
 </style>
 <span id="selected-menu" style="display: none;">purchase_event</span>
 
@@ -68,6 +81,7 @@ Purchase Event
                     <th style="text-align: right">Cash Out</th>
                     <th style="text-align: right">Cash Balance</th>
                     <th>Action</th>
+                    <th style="width: 5%;">Update</th>
                 </tr>
                 {% for event in events %}
                 <tr class="event-row">
@@ -97,6 +111,15 @@ Purchase Event
 <!--                           href="/server/purchase-event/delete?pe={{ event.id }}">-->
 <!--                            <span><i class='bx bxs-trash'></i></span>-->
 <!--                        </a>-->
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-transparent check-update"
+                                id="checkUpdate-{{event.id}}"
+                                data-event-id="{{event.id}}"
+                                style="width: 100%; height: 100%;"
+                        >
+
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -187,4 +210,83 @@ Purchase Event
 {% endblock %}
 {% block script_plugin %}
 <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/event.css') }}">
+<script>
+    $(document).ready(function() {
+        if (navigator.onLine) {
+            $('.check-update').html(`
+                <i class='bx bx-sync bx-sm rotate-this-icon' style='color: blue;' data-bs-toggle='tooltip' title='Checking Updatable'></i>
+            `);
+
+            $('.check-update').each(function() {
+                var thisCheck = $(this);
+                var eventId = $(thisCheck).attr('data-event-id');
+                var modelName = 'PurchaseEvent';
+
+                $.ajax({
+                    url: '/nfcpurchase/upload/check-update-by-id/',
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        check_id: eventId,
+                        model: modelName,
+                    },
+                    success: function(response) {
+                        if (response.update_type) {
+                            $(thisCheck).attr('data-update-type', response.update_type);
+                            $(thisCheck).html(`
+                                <i class='bx bx-cloud-upload bx-sm' style='color: blue;' data-bs-toggle='tooltip' title='Upload'></i>
+                            `);
+                        } else if (response.update_type === false) {
+                            // no update
+                            $(thisCheck).html('');
+                            $(thisCheck).addClass('disabled');
+                        } else {
+                            $(thisCheck).html(`<i class='bx bx-error bx-sm' data-bs-toggle='tooltip' title='${response.error}'></i>`);
+                        };
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('.check-update').click(function(event) {
+                event.preventDefault();
+                if ($(this).attr('data-update-type')) {
+                    var thisUpdate = $(this);
+                    var eventId = $(thisUpdate).attr('data-event-id');
+                    var modelName = 'PurchaseEvent';
+                    var updateType = $(thisUpdate).attr('data-update-type');
+
+                    $(thisUpdate).html(`
+                        <i class='bx bx-sync bx-sm rotate-this-icon' style='color: blue;' data-bs-toggle='tooltip' title='Uploading'></i>
+                    `);
+                    $.ajax({
+                        url: '/nfcpurchase/upload/update/',
+                        type: 'POST',
+                        dataType: 'json',
+                        async: true,
+                        data: {
+                            update_id: eventId,
+                            model: modelName,
+                            update_type: updateType,
+                        },
+                        success: function(response) {
+                            if (response.status === 200) {
+                                $(thisUpdate).attr('data-update-type', '');
+                                $(thisUpdate).html(`
+                                    <i class='bx bx-check bx-sm' style='color: blue;' data-bs-toggle='tooltip' title='Uploaded'></i>
+                                `);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
+            });
+        };
+    });
+</script>
 {% endblock %}
