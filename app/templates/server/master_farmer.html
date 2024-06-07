@@ -4,7 +4,20 @@
 {% endblock %}
 {% block plugin %}
 <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
-
+<style>
+    .rotate-this-icon {
+        display: inline-block;
+        animation: rotation 2s infinite linear;
+    }
+    @keyframes rotation {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(-360deg);
+        }
+    }
+</style>
 {% endblock %}
 
 {% block header %}
@@ -65,6 +78,7 @@
                             Certification Status
 
                         </th>
+                        <th>Sync</th>
                         <th>
                             Sync Date
 
@@ -84,7 +98,9 @@
                                     <td>{{ data.farmer.parent_name }}</td>
                                <td>{{ data.farmer.station_name }}</td>
                               <td>{{ data.farmer.certification_status_name }}</td>
+                            <td class="sync-farmer-id text-center" data-farmer-id="{{ data.farmer.id }}" data-odoo-id="{{ data.farmer.odoo_id }}">
 
+                            </td>
                                       <td> {{ data.farmer.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
 
                             <td>
@@ -111,4 +127,90 @@
 
 {% block script_plugin %}
 <script src="{{ url_for('static', filename='/js/server/master_farmer.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        if (navigator.onLine) {
+            // if online
+            $('.sync-farmer-id').html(`
+                <i class='bx bx-sync bx-sm rotate-this-icon' style='color: blue;' data-bs-toggle='tooltip' title='Syncing'></i>
+            `);
+
+            // Array to store all AJAX promises
+            var ajaxPromises = [];
+
+            $('.sync-farmer-id').each(function() {
+                var thisCheck = $(this);
+                var farmerId = $(thisCheck).attr('data-farmer-id');
+                var odooId = $(thisCheck).attr('data-odoo-id');
+
+                // Create a new promise for each AJAX request
+                const ajaxPromise = new Promise(function(resolve, reject) {
+                    $.ajax({
+                        url: '/sync/check-update',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            flask_id: farmerId,
+                            model: 'NfcappFarmerOdoo',
+                        },
+                        success: function(response) {
+                            if (response.status === 200) {
+                                if (response.update) {
+                                    $.ajax({
+                                        url: '/sync/get-farmer-odoo',
+                                        type: 'GET',
+                                        dataType: 'json',
+                                        async: true,
+                                        data: {
+                                            odoo_id: odooId,
+                                        },
+                                        success: function(response) {
+                                            $(thisCheck).html(`
+                                                <i class='bx bx-check bx-sm' style='color: blue;' data-bs-toggle='tooltip' title='Synced'></i>
+                                            `);
+                                            resolve();
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error:', error);
+                                            reject(error);
+                                        }
+                                    });
+                                } else {
+                                    $(thisCheck).html('');
+                                    $(thisCheck).attr({'data-bs-toggle': 'tooltip', 'title': 'No Update'});
+                                    resolve();
+                                }
+                            } else if (response.status === 401 || response.status === 404) {
+                                // Set error icons and reject promise with appropriate message
+                                const iconClass = response.status === 401 ? 'bx bx-error bx-sm' : 'bx bx-error-alt bx-sm';
+                                thisCheck.html(`<i class='${iconClass}' data-bs-toggle='tooltip' title='${response.message}'></i>`);
+                                reject(response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                            reject(error);
+                        }
+                    });
+                });
+
+                // Add the promise to the array
+                ajaxPromises.push(ajaxPromise);
+            });
+
+            // Execute all promises concurrently
+            Promise.all(ajaxPromises)
+                .then(function() {
+                    console.log('All requests completed successfully');
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                });
+
+        } else {
+            $('.sync-farmer-id').html("<i class='bx bx-wifi-off bx-sm'></i>");
+        }
+    });
+</script>
 {% endblock %}
