@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Farmer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/bootstrap/css/bootstrap.css') }}"
-        type="text/css">
+          type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.css') }}"
-        type="text/css">
+          type="text/css">
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/farmer_detail.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
@@ -138,6 +138,7 @@
                                href="/purchase/transaction/create?purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}">
                                 Add
                             </a>
+
                             {% endif %}
                         </div>
                     </div>
@@ -148,26 +149,32 @@
                         <table class="table event-table" style="width: 100%; margin-top: 32px;">
                             <tr>
 
-                                <th style="width: 12%;">
+                                <th>
                                     Product
                                 </th>
 
-                                <th class="text-right" style="width: 12%;">
+                                <th class="text-right">
                                     Price Unit
                                 </th>
-                                <th class="text-right" style="width: 8%;">
+                                <th class="text-right">
                                     Qty
                                 </th>
-                                <th class="text-right" style="width: 16%;">
+                                <th class="text-right">
                                     Subtotal
                                 </th>
-                                <th style="width: 16%;">
-                                    Barcode
+                                <th class="text-right">
+                                    Premium
                                 </th>
-                                <th style="width: 16%;">
+                                <th class="text-right">
+                                    Pokok
+                                </th>
+                                <th>
+                                    QR Code
+                                </th>
+                                <th>
                                     Note
                                 </th>
-                                <th style="width: 10%;">
+                                <th>
                                     Action
                                 </th>
                             </tr>
@@ -180,13 +187,17 @@
                                     <b>Product</b>
                                 </td>
 
-                                <td class="overflow-container">
+                                <td>
                                     <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                         {{ transaction.product_odoo_id.id }}
                                     </div>
 
-                                    <span> {{transaction.commodity_name}} {{transaction.variant}}</span><br/>
-                                    <span style="font-size:8px;">{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}</span>
+                                    <div> {{transaction.commodity_name}} {{transaction.variant}}</div>
+
+                                    <div class="mobile-hidden" style="font-size:8px;">{{
+                                        ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code
+                                        }}
+                                    </div>
 
 
                                 </td>
@@ -219,7 +230,41 @@
                                     </div>
                                 </td>
                                 <td class="responsive-th">
-                                    <b>Barcode</b>
+                                    <b>Premium</b>
+                                </td>
+                                <td class="text-right">
+                                    <div id="subtotal-info{{ transaction.id }} text-right">
+                                        {% if transaction.nfcapp_commodity_item_odoo.total_premium %}
+                                        Rp {{
+                                        '{:,.2f}'.format(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100)
+                                        }}
+                                        {% else %}
+                                        0
+                                        {% endif %}
+
+
+                                    </div>
+                                </td>
+                                <td class="responsive-th">
+                                    <b>Pokok</b>
+                                </td>
+                                <td class="text-right">
+                                    <div id="subtotal-info{{ transaction.id }} text-right">
+                                        {% if transaction.nfcapp_commodity_item_odoo.total_premium %}
+                                        Rp {{
+                                        '{:,.2f}'.format(transaction.subtotal-(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100))
+                                        }}
+                                        <input type="hidden" id="nilai_pokok"
+                                               value="{{'{:,.2f}'.format(transaction.subtotal-(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100))}}">
+                                        {% else %}
+                                        <input type="hidden" id="nilai_pokok" value="0">
+                                        {% endif %}
+
+
+                                    </div>
+                                </td>
+                                <td class="responsive-th">
+                                    <b>QR Code</b>
                                 </td>
                                 <td>
                                     <div id="subtotal-info{{ transaction.id }}">
@@ -272,6 +317,26 @@
                                 <td>
                                     <div id="total-price" class="text-right">
                                         Rp {{ '{:,.2f}'.format(total_price) }}
+                                    </div>
+
+                                </td>
+                                <td class="responsive-th">
+                                    <b>Total Premium</b>
+                                </td>
+                                <td>
+                                    <div id="total-premium-data" style="display: none;">{{total_premium}}</div>
+                                    <div id="total-price" class="text-right">
+                                        Rp {{ '{:,.2f}'.format(total_premium) }}
+                                    </div>
+                                </td>
+                                <td class="responsive-th">
+                                    <b>Total Pokok</b>
+                                </td>
+                                <td>
+                                    <div id="total-pokok-data" style="display: none;">{{total_price-total_premium}}
+                                    </div>
+                                    <div id="total-price" class="text-right">
+                                        Rp {{ '{:,.2f}'.format(total_price-total_premium) }}
                                     </div>
                                 </td>
                                 <td></td>
@@ -359,9 +424,23 @@
                     <div style="padding:20px;">
                         <div style="display: flex; align-items: center;">
                             <button onclick="btPrint3()" class="btn btn-success">Print</button>
+                            {% if po_status.lower() == 'confirm' %}
+                            <a type="button" class="btn btn-primary" style="margin-left: 16px ;"
+                               href="/purchase/search/farmer?pe={{ event.id }}">
+                                Purchase Again
+                            </a>
+                            <a type="button" class="btn btn-danger" style="margin-left: 16px ;"
+                               href="/purchase/transaction/reset-to-draft?purchase_order={{ po.id }}">
+                                Reset to Draft
+                            </a>
+                            {% endif %}
+
                         </div>
+
+
                     </div>
                     {% endif %}
+
 
                 </div>
                 <div class="tab-content" id="po-info">
@@ -504,6 +583,7 @@
         var nama_petani = document.getElementById("farmer_name").value;
         let order_id = document.getElementById("purchase_order_id").value;
         let order_name = document.getElementById("purchase_order_name").value;
+        let total_pokok = document.getElementById("nilai_pokok").value;
         let event_name = document.getElementById("purchase_event_id").value;
         let odoo_name = document.getElementById("purchase_order_odoo_id").value;
         let total_premium = document.getElementById("total_premium").value;
@@ -551,6 +631,11 @@
                     currency: "IDR",
                     minimumFractionDigits: 0
                 }).format(total_premium).replace(/Rp\s*/g, "");
+                const formattedTotalPokok = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0
+                }).format(total_pokok).replace(/Rp\s*/g, "");
 
                 let DATA = ''
                     + 'TRIPPER\nWE ADD VALUE AT ORIGIN\n'
@@ -567,6 +652,7 @@ Certification : ${certification_status}
                 let DATA3 = table
                 let DATA4 = `\n Total : ${formattedTotalAmount} \n`
                 let DATA5 = `\n Total Premium : ${formattedTotalPremium} \n`
+                let DATA6 = `\n Total Pokok : ${formattedTotalPokok} \n`
                 // DATA += `Total\t :${formattedTotalAmount}`
 
 
@@ -578,7 +664,7 @@ Certification : ${certification_status}
                     return service.getCharacteristic(WRITE);
                 }).then(characteristic => {
                     // Combine your data into a single string
-                    let allData = DATA + DATA2 + DATA3 + DATA4 + DATA5;
+                    let allData = DATA + DATA2 + DATA3 + DATA4 + DATA5 + DATA6;
 
                     // Split the data into chunks
                     let chunks = splitDataIntoChunks(allData, 128);
@@ -613,8 +699,8 @@ Certification : ${certification_status}
                     }
 
                     // Function to get image print data
-                    function getImagePrintData() {
-                        let image = document.querySelector('#sig-image');
+                    function getImagePrintData(image_id) {
+                        let image = document.querySelector(`#${image_id}`);
                         let canvas = document.createElement('canvas');
                         canvas.width = 360;
                         canvas.height = 190;
@@ -676,10 +762,15 @@ Certification : ${certification_status}
                     }
 
                     // Start sending data chunks and then image data chunks
-                    return sendNextChunk().then(() => {
-                        let imageData = getImagePrintData();
-                        let imageChunks = splitImageDataIntoChunks(imageData, 128);
-                        return sendImageDataChunks(characteristic, imageChunks);
+                    let imageData = getImagePrintData('sig-qr');
+                    let imageChunks = splitImageDataIntoChunks(imageData, 128);
+
+                    let imageData2 = getImagePrintData('sig-image');
+                    let imageChunks2 = splitImageDataIntoChunks(imageData2, 128);
+                    return sendImageDataChunks(characteristic, imageChunks).then(() => {
+                        return sendNextChunk().then(() => {
+                        return sendImageDataChunks(characteristic, imageChunks2)
+                    })
                     }).then(() => {
                         console.log('Data and image sent successfully');
                     }).catch(error => {
@@ -857,7 +948,6 @@ Certification : ${certification_status}
             });
 
         }, false);
-
 
     })();
 
