@@ -327,12 +327,13 @@ Cashier Order
                         <input type="hidden" name="purchase_order_id" value="{{ purchase_order.id }}">
                         <input type="hidden" name="purchase_event_id" value="{{ purchase_order.purchase_event_id }}">
                         <input type="hidden" name="type" value="credit">
-                        <div class="form-group">
-                            <label for="amount">Amount</label>
-                            <input type="number" class="form-control" value="{{ payment_debt }}" id="amount"
-                                   name="amount" step="0.01"
-                                   required>
-                        </div>
+                        <label for="amount">Amount</label>
+                            <div class="form-group form-floating number-input" style="margin-top: -8px;">
+                                <input type="number" id="amount" class="form-control" name="amount"
+                                        step="0.01"
+                                        required>
+                                <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label>
+                            </div>
                         <div class="form-group">
                             <label for="note">Note</label>
                             <textarea class="form-control" id="note" name="note"></textarea>
@@ -380,6 +381,38 @@ Cashier Order
             currency: 'IDR'
         }).format(value).replace('IDR', 'IDR ').trim();
     }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+                const numberInputs = document.querySelectorAll('.number-input');
+
+                numberInputs.forEach(form => {
+                    let input = form.querySelector('.form-control')
+                    let label = form.querySelector('.formatted_label')
+                    input.addEventListener('input', function (e) {
+                        let value = parseFloat(e.target.value).toFixed(2);
+
+                        // Remove all non-digit characters except for the decimal point
+                        let formattedValue = value.replace(/[^0-9.]/g, '');
+
+                        // Split the value on the decimal point
+                        const parts = formattedValue.split('.');
+
+                        // Add thousand separators to the integer part
+                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                        // Rejoin the integer and decimal parts
+                        formattedValue = parts.join('.');
+                        if(formattedValue){
+                            label.innerHTML = 'Rp '+formattedValue
+                        }else{
+                            label.innerHTML = 'Rp 0.00'
+                        }
+
+                        
+                    });
+                });
+            });
+
 </script>
 
 {% endblock %}
