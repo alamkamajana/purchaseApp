@@ -28,10 +28,6 @@ if exist "..\..\venv" (
     echo Successfully created virtual environment.
 )
 
-REM Install vc_redist.x86.exe silently
-echo Installing vc_redist.x86.exe...
-start /wait vc_redist.x86.exe /quiet /norestart
-
 REM Activate virtual environment and install dependencies
 echo Installing dependencies...
 call ..\..\venv\Scripts\activate.bat
