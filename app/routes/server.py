@@ -90,8 +90,12 @@ def get_current_ip():
             if address.family == socket.AF_INET:
                 ip_addresses[interface_name] = address.address
 
-    print(ip_addresses)
-    return ip_addresses.get('en0')
+    if 'en0' in ip_addresses:  # macOS
+        return ip_addresses.get('en0')
+    elif 'Wi-Fi' in ip_addresses:  # windows
+        return ip_addresses.get('Wi-Fi')
+    else:
+        return None
 
 
 @bp.route('/sync', methods=["GET"])
