@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Activate the virtual environment
-source venv3/bin/activate
+source venv/bin/activate
 
 # Initialize the database migrations folder
 flask --app run db init
 
 # Generate the migration file
-flask --app run db migrate -m "Update flaskApp"
+flask --app run db migrate -m "Update purchaseApp"
 
 # Apply the migrations to the database
 flask --app run db upgrade
