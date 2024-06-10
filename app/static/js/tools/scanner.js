@@ -66,15 +66,15 @@
     html5QrcodeScanner.render(
         function (decodedText) {
             document.getElementById('barcode').value = decodedText;
-            
+
             // Stop scanning after successfully decoding a QR code
             html5QrcodeScanner.clear().then(_ => {
-                
-                // the UI should be cleared here 
+
+                // the UI should be cleared here
                 $('.modal').modal('hide');
                 let add_url = '/delivery/detail/add?do='+do_id+'&barcode='+decodedText
-                window.location.href = add_url  
-                
+                window.location.href = add_url
+
               })
               // .then(() => {
               //   let add_url = '/delivery/detail/add?do='+do_id+'&barcode='+decodedText
@@ -84,9 +84,9 @@
                 // Could not stop scanning for reasons specified in `error`.
                 // This conditions should ideally not happen.
               });
-        }, 
+        },
         function (errorMessage) {
-            
+
         }
     );
 }

@@ -50,13 +50,20 @@
                 <div class="tab-content active" id="purchase">
                     <div class="status" style="text-align: right;">
                         <div style="">
-                             <b><u>STATUS :     {% if po.compute_is_paid %}
-                                    <span>PAID</span>
-                                    {% else %}
-                                    <span>{{po.status.upper()}}</span>
-                                    {% endif %}
-
-                             </u></b>
+                            <b><u>STATUS : {% if po.compute_is_paid %}
+                                <span>PAID</span>
+                                {% else %}
+                                <span>{{po.status.upper()}}</span>
+                                {% endif %}
+                            </u></b>
+                            {% if not po.compute_is_paid and po.status.lower() == 'confirm' %}
+                            <br>
+                            <a href="/purchase/order/set-to-draft?po={{po.id}}&farmer={{farmer.id}}"
+                               class="btn btn-sm btn-success">
+                                Set To Draft
+                            </a>
+                            {% else %}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="purchase-data">
@@ -67,7 +74,7 @@
                         </div>
                         <table id="farmer-detail" class="data-table">
                             <tbody>
-                              <tr>
+                            <tr>
                                 <th style="width: 50%;">Date</th>
                                 <td>{{ po.date }}</td>
                             </tr>
@@ -130,12 +137,9 @@
                                href="/purchase/transaction/create?purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}">
                                 Add
                             </a>
-                            
                             {% endif %}
                         </div>
                     </div>
-
-                    
 
 
                     <div class="event-container responsive-table">
@@ -143,32 +147,26 @@
                         <table class="table event-table" style="width: 100%; margin-top: 32px;">
                             <tr>
 
-                                <th>
+                                <th style="width: 12%;">
                                     Product
                                 </th>
 
-                                <th class="text-right">
+                                <th class="text-right" style="width: 12%;">
                                     Price Unit
                                 </th>
-                                <th class="text-right">
+                                <th class="text-right" style="width: 8%;">
                                     Qty
                                 </th>
-                                <th class="text-right">
+                                <th class="text-right" style="width: 16%;">
                                     Subtotal
                                 </th>
-                                <th class="text-right">
-                                    Premium
+                                <th style="width: 16%;">
+                                    Barcode
                                 </th>
-                                <th class="text-right">
-                                    Pokok
-                                </th>
-                                <th>
-                                    QR Code
-                                </th>
-                                <th>
+                                <th style="width: 16%;">
                                     Note
                                 </th>
-                                <th>
+                                <th style="width: 10%;">
                                     Action
                                 </th>
                             </tr>
@@ -181,17 +179,13 @@
                                     <b>Product</b>
                                 </td>
 
-                                <td>
+                                <td class="overflow-container">
                                     <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                         {{ transaction.product_odoo_id.id }}
                                     </div>
 
-                                            <div> {{transaction.commodity_name}} {{transaction.variant}}</div>
-                                        
-                                    <div class="mobile-hidden" style="font-size:8px;">{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}</div>
-
-
-
+                                    <span> {{transaction.commodity_name}} {{transaction.variant}}</span><br/>
+                                    <span style="font-size:8px;">{{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().default_code }}</span>
 
 
                                 </td>
@@ -224,25 +218,7 @@
                                     </div>
                                 </td>
                                 <td class="responsive-th">
-                                    <b>Premium</b>
-                                </td>
-                                <td class="text-right">
-                                    <div id="subtotal-info{{ transaction.id }} text-right">
-                                        Rp {{ '{:,.2f}'.format(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100) }}
-
-                                    </div>
-                                </td>
-                                <td class="responsive-th">
-                                    <b>Pokok</b>
-                                </td>
-                                <td class="text-right">
-                                    <div id="subtotal-info{{ transaction.id }} text-right">
-                                        Rp {{ '{:,.2f}'.format(transaction.subtotal-(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100)) }}
-
-                                    </div>
-                                </td>
-                                <td class="responsive-th">
-                                    <b>QR Code</b>
+                                    <b>Barcode</b>
                                 </td>
                                 <td>
                                     <div id="subtotal-info{{ transaction.id }}">
@@ -264,9 +240,9 @@
                                 <td>
                                     <span class="event-id" style="display: none;">{{ transaction.id }}</span>
 
-                                     {% if po.status == 'draft' %}
+                                    {% if po.status == 'draft' %}
 
-                                            <a type="button"
+                                    <a type="button"
                                        href="/purchase/transaction/detail?transaction={{ transaction.id }}&purchase-order={{ po.id }}&purchase-event={{ event.id }}&farmer_id={{ farmer.id }}"
                                        class="btn btn-primary">
                                         <span><i class='bx bxs-pencil'></i></span>
@@ -280,8 +256,6 @@
                                     </a>
 
                                     {% endif %}
-
-
 
 
                                 </td>
@@ -298,25 +272,6 @@
                                     <div id="total-price" class="text-right">
                                         Rp {{ '{:,.2f}'.format(total_price) }}
                                     </div>
-                                    
-                                </td>
-                                <td class="responsive-th">
-                                    <b>Total Premium</b>
-                                </td>
-                                <td>
-                                    <div id="total-premium-data" style="display: none;">{{total_premium}}</div>
-                                    <div id="total-price" class="text-right">
-                                        Rp {{ '{:,.2f}'.format(total_premium) }}
-                                    </div>
-                                </td>
-                                <td class="responsive-th">
-                                    <b>Total Pokok</b>
-                                </td>
-                                <td>
-                                    <div id="total-pokok-data" style="display: none;">{{total_price-total_premium}}</div>
-                                    <div id="total-price" class="text-right">
-                                        Rp {{ '{:,.2f}'.format(total_price-total_premium) }}
-                                    </div>
                                 </td>
                                 <td></td>
                                 <td></td>
@@ -325,9 +280,6 @@
                         </table>
 
                     </div>
-
-
-
                     <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
                         <div class="container">
                             <div class="row">
@@ -400,29 +352,14 @@
                         </div>
                     </div>
 
-  {% if po.signature %}
+                    {% if po.signature %}
 
                     <div style="padding:20px;">
                         <div style="display: flex; align-items: center;">
-                            <button onclick="deliveryInfo()" class="btn btn-success">Print</button>
-                            {% if po_status.lower() == 'confirm' %}
-                            <a type="button" class="btn btn-primary" style="margin-left: 16px ;"
-                                href="/purchase/search/farmer?pe={{ event.id }}">
-                                Purchase Again
-                            </a>
-                            <a type="button" class="btn btn-danger" style="margin-left: 16px ;"
-                                href="/purchase/transaction/reset-to-draft?purchase_order={{ po.id }}">
-                                Reset to Draft
-                            </a>
-                            {% endif %}
-                            
+                            <button onclick="btPrint3()" class="btn btn-success">Print</button>
                         </div>
-
-                        
                     </div>
-          {% endif %}
-
-        
+                    {% endif %}
 
                 </div>
                 <div class="tab-content" id="po-info">
@@ -543,8 +480,230 @@
         </div>
     </div>
 
+    <!--    <div class="thermal" id="thermal">-->
+    <!--        <p>Hello World</p>-->
+    <!--        <img src="https://odoo.tripper.com/web/image/338464/utilize_turmeric.jpg" height="50px">-->
+    <!--    </div>-->
+    <!--    <button onclick="printThermal()">Print Thermal</button>-->
+
 
 </div>
+<script>
+    function btPrint3() {
+        var SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
+        var WRITE = '00002af1-0000-1000-8000-00805f9b34fb';
+        var currentDate = new Date();
+        var year = currentDate.getFullYear();
+        var month = currentDate.getMonth() + 1;
+        var day = currentDate.getDate();
+        var formattedDate = year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day);
+
+        var code_petani = document.getElementById("farmer_code").value;
+        var nama_petani = document.getElementById("farmer_name").value;
+        let order_id = document.getElementById("purchase_order_id").value;
+        let order_name = document.getElementById("purchase_order_name").value;
+        let event_name = document.getElementById("purchase_event_id").value;
+        let odoo_name = document.getElementById("purchase_order_odoo_id").value;
+        let certification_status = document.getElementById("certification_status_id").value;
+
+        function splitDataIntoChunks(data, chunkSize) {
+            let chunks = [];
+            for (let i = 0; i < data.length; i += chunkSize) {
+                chunks.push(data.slice(i, i + chunkSize));
+            }
+            return chunks;
+        }
+
+        fetch(`/purchase/transaction/items?purchase_order=${order_id}`)
+            .then(response => response.json())
+            .then(data => {
+                const purchaseData = data
+                let table = "\n";
+                for (const item of purchaseData) {
+                    const productName = item.product_name.substring(0, 25);
+                    // Format price and subtotal as IDR currency, remove Rp and spaces
+                    const formattedPrice = new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0
+                    }).format(item.price).replace(/Rp\s*/g, ""); // Remove "Rp" and any spaces
+
+                    const formattedSubtotal = new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0
+                    }).format(item.subtotal).replace(/Rp\s*/g, "");
+
+                    table += `\n${item.product_code}\n${productName}\nRp.${formattedPrice}\n${item.quantity}\nRp.${formattedSubtotal}\n`;
+                }
+
+                const totalAmount = purchaseData.reduce((sum, item) => sum + item.quantity * item.price, 0);
+                const formattedTotalAmount = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0
+                }).format(totalAmount).replace(/Rp\s*/g, "");
+
+                let DATA = ''
+                    + 'TRIPPER\nWE ADD VALUE AT ORIGIN\n'
+                    + '------------------------'
+
+                let DATA2 = `
+PE : ${event_name}
+PO : ${odoo_name}
+Tanggal : ${formattedDate}
+ID Petani : ${code_petani}
+Nama : ${nama_petani}
+Certification : ${certification_status}
+`
+                let DATA3 = table
+                let DATA4 = `\n Total : ${formattedTotalAmount} \n`
+                // DATA += `Total\t :${formattedTotalAmount}`
+
+
+                navigator.bluetooth.requestDevice({filters: [{services: [SERVICE]}]}).then(device => {
+                    return device.gatt.connect();
+                }).then(server => {
+                    return server.getPrimaryService(SERVICE);
+                }).then(service => {
+                    return service.getCharacteristic(WRITE);
+                }).then(characteristic => {
+                    // Combine your data into a single string
+                    let allData = DATA + DATA2 + DATA3 + DATA4;
+
+                    // Split the data into chunks
+                    let chunks = splitDataIntoChunks(allData, 128);
+
+                    // Function to send a chunk and then send the next chunk
+                    function sendNextChunk() {
+                        return new Promise((resolve, reject) => {
+                            function processChunk() {
+                                if (chunks.length > 0) {
+                                    let chunk = chunks.shift();
+                                    characteristic.writeValue(new TextEncoder("utf-8").encode(chunk)).then(() => {
+                                        processChunk(); // Send the next chunk
+                                    }).catch(error => {
+                                        reject(error);
+                                    });
+                                } else {
+                                    resolve();
+                                }
+                            }
+
+                            processChunk(); // Start processing chunks
+                        });
+                    }
+
+                    // Function to split image data into chunks
+                    function splitImageDataIntoChunks(data, chunkSize) {
+                        let chunks = [];
+                        for (let i = 0; i < data.length; i += chunkSize) {
+                            chunks.push(data.slice(i, i + chunkSize));
+                        }
+                        return chunks;
+                    }
+
+                    // Function to get image print data
+                    function getImagePrintData() {
+                        let image = document.querySelector('#sig-image');
+                        let canvas = document.createElement('canvas');
+                        canvas.width = 360;
+                        canvas.height = 190;
+                        let context = canvas.getContext("2d");
+                        let imageWidth = canvas.width / 2;
+                        let imageHeight = imageWidth / 966 * 950;
+                        let offsetX = (canvas.width - imageWidth) / 2 + 1;
+                        context.drawImage(image, offsetX, 0, imageWidth, imageHeight);
+                        let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+                        function getDarkPixel(x, y) {
+                            let red = imageData[((canvas.width * y) + x) * 4];
+                            let green = imageData[((canvas.width * y) + x) * 4 + 1];
+                            let blue = imageData[((canvas.width * y) + x) * 4 + 2];
+                            return (red + green + blue) > 0 ? 1 : 0;
+                        }
+
+                        let printData = new Uint8Array(canvas.width / 8 * canvas.height + 8);
+                        let offset = 0;
+                        printData[0] = 29;
+                        printData[1] = 118;
+                        printData[2] = 48;
+                        printData[3] = 0;
+                        printData[4] = canvas.width / 8;
+                        printData[5] = 0;
+                        printData[6] = canvas.height % 256;
+                        printData[7] = canvas.height / 256;
+                        offset = 7;
+                        for (let i = 0; i < canvas.height; ++i) {
+                            for (let k = 0; k < canvas.width / 8; ++k) {
+                                let k8 = k * 8;
+                                printData[++offset] = getDarkPixel(k8 + 0, i) * 128 + getDarkPixel(k8 + 1, i) * 64 +
+                                    getDarkPixel(k8 + 2, i) * 32 + getDarkPixel(k8 + 3, i) * 16 +
+                                    getDarkPixel(k8 + 4, i) * 8 + getDarkPixel(k8 + 5, i) * 4 +
+                                    getDarkPixel(k8 + 6, i) * 2 + getDarkPixel(k8 + 7, i);
+                            }
+                        }
+                        return printData;
+                    }
+
+                    // Function to send image data chunks sequentially
+                    function sendImageDataChunks(characteristic, chunks) {
+                        return new Promise((resolve, reject) => {
+                            function sendNextChunk() {
+                                if (chunks.length > 0) {
+                                    let chunk = chunks.shift();
+                                    characteristic.writeValue(chunk).then(() => {
+                                        sendNextChunk(); // Send the next chunk
+                                    }).catch(error => {
+                                        reject(error);
+                                    });
+                                } else {
+                                    resolve();
+                                }
+                            }
+
+                            sendNextChunk(); // Start sending chunks
+                        });
+                    }
+
+                    // Start sending data chunks and then image data chunks
+                    return sendNextChunk().then(() => {
+                        let imageData = getImagePrintData();
+                        let imageChunks = splitImageDataIntoChunks(imageData, 128);
+                        return sendImageDataChunks(characteristic, imageChunks);
+                    }).then(() => {
+                        console.log('Data and image sent successfully');
+                    }).catch(error => {
+                        console.error('Error:', error);
+                    });
+                }).catch(error => {
+                    console.error('Error connecting to device:', error);
+                }).then(() => {
+                    let purchaseOrderId = document.getElementById("purchase_order_id").value;
+
+                    fetch(`/purchase/transaction/confirm2?purchase_order=${purchaseOrderId}`, {
+                        method: 'GET',
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 200) {
+                                window.location.reload();
+                            } else {
+                                console.error('Failed to confirm transaction:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }).catch(error => {
+                    console.error('Error connecting to device:', error);
+                });
+
+            })
+    }
+
+
+</script>
 <script>
     (function () {
         window.requestAnimFrame = (function (callback) {
@@ -689,6 +848,7 @@
             });
 
         }, false);
+
 
     })();
 

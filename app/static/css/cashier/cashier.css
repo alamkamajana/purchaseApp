@@ -15,7 +15,7 @@
         width: 100%;
     }
 
-    
+
 
     .event-container .form-control {
         margin-bottom: 10px;
@@ -117,10 +117,10 @@
         width:100% ;
     }
 
-    
+
     .responsive-table .total-price-container td {
         width:50% !important;
-        
+
     }
 
     .text-right{
@@ -128,7 +128,7 @@
     }
 
     .responsive-table .total-price-container td:first-child{
-        
+
         justify-content: left !important;
     }
 

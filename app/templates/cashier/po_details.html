@@ -18,6 +18,10 @@ Cashier Order
     .active {
         color: black;
     }
+
+    .payment_label{
+        font-size: 12px;
+    }
 </style>
 <span id="selected-menu" style="display: none;">purchase_event</span>
 
@@ -327,12 +331,42 @@ Cashier Order
                         <input type="hidden" name="purchase_order_id" value="{{ purchase_order.id }}">
                         <input type="hidden" name="purchase_event_id" value="{{ purchase_order.purchase_event_id }}">
                         <input type="hidden" name="type" value="credit">
-                        <label for="amount">Amount</label>
-                            <div class="form-group form-floating number-input" style="margin-top: -8px;">
-                                <input type="number" id="amount" class="form-control" name="amount"
+                        
+                        
+                            
+                            <div class="form-group number-input" style="margin-top: -8px;">
+                                <table class="payment_label">
+                                    <tr style="color: green;">
+                                        <td>Grand Total</td>
+                                        <td>: Rp</td>
+                                        <td class="text-end">
+                                            <span id="label_total" class="label_total">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr style="color: red;">
+                                        <td>Difference</td>
+                                        <td>: Rp </td>
+                                        <td class="text-end">
+                                            <span id="label_difference" class="label_difference">{{ '{:,.2f}'.format(0) }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr style="color: black;">
+                                        <td>Payment Amount</td>
+                                        <td>: Rp </td>
+                                        <td class="text-end">
+                                            <span id="label_amount" class="label_amount">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- <div class="payment_label"></div> -->
+                                <span id="var_total" class="var_total" style="display: none;">{{ purchase_order.amount_total }}</span>
+                                <!-- <div class="payment_label">Rp <span id="label_amount" class="label_amount">0.00</span>
+                                <div class="payment_label">Rp <span id="label_difference" class="label_difference">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span> -->
+                                <label for="amount">Amount</label>
+                                <input type="number" id="amount" class="form-control" name="amount" value="{{purchase_order.amount_total}}"
                                         step="0.01"
                                         required>
-                                <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label>
+                                <!-- <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label> -->
                             </div>
                         <div class="form-group">
                             <label for="note">Note</label>
@@ -387,12 +421,17 @@ Cashier Order
 
                 numberInputs.forEach(form => {
                     let input = form.querySelector('.form-control')
-                    let label = form.querySelector('.formatted_label')
+                    let label_amount = form.querySelector('.label_amount')
+                    let label_difference = form.querySelector('.label_difference')
+                    let label_total = form.querySelector('.label_total')
+                    let var_total = parseFloat(document.getElementById('var_total').innerHTML.trim())
                     input.addEventListener('input', function (e) {
                         let value = parseFloat(e.target.value).toFixed(2);
+                        let var_difference = var_total - value
 
                         // Remove all non-digit characters except for the decimal point
                         let formattedValue = value.replace(/[^0-9.]/g, '');
+                        let formattedDifference = var_difference.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
                         // Split the value on the decimal point
                         const parts = formattedValue.split('.');
@@ -402,13 +441,17 @@ Cashier Order
 
                         // Rejoin the integer and decimal parts
                         formattedValue = parts.join('.');
+
                         if(formattedValue){
-                            label.innerHTML = 'Rp '+formattedValue
+                            label_amount.innerHTML = formattedValue
+                            label_difference.innerHTML = formattedDifference
                         }else{
-                            label.innerHTML = 'Rp 0.00'
+                            label_amount.innerHTML = '0.00'
+                            label_difference.innerHTML = label_total.innerHTML
+
                         }
 
-                        
+
                     });
                 });
             });

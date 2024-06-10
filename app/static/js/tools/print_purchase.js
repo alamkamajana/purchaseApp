@@ -111,7 +111,7 @@ async function sendTextData(product) {
     let certification_status = document.getElementById("certification_status_id").value;
     let totalPremium = parseFloat(document.getElementById('total-premium-data').innerHTML.trim())
     let totalPokok = parseFloat(document.getElementById('total-pokok-data').innerHTML.trim())
-    
+
     const purchaseData = await fetchPurchaseData(order_id);
     // const purchaseData = [
     //   { product_name: "Kopi Arabica",price: 25000, quantity: 2, subtotal: 25000 },

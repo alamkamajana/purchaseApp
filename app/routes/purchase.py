@@ -139,7 +139,7 @@ def transaction_order():
         total_price += po_line.subtotal
         total_premium += po_line.subtotal*po_line.nfcapp_commodity_item_odoo.total_premium/100
 
-        
+
 
     po_status = po.status if po else None
     # print(po_line_product_arr)
@@ -151,7 +151,7 @@ def transaction_order():
     grand_total=0
     for order in po_order_line:
         grand_total=grand_total+(order.price_unit*order.product_qty)
-        
+
 
     commodity_items = NfcappCommodityItemOdoo.query.filter(
             NfcappCommodityItemOdoo.farmer_id == farmer.odoo_id,
@@ -210,6 +210,16 @@ def order_get_signature():
         return send_file(io.BytesIO(purchase_order.signature), mimetype='image/png')
     else:
         return jsonify({"error": "Signature not found"}), 404
+
+
+@bp.route('/order/set-to-draft')
+def order_set_to_draft():
+    po = request.args.get("po")
+    farmer = request.args.get("farmer")
+    purchase_order = PurchaseOrder.query.get(int(po))
+    purchase_order.status = 'draft'
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 @bp.route('/transaction', methods=["GET"])

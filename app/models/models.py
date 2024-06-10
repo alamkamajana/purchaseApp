@@ -145,11 +145,15 @@ class PurchaseOrder(db.Model):
     def compute_is_paid(self):
         calculation = self.amount_total + self.compute_payment
         payment_positive = abs(self.compute_payment)
-        if payment_positive == self.amount_total and int(self.compute_payment) != 0 :
+        print("Hasil is paid")
+        if payment_positive >= self.amount_total and int(self.compute_payment) != 0 :
+            
             return True
         elif int(calculation) > 0 :
+            
             return False
         else :
+            
             return False
 
 

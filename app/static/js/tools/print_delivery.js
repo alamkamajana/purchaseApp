@@ -216,14 +216,14 @@ function getTextData(product) {
     let encoder = new TextEncoder("utf-8");
     // Add line feed + carriage return chars to text
     let text = ''
-    + '\x1B' + '\x61' + '\x31'                                              
+    + '\x1B' + '\x61' + '\x31'
     + '\x1D' + '\x21' + '\x00' + 'SURAT JALAN PT. TRIPPER NATURE\n'
     +  orderName + '\n'
     + 'PRODUK\n'+product.name+'\n'
     + product.organic_message +'\n\n'
-    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
+    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00'
     + 'Nama Sopir\t: '+orderDriver
-    + '\nJenis Kendaraan & No. Polisi: \n'+orderVehicle 
+    + '\nJenis Kendaraan & No. Polisi: \n'+orderVehicle
     + '\nAlamat Asal\t: '+orderOrigin
     + '\nDikirim Ke\t: '+orderDestination
     + '\nTgl Kirim\t: '+ orderDate
@@ -235,7 +235,7 @@ function getTextData(product) {
     + '\nJumlah Box\t: '+ product.amount
     + '\nBerat Barang: '+ product.qty
     + '\n--------------------------------\n'
-    ;    
+    ;
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
 }
 
@@ -244,9 +244,9 @@ function getTextData(product) {
     let encoder = new TextEncoder("utf-8");
     // Add line feed + carriage return chars to text
     let text = ''
-    + '\x1B' + '\x61' + '\x31'                                              
+    + '\x1B' + '\x61' + '\x31'
     + '\x1D' + '\x21' + '\x00' + 'KRITERIA PENGIRIMAN\n'
-    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
+    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00'
     + 'Dicek oleh pengirim :'
     + '\n(  )Produk sesuai standar\n    Tripper'
     + '\n(  )Label lengkap dan tertempel\n    pada kemasan'
@@ -254,7 +254,7 @@ function getTextData(product) {
     + '\n(  )Truk bersih dan bebas dari\n    segala resiko kontaminasi'
     + '\n(  )Hanya material\n    tersertifikasi/NFC yang di\n    dalam truk/kontainer'
     + '\n\n'
-    ;    
+    ;
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
 }
 
@@ -263,7 +263,7 @@ function getTextKriteria2() {
     let encoder = new TextEncoder("utf-8");
     // Add line feed + carriage return chars to text
     let text = ''
-    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
+    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00'
     + 'Dicek oleh penerima:'
     + '\n(  )Produk sesuai standar\n    Tripper'
     + '\n(  )Label lengkap dan tertempel\n    pada kemasan'
@@ -274,7 +274,7 @@ function getTextKriteria2() {
     + '* beri tanda V jika sesuai'
     + '\n\n'
     + '--------------------------------'
-    ;    
+    ;
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
 }
 
@@ -283,7 +283,7 @@ function getTextTTD() {
     let encoder = new TextEncoder("utf-8");
     // Add line feed + carriage return chars to text
     let text = ''
-    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00' 
+    + '\x1D' + '\x21' + '\x00' + '\x1B' +'\x61' + '\x00'
     + 'Pengirim:'
     + '\n\n\n\n\n'
     + '(                              )'
@@ -294,14 +294,14 @@ function getTextTTD() {
     + '(                              )'
     + '\n\n'
     + '--------------------------------'
-    ;    
+    ;
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
 }
 
 
 async function sendPrinterData(product) {
     // Print an image followed by the text
-    return printLogo()
+    return sendImageData()
         .then(() => sendTextData(product))
         // .then(() => sendTextKriteria1())
         // .then(() => sendTextKriteria2())
@@ -325,7 +325,7 @@ function printDelivery (products) {
             .then(characteristic => {
                 // Cache the characteristic
                 printCharacteristic = characteristic;
-                processAllItems2(products);
+                processAllItems(products);
             })
             .catch(handleError);
     } else {
@@ -346,13 +346,11 @@ function deliveryInfo(){
         
 
         if (!found){
-            
             let product_array = {};
-            
             product_array.id = element.innerHTML;
             row = element.closest('tr');
             let is_organic = row.querySelector('.is-organic').textContent.trim();
-            
+
             product_array.name = row.querySelector('.product-name').textContent.trim();
             product_array.amount = 1
             product_array.qty = parseFloat(row.querySelector('.order-qty').textContent);
@@ -363,7 +361,7 @@ function deliveryInfo(){
                 product_array.organic_message = ""
             }
             console.log(product_array.organic_message)
-            
+
             products.push(product_array);
         }else{
             let index = products.findIndex(item => item.id === element.innerHTML);
@@ -378,6 +376,18 @@ function deliveryInfo(){
 
     });
 
+    products.forEach(product =>{
+        console.log(product.name)
+        console.log(orderDriver)
+        console.log(orderVehicle)
+        console.log(orderDestination)
+        console.log(orderDate)
+        console.log(poName)
+        console.log(poPartner)
+        console.log(product.amount)
+        console.log(product.qty)
+        
+    })
     printDelivery(products)
     // processAllItems(products)
     
@@ -428,8 +438,8 @@ function processItem2(product) {
         }
     }
 
-    
-    
+
+
         processChunk(); // Start processing chunks
     });
     // sendTextData(product)
@@ -468,7 +478,7 @@ function processAllItems2(products) {
             resolve();
         }
 
-        
+
         // console.log('All items processed');
         // window.location.href = '/delivery/confirm?do='+doId;
     });

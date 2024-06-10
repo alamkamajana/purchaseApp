@@ -76,13 +76,13 @@
                                 </table>
                             </div>
                         </div>
-                        <input type="text" class="form-control" id="commodity_name" name="commodity_name" value="{{ purchase_order_line.commodity_name }}" required>
-                        <input type="text" class="form-control" id="variant" name="variant" value="{{ purchase_order_line.variant }}" required>
-                        <input type="text" class="form-control" id="is_organic" name="is_organic" value="{{ purchase_order_line.is_organic }}" required>
-                        <input type="text" class="form-control" id="is_ra_cert" name="is_ra_cert" value="{{ purchase_order_line.is_ra_cert }}" required>
-                        <input type="text" class="form-control" id="color_hex" name="color_hex" value="{{ purchase_order_line.color_hex }}" required>
-                        <input type="text" class="form-control" id="color_name" name="color_name" value="{{ purchase_order_line.color_name }}" required>
-                        <input type="text" class="form-control" id="nfcapp_commodity_item_odoo_id" name="nfcapp_commodity_item_odoo_id" value="{{ purchase_order_line.nfcapp_commodity_item_odoo_id }}" required>
+                        <input type="hidden" class="form-control" id="commodity_name" name="commodity_name" value="{{ purchase_order_line.commodity_name }}" required>
+                        <input type="hidden" class="form-control" id="variant" name="variant" value="{{ purchase_order_line.variant }}" required>
+                        <input type="hidden" class="form-control" id="is_organic" name="is_organic" value="{{ purchase_order_line.is_organic }}" required>
+                        <input type="hidden" class="form-control" id="is_ra_cert" name="is_ra_cert" value="{{ purchase_order_line.is_ra_cert }}" required>
+                        <input type="hidden" class="form-control" id="color_hex" name="color_hex" value="{{ purchase_order_line.color_hex }}" required>
+                        <input type="hidden" class="form-control" id="color_name" name="color_name" value="{{ purchase_order_line.color_name }}" required>
+                        <input type="hidden" class="form-control" id="nfcapp_commodity_item_odoo_id" name="nfcapp_commodity_item_odoo_id" value="{{ purchase_order_line.nfcapp_commodity_item_odoo_id }}" required>
                         <div class="form-group">
                             <label for="qty">Quantity</label>
                             <input type="number" class="form-control" id="qty" name="qty" value="{{ purchase_order_line.qty }}"
