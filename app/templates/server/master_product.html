@@ -1,0 +1,53 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Products
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
+{% endblock %}
+
+{% block header %}
+    <b>Odoo Product List</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">product</span>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="event-container">
+                <table class="table" style="width: 100%; margin-top: 32px;">
+                    <tr>
+                        <th>
+                            Item Code
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Commodity
+                        </th>
+                        <th>
+                            Sync Date
+                        </th>
+                    </tr>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.item_code }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.commodity }}</td>
+                            <td> {{ product.sync_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}
