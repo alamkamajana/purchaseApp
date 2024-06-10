@@ -254,10 +254,9 @@
                                         Rp {{
                                         '{:,.2f}'.format(transaction.subtotal-(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100))
                                         }}
-                                        <input type="hidden" id="nilai_pokok"
-                                               value="{{'{:,.2f}'.format(transaction.subtotal-(transaction.subtotal*transaction.nfcapp_commodity_item_odoo.total_premium/100))}}">
+
                                         {% else %}
-                                        <input type="hidden" id="nilai_pokok" value="0">
+                                        0
                                         {% endif %}
 
 
@@ -336,6 +335,7 @@
                                     <div id="total-pokok-data" style="display: none;">{{total_price-total_premium}}
                                     </div>
                                     <div id="total-price" class="text-right">
+                                        <input type="hidden" id="total_pokok" value="{{ total_price-total_premium }}">
                                         Rp {{ '{:,.2f}'.format(total_price-total_premium) }}
                                     </div>
                                 </td>
@@ -583,11 +583,12 @@
         var nama_petani = document.getElementById("farmer_name").value;
         let order_id = document.getElementById("purchase_order_id").value;
         let order_name = document.getElementById("purchase_order_name").value;
-        let total_pokok = document.getElementById("nilai_pokok").value;
+        let total_pokok = document.getElementById("total_pokok").value;
         let event_name = document.getElementById("purchase_event_id").value;
         let odoo_name = document.getElementById("purchase_order_odoo_id").value;
         let total_premium = document.getElementById("total_premium").value;
         let certification_status = document.getElementById("certification_status_id").value;
+
 
         function splitDataIntoChunks(data, chunkSize) {
             let chunks = [];
@@ -644,15 +645,16 @@
                 let DATA2 = `
 PE : ${event_name}
 PO : ${odoo_name}
+Order : ${order_name}
 Tanggal : ${formattedDate}
 ID Petani : ${code_petani}
 Nama : ${nama_petani}
 Certification : ${certification_status}
 `
                 let DATA3 = table
-                let DATA4 = `\n Total : ${formattedTotalAmount} \n`
-                let DATA5 = `\n Total Premium : ${formattedTotalPremium} \n`
-                let DATA6 = `\n Total Pokok : ${formattedTotalPokok} \n`
+                let DATA4 = `\n Total : Rp ${formattedTotalAmount} \n`
+                let DATA5 = `\n Total Premium : Rp ${formattedTotalPremium} \n`
+                let DATA6 = `\n Total Pokok : Rp ${formattedTotalPokok} \n`
                 // DATA += `Total\t :${formattedTotalAmount}`
 
 
@@ -769,8 +771,8 @@ Certification : ${certification_status}
                     let imageChunks2 = splitImageDataIntoChunks(imageData2, 128);
                     return sendImageDataChunks(characteristic, imageChunks).then(() => {
                         return sendNextChunk().then(() => {
-                        return sendImageDataChunks(characteristic, imageChunks2)
-                    })
+                            return sendImageDataChunks(characteristic, imageChunks2)
+                        })
                     }).then(() => {
                         console.log('Data and image sent successfully');
                     }).catch(error => {
