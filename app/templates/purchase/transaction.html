@@ -56,14 +56,14 @@
                                 <span>{{po.status.upper()}}</span>
                                 {% endif %}
                             </u></b>
-                            {% if not po.compute_is_paid and po.status.lower() == 'confirm' %}
-                            <br>
-                            <a href="/purchase/order/set-to-draft?po={{po.id}}&farmer={{farmer.id}}"
-                               class="btn btn-sm btn-success">
-                                Set To Draft
-                            </a>
-                            {% else %}
-                            {% endif %}
+<!--                            {% if not po.compute_is_paid and po.status.lower() == 'confirm' %}-->
+<!--                            <br>-->
+<!--                            <a href="/purchase/order/set-to-draft?po={{po.id}}&farmer={{farmer.id}}"-->
+<!--                               class="btn btn-sm btn-success">-->
+<!--                                Set To Draft-->
+<!--                            </a>-->
+<!--                            {% else %}-->
+<!--                            {% endif %}-->
                         </div>
                     </div>
                     <div class="purchase-data">
