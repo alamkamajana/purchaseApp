@@ -30,10 +30,11 @@ import qrcode
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
-def generate_unique_sequence_number(model, column, length=8, prefix=""):
+def generate_unique_sequence_number(model, column, length=4, prefix=""):
     sequence_number = prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
+
 
 def get_current_ip():
     hostname = socket.gethostname()
@@ -203,13 +204,14 @@ def purchase_payment_note():
 
 @bp.route('/order/add', methods=["POST","GET"])
 def transaction_order_add():
-    if request.method.lower() == 'post' :
-        purchase_event = request.form['pe']
-        farmer = request.form['farmer']
-    else :
-        purchase_event = request.args.get('pe')
-        farmer = request.args.get('farmer')
-    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="ORDER-")
+    # if request.method.lower() == 'post' :
+    #     purchase_event = request.form['pe']
+    #     farmer = request.form['farmer']
+    # else :
+    purchase_event = request.args.get('pe')
+    farmer = request.args.get('farmer')
+    pe = PurchaseEvent.query.get(int(purchase_event))
+    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix=f"{pe.name}-")
     new_po = PurchaseOrder(name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft')
     db.session.add(new_po)
     db.session.commit()
