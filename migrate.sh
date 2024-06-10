@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Activate the virtual environment
-#source venv3/bin/activate
+source venv/bin/activate
 
 # Initialize the database migrations folder
 flask --app run db init

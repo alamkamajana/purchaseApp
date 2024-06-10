@@ -148,7 +148,6 @@ class NfcappCommodityOdoo(db.Model):
 
 class NfcappCommodityItemOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_item_odoo'
-
     farmer_id = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String)
@@ -175,6 +174,8 @@ class NfcappCommodityItemOdoo(db.Model):
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
     sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
+
+
 
 class NfcappStationOdoo(db.Model):
     __tablename__ = 'nfcapp_station_odoo'

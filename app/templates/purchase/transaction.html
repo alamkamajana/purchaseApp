@@ -112,7 +112,8 @@
 
                     <input name="purchase-event" class="form-control" id="purchase-event" value="{{ event.id }}"
                            hidden>
-
+                    <input name="total_premium" class="form-control" id="total_premium" value="{{ total_premium }}"
+                           hidden>
                     <input name="purchase-order-odoo" class="form-control" id="purchase-order-odoo"
                            value="{{ event.purchase_order_odoo.id }}" hidden>
                     <input name="purchase-order-odoo" class="form-control" id="purchase_order_odoo_id"
@@ -280,6 +281,7 @@
                         </table>
 
                     </div>
+                    <img style="display: none;" id="sig-qr" src="data:image/png;base64,{{ qr_code_po }}">
                     <div style="width:100%; display:flex; justify-content: flex-end; padding:20px;">
                         <div class="container">
                             <div class="row">
@@ -504,6 +506,7 @@
         let order_name = document.getElementById("purchase_order_name").value;
         let event_name = document.getElementById("purchase_event_id").value;
         let odoo_name = document.getElementById("purchase_order_odoo_id").value;
+        let total_premium = document.getElementById("total_premium").value;
         let certification_status = document.getElementById("certification_status_id").value;
 
         function splitDataIntoChunks(data, chunkSize) {
@@ -543,6 +546,11 @@
                     currency: "IDR",
                     minimumFractionDigits: 0
                 }).format(totalAmount).replace(/Rp\s*/g, "");
+                const formattedTotalPremium = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0
+                }).format(total_premium).replace(/Rp\s*/g, "");
 
                 let DATA = ''
                     + 'TRIPPER\nWE ADD VALUE AT ORIGIN\n'
@@ -558,6 +566,7 @@ Certification : ${certification_status}
 `
                 let DATA3 = table
                 let DATA4 = `\n Total : ${formattedTotalAmount} \n`
+                let DATA5 = `\n Total Premium : ${formattedTotalPremium} \n`
                 // DATA += `Total\t :${formattedTotalAmount}`
 
 
@@ -569,7 +578,7 @@ Certification : ${certification_status}
                     return service.getCharacteristic(WRITE);
                 }).then(characteristic => {
                     // Combine your data into a single string
-                    let allData = DATA + DATA2 + DATA3 + DATA4;
+                    let allData = DATA + DATA2 + DATA3 + DATA4 + DATA5;
 
                     // Split the data into chunks
                     let chunks = splitDataIntoChunks(allData, 128);

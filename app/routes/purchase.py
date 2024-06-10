@@ -24,6 +24,8 @@ import string
 import socket
 import io
 import base64
+from io import BytesIO
+import qrcode
 
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
@@ -37,6 +39,29 @@ def get_current_ip():
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
     return ip_address
+
+def generate_qr_code(data):
+    # Generate QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Create an image from the QR Code instance
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Save the image to a BytesIO object
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    # Encode the image to base64
+    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return img_str
 
 
 @bp.route('/search_farmers', methods=["POST","GET"])
@@ -137,7 +162,8 @@ def transaction_order():
 
     for po_line in po_lines:
         total_price += po_line.subtotal
-        total_premium += po_line.subtotal*po_line.nfcapp_commodity_item_odoo.total_premium/100
+        po_line_premium = po_line.nfcapp_commodity_item_odoo.total_premium/100 if po_line.nfcapp_commodity_item_odoo.total_premium else 0
+        total_premium += po_line.subtotal * po_line_premium
 
 
 
@@ -158,11 +184,14 @@ def transaction_order():
             NfcappCommodityItemOdoo.product_id.isnot(None)
     ).all()
 
+    data_po = po.name
+    qr_code_po = generate_qr_code(data_po)
+
     return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
                            product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price,
                            ProductOdoo=ProductOdoo, NfcappCommodityItemOdoo=NfcappCommodityItemOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
                            po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
-                           po_order_line=po_order_line, grand_total=grand_total, total_premium=total_premium )
+                           po_order_line=po_order_line, grand_total=grand_total, total_premium=total_premium, qr_code_po=qr_code_po )
 
 @bp.route('/payment-note', methods=["GET"])
 def purchase_payment_note():
