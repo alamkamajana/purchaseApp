@@ -88,7 +88,7 @@
 <div class="container">
     <div class="row">
         <div class="col text-left">
-            <a href="/delivery/index?pe={{ pe }}" class="btn btn-secondary back-btn">
+            <a href="/delivery/detail?do={{ do.id }}" class="btn btn-secondary back-btn">
                 <i class='bx bx-chevron-left'></i>Kembali
             </a>
         </div>
@@ -101,37 +101,37 @@
         <div class="row menu-container text-left">
             <div class="col">
                 <label>Nama Sopir</label>
-                <input type="text" class="form-control" value="{{ do.driver }}" name="driver"/>
+                <input type="text" class="form-control" value="{{ do.driver }}" name="driver" required/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
                 <label>Tanggal Kirim</label>
-                <input type="datetime-local" id="send_date" class="form-control" value="{{ do.sent_date }}" name="sent_date"/>
+                <input type="datetime-local" id="send_date" class="form-control" value="{{ do.sent_date }}" name="sent_date" required/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
                 <label>Tanggal Terima</label>
-                <input type="datetime-local" id="received_date" class="form-control" value="{{ do.received_date }}" name="received_date"/>
+                <input type="datetime-local" id="received_date" class="form-control" value="{{ do.received_date }}" name="received_date" required/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
                 <label>Asal Barang</label>
-                <input type="text" class="form-control" value="{{ do.origin }}" name="origin"/>
+                <input type="text" class="form-control" value="{{ do.origin }}" name="origin" required/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
                 <label>Dikirim Ke</label>
-                <input type="text" class="form-control" value="{{ do.destination }}" name="destination"/>
+                <input type="text" class="form-control" value="{{ do.destination }}" name="destination" required/>
             </div>
         </div>
         <div class="row menu-container text-left">
             <div class="col">
                 <label>Jenis Transport dan No. Polisi</label>
-                <input type="text" class="form-control" value="{{ do.vehicle_number }}" name="vehicle"/>
+                <input type="text" class="form-control" value="{{ do.vehicle_number }}" name="vehicle" required/>
             </div>
         </div>
         <div class="row menu-container text-left">

@@ -1,18 +1,19 @@
 {% extends 'server/base.html' %}
 {% block title %}
-Purchase Event
+Cashier Order
 {% endblock %}
 {% block plugin %}
 
 {% endblock %}
 
 {% block header %}
-<b>Cahier Order</b>
+<b>Cashier Order</b>
 {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='/css/cashier/breadcumb.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/purchase/transaction.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/cashier/cashier.css') }}">
 <style>
     .active {
         color: black;
@@ -108,7 +109,7 @@ Purchase Event
                             </table>
                         </div>
 
-                       <div class="event-container">
+                       <div class="event-container responsive-table">
 
                             <table class="table event-table" style="width: 100%; margin-top: 32px;">
                                 <tr>
@@ -129,7 +130,7 @@ Purchase Event
                                         Subtotal
                                     </th>
                                     <th style="width: 16%;">
-                                        Barcode
+                                        QR Code
                                     </th>
                                     <th style="width: 16%;">
                                         Note
@@ -140,15 +141,21 @@ Purchase Event
                                 {% for transaction in order_line %}
 
                                 <tr class="event-row">
-                                    <td>
+                                    <td class="mobile-hidden">
                                         {{ loop.index }}
                                     </td>
-                                    <td>
+                                    <td class="responsive-th mobile-first-tr">
+                                        <b>Product</b>
+                                    </td>
+                                    <td class="text-wrap mobile-first-tr">
                                         <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
                                             {{ transaction.product_odoo_id.id }}
                                         </div>
                                         {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
                                         {# {{transaction.product_odoo_id}}#}
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Price Unit</b>
                                     </td>
                                     <td class="text-right">
                                         <div class="transaction-info{{ transaction.id }} text-right"
@@ -156,11 +163,17 @@ Purchase Event
                                             Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
                                         </div>
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Qty</b>
+                                    </td>
                                     <td class="text-right">
                                         <div class="transaction-info{{ transaction.id }} text-right"
                                             id="qty-info{{ transaction.id }}">
                                             {{ '{:,.0f}'.format(transaction.qty) }}
                                         </div>
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Subtotal</b>
                                     </td>
                                     <td class="text-right">
                                         <div id="subtotal-info{{ transaction.id }} text-right">
@@ -169,12 +182,18 @@ Purchase Event
 
                                         </div>
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>QR Code</b>
+                                    </td>
                                     <td>
                                         <div id="subtotal-info{{ transaction.id }}">
 
                                             {{ transaction.barcode }}
 
                                         </div>
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Note</b>
                                     </td>
                                       <td>
                                         <div id="subtotal-info{{ transaction.id }}">
@@ -183,19 +202,23 @@ Purchase Event
 
                                         </div>
                                     </td>
+                                    <td style="display: none;">
+                                    </td>
                                 </tr>
 
                                 {% endfor %}
 
 
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="4" class="grand-total-title">
                                         <b>Grand Total</b>
                                     </td>
                                     <td>
                                         <div id="total-price" class="text-right">
                                             Rp {{ '{:,.2f}'.format(purchase_order.amount_total) }}
                                         </div>
+                                    </td>
+                                    <td style="display: none;">
                                     </td>
                                 </tr>
                             </table>
@@ -205,7 +228,7 @@ Purchase Event
 
             </div>
 
-            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+            <div class="tab-pane fade responsive-table" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
                 <table class="table">
                     <thead>
                     <tr>
@@ -227,11 +250,17 @@ Purchase Event
                     <tr>
                          {% set number.number = number.number + 1 %}
                                     {% set ns.fund = ns.fund + payment.amount %}
-                                    <td>
+                                    <td class="mobile-hidden">
                                         {{number.number}}
                                     </td>
-                                    <td>
+                                    <td class="responsive-th mobile-first-tr">
+                                        <b>Name</b>
+                                    </td>
+                                    <td class="mobile-first-tr">
                                         {{payment.number}}
+                                    </td>
+                                    <td class="responsive-th">
+                                        <b>Kind</b>
                                     </td>
 
                                     <td>
@@ -241,6 +270,9 @@ Purchase Event
                                         Cash
                                         {% endif %}
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Source</b>
+                                    </td>
 
                                     <td>
                                         {% if payment.purchase_order_id %}
@@ -249,11 +281,22 @@ Purchase Event
                                         {{ purchase_event.name }}
                                         {% endif %}
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Amount</b>
+                                    </td>
                                     <td style="text-align: right;" class="" data-value="{{ payment.amount }}">Rp {{
                                         "{:,.2f}".format(payment.amount) }}
                                     </td>
+                                    <td class="responsive-th">
+                                        <b>Type</b>
+                                    </td>
                                     <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                                    <td class="responsive-th">
+                                        <b>Note</b>
+                                    </td>
                                     <td>{{ payment.note }}</td>
+                                    <td style="display: none;">
+                                    </td>
 
                     </tr>
                     {% endfor %}
