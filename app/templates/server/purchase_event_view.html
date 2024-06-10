@@ -125,11 +125,12 @@ Purchase Event
                                         <input type="hidden" id="purchase_event_id2" name="purchase_event_id"
                                                value="{{ purchase_event.id }}">
                                         <input type="hidden" name="type" id="type2" value="debit">
-                                        <div class="form-group">
-                                            <label for="amount2">Amount</label>
+                                        <label for="amount2">Amount</label>
+                                        <div class="form-group form-floating number-input" style="margin-top: -8px;">
                                             <input type="number" id="amount2" class="form-control" name="amount"
                                                    step="0.01"
                                                    required>
+                                            <label for="amount2" id="label_amount2" class="formatted_label">Rp 0.00</label>
                                         </div>
                                         <div class="form-group">
                                             <label for="note2">Note</label>
@@ -163,11 +164,12 @@ Purchase Event
                                         <input type="hidden" id="purchase_event_id" name="purchase_event_id"
                                                value="{{ purchase_event.id }}">
                                         <input type="hidden" name="type" id="type" value="credit">
-                                        <div class="form-group">
-                                            <label for="amount">Amount</label>
+                                        <label for="amount">Amount</label>
+                                        <div class="form-group form-floating number-input" style="margin-top: -8px;">
                                             <input type="number" id="amount" class="form-control" name="amount"
                                                    step="0.01"
                                                    required>
+                                            <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label>
                                         </div>
                                         <div class="form-group">
                                             <label for="note">Note</label>
@@ -310,6 +312,38 @@ Purchase Event
                     window.location.href = `/server/money/add2?purchase_event_id=${purchase_event_id}&amount=${amount}&type=${type}&note=${note}`
                 });
             });
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const numberInputs = document.querySelectorAll('.number-input');
+
+                numberInputs.forEach(form => {
+                    let input = form.querySelector('.form-control')
+                    let label = form.querySelector('.formatted_label')
+                    input.addEventListener('input', function (e) {
+                        let value = parseFloat(e.target.value).toFixed(2);
+
+                        // Remove all non-digit characters except for the decimal point
+                        let formattedValue = value.replace(/[^0-9.]/g, '');
+
+                        // Split the value on the decimal point
+                        const parts = formattedValue.split('.');
+
+                        // Add thousand separators to the integer part
+                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                        // Rejoin the integer and decimal parts
+                        formattedValue = parts.join('.');
+
+                        if(formattedValue){
+                            label.innerHTML = 'Rp '+formattedValue
+                        }else{
+                            label.innerHTML = 'Rp 0.00'
+                        }
+                    });
+                });
+            });
+
+
         </script>
     </div>
 </div>
