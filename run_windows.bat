@@ -9,6 +9,6 @@ cd /d %~dp0
 call venv\Scripts\activate
 set FLASK_APP=run.py
 
-start "" http://%ip%:5001
+start "" https://%ip%:5001
 python run.py
 pause
