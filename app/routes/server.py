@@ -314,4 +314,21 @@ def server_test_print():
     return render_template('server/test_print.html')
 
 
+@bp.route('/master/product', methods=["GET"])
+def master_data_product():
+    products = ProductOdoo.query.all()
+
+    return render_template('server/master_product.html', products=products)
+
+
+@bp.route('/master/commodity-item', methods=["GET"])
+def master_data_commodity_item():
+    commodity_id = request.args.get('commodity_id',0, type=int)
+    station_id = request.args.get('station_id', 0 , type=int)
+    commodities = NfcappCommodityOdoo.query.all()
+    stations = NfcappStationOdoo.query.all()
+    commodity_items = NfcappCommodityItemOdoo.query.filter_by(commodity_id=commodity_id).all()
+
+    return render_template('server/master_commodity_item.html', commodity_items=commodity_items,
+                           commodities=commodities, stations=stations, commodity_id=commodity_id, station_id=station_id)
 
