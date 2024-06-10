@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# go to current directory
+cd "$(dirname "$0")" || exit
+
 # Activate the virtual environment
 source venv/bin/activate
 
