@@ -321,6 +321,7 @@ function printDelivery(products) {
                         });
                     } else {
                         resolve();
+                        window.location.href = '/delivery/confirm?do='+doId;
                     }
                 }
 
