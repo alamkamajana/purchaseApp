@@ -263,21 +263,41 @@ def server_money_add():
     try :
         purchase_event_id = request.form.get('purchase_event_id')
         purchase_order_id = request.form.get('purchase_order_id')
+        grand_total = request.form.get('grand_total')
+        paid_amount = request.form.get('paid_amount')
         amount = request.form.get('amount')
         type = request.form.get('type')
         note = request.form.get('note')
         amount = float(amount)
+        grand_total = float(grand_total)
+        paid_amount = float(paid_amount)
         if type.lower() == 'credit' :
             amount = -amount
 
         purchase_event_id = int(purchase_event_id)
-        money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+        
         today_datetime = datetime.now()
+        difference = grand_total - paid_amount + amount
+        if difference<=0 :
+            amount2 = paid_amount - grand_total
+            money_name1 = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+            money1 = Money(amount=amount2,note=note,purchase_event_id=purchase_event_id,number=money_name1,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
+            db.session.add(money1)
+            db.session.commit()
+            money_name2 = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+            money2 = Money(amount=difference,note="Rounding",purchase_event_id=purchase_event_id,number=money_name2,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
+            db.session.add(money2)
+            db.session.commit()
+        else :
+            money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+            money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
+            db.session.add(money)
+            db.session.commit()
+        
+        
 
-        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
-
-        db.session.add(money)
-        db.session.commit()
+        # db.session.add(money)
+        
         return redirect(request.referrer)
     except Exception as e :
         print(e)

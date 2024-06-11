@@ -63,7 +63,7 @@ def cashier_po_detail():
         payment_debt += money_total
 
         return render_template('cashier/po_details.html', farmer=farmer, purchase_order=purchase_order,
-                               NfcappFarmerOdoo=NfcappFarmerOdoo, payment_debt=payment_debt, order_line=order_line,
+                               NfcappFarmerOdoo=NfcappFarmerOdoo, paid_total = abs(money_total), payment_debt=payment_debt, order_line=order_line,
                                ProductOdoo=ProductOdoo, money_data=money_data, PurchaseOrder=PurchaseOrder,
                                purchase_event=purchase_event, odoo_purchase_order=odoo_purchase_order)
     except Exception as e:

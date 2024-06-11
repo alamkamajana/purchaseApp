@@ -331,6 +331,9 @@ Cashier Order
                         <input type="hidden" name="purchase_order_id" value="{{ purchase_order.id }}">
                         <input type="hidden" name="purchase_event_id" value="{{ purchase_order.purchase_event_id }}">
                         <input type="hidden" name="type" value="credit">
+                        <input type="hidden" name="paid_amount" value="{{paid_total}}">
+                        <input type="hidden" name="grand_total" value="{{purchase_order.amount_total}}">
+
                         
                         
                             
@@ -341,6 +344,13 @@ Cashier Order
                                         <td>: Rp</td>
                                         <td class="text-end">
                                             <span id="label_total" class="label_total">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr style="color: blue;">
+                                        <td>Paid Amount</td>
+                                        <td>: Rp</td>
+                                        <td class="text-end">
+                                            <span id="label_total" class="label_total">{{ '{:,.2f}'.format(paid_total) }}</span>
                                         </td>
                                     </tr>
                                     <tr style="color: red;">
@@ -354,16 +364,17 @@ Cashier Order
                                         <td>Payment Amount</td>
                                         <td>: Rp </td>
                                         <td class="text-end">
-                                            <span id="label_amount" class="label_amount">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span>
+                                            <span id="label_amount" class="label_amount">{{ '{:,.2f}'.format(purchase_order.amount_total-paid_total) }}</span>
                                         </td>
                                     </tr>
                                 </table>
                                 <!-- <div class="payment_label"></div> -->
                                 <span id="var_total" class="var_total" style="display: none;">{{ purchase_order.amount_total }}</span>
+                                <span id="var_paid" class="var_total" style="display: none;">{{ paid_total }}</span>
                                 <!-- <div class="payment_label">Rp <span id="label_amount" class="label_amount">0.00</span>
                                 <div class="payment_label">Rp <span id="label_difference" class="label_difference">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span> -->
                                 <label for="amount">Amount</label>
-                                <input type="number" id="amount" class="form-control" name="amount" value="{{purchase_order.amount_total}}"
+                                <input type="number" id="amount" class="form-control" name="amount" value="{{purchase_order.amount_total-paid_total}}"
                                         step="0.01"
                                         required>
                                 <!-- <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label> -->
@@ -425,9 +436,10 @@ Cashier Order
                     let label_difference = form.querySelector('.label_difference')
                     let label_total = form.querySelector('.label_total')
                     let var_total = parseFloat(document.getElementById('var_total').innerHTML.trim())
+                    let var_paid = parseFloat(document.getElementById('var_paid').innerHTML.trim())
                     input.addEventListener('input', function (e) {
                         let value = parseFloat(e.target.value).toFixed(2);
-                        let var_difference = var_total - value
+                        let var_difference = var_total - var_paid -  value
 
                         // Remove all non-digit characters except for the decimal point
                         let formattedValue = value.replace(/[^0-9.]/g, '');
