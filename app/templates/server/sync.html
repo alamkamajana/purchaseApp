@@ -107,7 +107,7 @@
             <div class="col-6">
                 <button class="upload-button">
                     <div style="color: blue">
-                        <i class='bx bx-sync bx-lg'></i>
+                        <i class='bx bx-cloud-upload bx-lg'></i>
                     </div>
                     <div>
                         Upload Data
@@ -116,12 +116,100 @@
             </div>
         </div>
     </div>
+    <div>
+        <div class="row">
+            <div class="col-12">
+                <div><span>Data Info:</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Product Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="product-odoo-count">{{count.product_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span id="">Purchase Order Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="purchase-order-odoo-count">{{count.purchase_order_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Purchase Order Line Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="purchase-order-line-odoo-count">{{count.purchase_order_line_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Farmer Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="farmer-odoo-count">{{count.farmer_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>User Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="user-odoo-count">{{count.user_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Commodity Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="commodity-odoo-count">{{count.commodity_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Commodity Item Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="commodityitem-odoo-count">{{count.commodityitem_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Station Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="station-odoo-count">{{count.station_odoo}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9 col-sm-3">
+                <div><span>Cluster Odoo Count</span></div>
+            </div>
+            <div class="col-3">
+                <div>: <span id="cluster-odoo-count">{{count.cluster_odoo}}</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="reset-db">
+        <a href="/server/reset-db" class="btn btn-danger"><i class='bx bx-trash'></i></a>
+    </div>
 
     <div class="" id="progress-container">
         <div class="text-center" id="progress-bar" style="display: none">
             <h1>Syncing</h1>
             <div class="progress-bar" style="display: block;">
                 <div class="progress" style="width: 0%;"></div>
+            </div>
+            <div id="in-progress-urls" class="text-start">
+                <h3>In Progress</h3>
+            </div>
+            <div id="completed-urls" class="text-start">
+                <h3>Completed</h3>
             </div>
         </div>
 
@@ -135,6 +223,8 @@
         const progressBar = document.getElementById('progress-bar');
         const progressValue = progressBar.querySelector('.progress');
         const progressContainer = document.querySelector('#progress-container');
+        const inProgressUrlsContainer = document.getElementById('in-progress-urls');
+        const completedUrlsContainer = document.getElementById('completed-urls');
 
         const apiUrls = [
 <!--            '/sync/get-farmer-photo',-->
@@ -153,30 +243,58 @@
         syncButton.addEventListener('click', () => {
             progressContainer.style.display = 'flex';
             progressBar.style.display = 'block'; // Show progress bar
-            callApiSequence(apiUrls, 0); // Start calling APIs
+            inProgressUrlsContainer.innerHTML = '<h3>In Progress</h3>'; // Clear previous in-progress URLs
+            completedUrlsContainer.innerHTML = '<h3>Completed</h3>'; // Clear previous completed URLs
+            callApisConcurrently(apiUrls); // Start calling APIs concurrently
         });
 
-        async function callApiSequence(urls, index) {
-            if (index >= urls.length) {
+        async function callApisConcurrently(urls) {
+            let completedRequests = 0;
+
+            const updateProgress = () => {
+                const percentage = Math.round((completedRequests / urls.length) * 100);
+                progressValue.style.width = `${percentage}%`;
+                progressValue.ariaValueNow = percentage;
+            };
+
+            const showInProgressUrl = (url) => {
+                const urlElement = document.createElement('div');
+                urlElement.textContent = `In Progress: ${url}`;
+                urlElement.id = `url-${url}`;
+                inProgressUrlsContainer.appendChild(urlElement);
+            };
+
+            const showCompletedUrl = (url) => {
+                const urlElement = document.getElementById(`url-${url}`);
+                if (urlElement) {
+                    urlElement.remove();
+                }
+                const completedUrlElement = document.createElement('div');
+                completedUrlElement.textContent = `Completed: ${url}`;
+                completedUrlsContainer.appendChild(completedUrlElement);
+            };
+
+            try {
+                const promises = urls.map(url => {
+                    showInProgressUrl(url); // Display the in-progress URL
+                    return fetch(url).then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error calling ${url}: ${response.status}`);
+                        }
+                        completedRequests++;
+                        showCompletedUrl(url); // Move URL to completed
+                        updateProgress();
+                    });
+                });
+
+                await Promise.all(promises);
+
                 progressContainer.style.display = 'none';
                 progressBar.style.display = 'none'; // Hide progress bar
                 alert('Synchronization completed!');
-                return;
-            }
-
-            const percentage = Math.round((index / urls.length) * 100);
-            console.log(percentage)
-            progressValue.style.width = `${percentage}%`;
-            progressValue.ariaValueNow = percentage;
-
-            try {
-                const response = await fetch(urls[index]);
-                if (response.status === 200) {
-                    callApiSequence(urls, index + 1); // Call next API
-                } else {
-                    throw new Error(`Error calling ${urls[index]}: ${response.status}`);
-                }
+                location.reload();
             } catch (error) {
+                progressContainer.style.display = 'none';
                 progressBar.style.display = 'none'; // Hide progress bar on error
                 alert(`Synchronization failed: ${error.message}`);
             }

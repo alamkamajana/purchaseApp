@@ -2,7 +2,7 @@ import functools
 
 import psutil
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response, send_from_directory, abort, make_response
 )
 import socket
 from sqlalchemy import and_, create_engine
@@ -28,6 +28,7 @@ import qrcode
 from barcode.writer import ImageWriter
 from io import BytesIO
 import base64
+from werkzeug.utils import secure_filename
 
 
 load_dotenv()
@@ -97,7 +98,34 @@ def get_current_ip():
 @bp.route('/sync', methods=["GET"])
 @login_required
 def sync_menu():
-    return render_template('server/sync.html')
+    count = {}
+    count["product_odoo"] = ProductOdoo.query.count()
+    count["purchase_order_odoo"] = PurchaseOrderOdoo.query.count()
+    count["purchase_order_line_odoo"] = PurchaseOrderLineOdoo.query.count()
+    count["farmer_odoo"] = NfcappFarmerOdoo.query.count()
+    count["user_odoo"] = ResUserOdoo.query.count()
+    count["commodity_odoo"] = NfcappCommodityOdoo.query.count()
+    count["commodityitem_odoo"] = NfcappCommodityItemOdoo.query.count()
+    count["station_odoo"] = NfcappStationOdoo.query.count()
+    count["cluster_odoo"] = NfcappClusterOdoo.query.count()
+    print(count)
+    return render_template('server/sync.html', count=count)
+
+@bp.route('/reset-db', methods=["GET"])
+def reset_db():
+    db.session.query(ProductOdoo).delete()
+    db.session.query(PurchaseOrderOdoo).delete()
+    db.session.query(PurchaseOrderLineOdoo).delete()
+    db.session.query(NfcappFarmerOdoo).delete()
+    db.session.query(ResUserOdoo).delete()
+    db.session.query(NfcappCommodityOdoo).delete()
+    db.session.query(NfcappCommodityItemOdoo).delete()
+    db.session.query(NfcappStationOdoo).delete()
+    db.session.query(NfcappClusterOdoo).delete()
+    db.session.commit()
+
+    return redirect(url_for('routes.server.master_data_backup'))
+
 
 @bp.route('/master/farmer', methods=["GET"])
 def master_data_farmer():
@@ -139,6 +167,58 @@ def master_data_purchase_order():
             po_order_line_arr.append(order_line_json)
         po_json['order_lines'] = po_order_line_arr
     return render_template('server/master_po.html',purchase_data=data)
+
+@bp.route('/master/backup', methods=["GET"])
+def master_data_backup():
+    return render_template('server/backup.html')
+
+@bp.route('/master/download_backup', methods=["GET"])
+def download_backup():
+    today_datetime = datetime.now()
+    instance_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'instance'))
+    new_filename = "purchase-"+str(today_datetime)+".db"
+    file_path = os.path.join(instance_directory, "purchase.db")
+    try:
+        # return send_from_directory(instance_directory, "purchase.db", as_attachment=True, attachment_filename=new_filename)
+        with open(file_path, 'rb') as f:
+            # Create a response
+            response = make_response(f.read())
+            # Set the headers to force download
+            response.headers['Content-Type'] = 'application/octet-stream'
+            response.headers['Content-Disposition'] = 'attachment; filename="{}"'.format(new_filename)
+            return response
+    except FileNotFoundError:
+        abort(404)
+
+def allowed_file(filename):
+    allowed_extensions = {'db'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+@bp.route('master/upload_database', methods=['POST'])
+def upload_database():
+    
+    # Check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # If the user does not select a file, the browser submits an empty file without a filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        # Define the path to the 'instance' directory within the route
+        upload_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'instance'))
+        file_path = os.path.join(upload_folder, "purchase.db")
+        # Save the file, replacing any existing file
+        file.save(file_path)
+        return '''
+        <script>alert("Purchase.db uploaded successfully");</script>
+        <meta http-equiv="refresh" content="0; URL='/server/master/backup'">
+        '''
+        # flash(f'Purchase.db uploaded successfully')
+        # return redirect(url_for('routes.server.master_data_backup'))
 
 
 @bp.route('/purchase-order/view', methods=["POST","GET"])
