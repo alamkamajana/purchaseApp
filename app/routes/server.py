@@ -201,12 +201,16 @@ def purchase_event_details():
 def purchase_event_view():
     purchasers = ResUserOdoo.query.all()
     base_url = "https://"+str(get_current_ip())+":5000/"
+    base_url2 = "https://" + str(request.remote_addr) + ":5000/"
+
+
+
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
     local_ip = get_local_ip()
     data_purchase = f"{base_url}purchase/transaction?pe={purchase_event_id}"
     data_delivery = f"{base_url}delivery/index?pe={purchase_event_id}"
-    data_cashier = f"{base_url}cashier/index?pe={purchase_event_id}"
+    data_cashier = f"{base_url2}cashier/index?pe={purchase_event_id}"
     qr_code_purchase = generate_qr_code(data_purchase)
     qr_code_delivery = generate_qr_code(data_delivery)
     qr_code_cashier = generate_qr_code(data_cashier)

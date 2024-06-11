@@ -145,11 +145,15 @@ class PurchaseOrder(db.Model):
     def compute_is_paid(self):
         calculation = self.amount_total + self.compute_payment
         payment_positive = abs(self.compute_payment)
-        if payment_positive == self.amount_total and int(self.compute_payment) != 0 :
+
+        if payment_positive >= self.amount_total and int(self.compute_payment) != 0 :
+
             return True
         elif int(calculation) > 0 :
+
             return False
         else :
+
             return False
 
 
@@ -159,7 +163,8 @@ class PurchaseOrderLine(db.Model):
     change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
-    nfcapp_commodity_item_odoo_id = db.Column(db.Integer)
+    nfcapp_commodity_item_odoo_id = db.Column(db.Integer, db.ForeignKey('nfcapp_commodity_item_odoo.id'))
+    nfcapp_commodity_item_odoo = db.relationship('NfcappCommodityItemOdoo')
     qty = db.Column(db.Float)
     unit_price = db.Column(db.Float)
     barcode = db.Column(db.String)

@@ -109,6 +109,9 @@ async function sendTextData(product) {
     let event_name = document.getElementById("purchase_event_id").value;
     let odoo_name = document.getElementById("purchase_order_odoo_id").value;
     let certification_status = document.getElementById("certification_status_id").value;
+    let totalPremium = parseFloat(document.getElementById('total-premium-data').innerHTML.trim())
+    let totalPokok = parseFloat(document.getElementById('total-pokok-data').innerHTML.trim())
+
     const purchaseData = await fetchPurchaseData(order_id);
     // const purchaseData = [
     //   { product_name: "Kopi Arabica",price: 25000, quantity: 2, subtotal: 25000 },
@@ -122,6 +125,16 @@ async function sendTextData(product) {
         currency: "IDR",
         minimumFractionDigits: 0
     }).format(totalAmount).replace(/Rp\s*/g, "");
+    const formattedTotalPremium = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0
+    }).format(totalPremium).replace(/Rp\s*/g, "");
+    const formattedTotalPokok = new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0
+    }).format(totalPokok).replace(/Rp\s*/g, "");
 
 
     var DATA = ''
@@ -137,7 +150,9 @@ async function sendTextData(product) {
         + '\nCertification Status\t: ' + certification_status
         + '\n'
         + `\x1B\x21\x01${tableData}`
-        + `\nTotal\tRp.${formattedTotalAmount}\n\n\x1B\x21\x00 `
+        + `\nTotal\tRp.${formattedTotalAmount}\x1B\x21\x00`
+        + `\nPremium\tRp.${formattedTotalPremium}\x1B\x21\x00`
+        + `\nPokok\tRp.${formattedTotalPokok}\x1B\x21\x00`
 
     ;
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(DATA))
