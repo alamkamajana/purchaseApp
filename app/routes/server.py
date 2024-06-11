@@ -90,8 +90,12 @@ def get_current_ip():
             if address.family == socket.AF_INET:
                 ip_addresses[interface_name] = address.address
 
-    print(ip_addresses)
-    return ip_addresses.get('en0')
+    if 'en0' in ip_addresses:  # macOS
+        return ip_addresses.get('en0')
+    elif 'Wi-Fi' in ip_addresses:  # windows
+        return ip_addresses.get('Wi-Fi')
+    else:
+        return None
 
 
 @bp.route('/sync', methods=["GET"])
@@ -197,12 +201,16 @@ def purchase_event_details():
 def purchase_event_view():
     purchasers = ResUserOdoo.query.all()
     base_url = "https://"+str(get_current_ip())+":5000/"
+    base_url2 = "https://" + str(request.remote_addr) + ":5000/"
+
+
+
     purchase_event_id = request.args.get("pe")
     purchase_event = PurchaseEvent.query.get(purchase_event_id)
     local_ip = get_local_ip()
     data_purchase = f"{base_url}purchase/transaction?pe={purchase_event_id}"
     data_delivery = f"{base_url}delivery/index?pe={purchase_event_id}"
-    data_cashier = f"{base_url}cashier/index?pe={purchase_event_id}"
+    data_cashier = f"{base_url2}cashier/index?pe={purchase_event_id}"
     qr_code_purchase = generate_qr_code(data_purchase)
     qr_code_delivery = generate_qr_code(data_delivery)
     qr_code_cashier = generate_qr_code(data_cashier)
@@ -310,4 +318,21 @@ def server_test_print():
     return render_template('server/test_print.html')
 
 
+@bp.route('/master/product', methods=["GET"])
+def master_data_product():
+    products = ProductOdoo.query.all()
+
+    return render_template('server/master_product.html', products=products)
+
+
+@bp.route('/master/commodity-item', methods=["GET"])
+def master_data_commodity_item():
+    commodity_id = request.args.get('commodity_id',0, type=int)
+    station_id = request.args.get('station_id', 0 , type=int)
+    commodities = NfcappCommodityOdoo.query.all()
+    stations = NfcappStationOdoo.query.all()
+    commodity_items = NfcappCommodityItemOdoo.query.filter_by(commodity_id=commodity_id).all()
+
+    return render_template('server/master_commodity_item.html', commodity_items=commodity_items,
+                           commodities=commodities, stations=stations, commodity_id=commodity_id, station_id=station_id)
 

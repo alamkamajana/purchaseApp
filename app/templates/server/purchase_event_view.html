@@ -16,6 +16,17 @@ Purchase Event
     .active {
         color: black;
     }
+
+    .cashier-button{
+        border: none;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        width: 240px;
+        height: 160px;
+        border-radius: 10px;
+        text-align: center;
+        align-content: center;
+    }
 </style>
 
 <nav aria-label="breadcrumb">
@@ -202,7 +213,7 @@ Purchase Event
                 <img src="data:image/png;base64,{{ qr_code_purchase }}">
             </div>
             <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-                <h1>for Trucker</h1>
+                <h1>for Packer</h1>
                 <a href="{{data_delivery}}" target="_blank" class="btn btn-warning"><i
                         class="bx bxs-truck"></i></a>
 
@@ -215,7 +226,20 @@ Purchase Event
                    href="{{ data_cashier}}" target="_blank">
                     <span><i class='bx bx-dollar'></i></span>
                 </a>
-                <img src="data:image/png;base64,{{ qr_code_cashier }}">
+                <!-- <img src="data:image/png;base64,{{ qr_code_cashier }}"> -->
+                    <a href="{{ data_cashier}}">
+                            Click Here
+                    </a>
+                    <!-- <a href="{{ data_cashier}}" class="btn cashier-button">
+                        <div style="color: green">
+                            <i class='bx bx-dollar bx-lg'></i>
+                        </div>
+                        <div>
+                            Click Here
+                        </div>
+                    </a> -->
+
+
             </div>
             <div class="tab-pane fade" id="nav-contact3" role="tabpanel" aria-labelledby="nav-contact-tab3">
                 <div class="container">

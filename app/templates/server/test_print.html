@@ -48,19 +48,6 @@
                         Test Camera
                     </div>
                 </button>
-                  <button class="test-google" >
-                    <div style="color: blue">
-                        <i class='bx bx-scan bx-lg'></i>
-                    </div>
-                    <div>
-                        Test Google
-                    </div>
-                </button>
-
-    <input type="file" id="imageInput" accept="image/*">
-    <button onclick="printImage()">Print Image</button>
-                    <button onclick="printLetterA()">Print Letter A</button>
-
             </div>
         </div>
 
@@ -102,106 +89,6 @@
 {% endblock %}
 
 {% block script_plugin %}
-
-
-
-    <script>
-        function printLetterA() {
-            const SERVICE = '000018f0-0000-1000-8000-00805f9b34fb';
-            const WRITE = '00002af1-0000-1000-8000-00805f9b34fb';
-            const MAX_CHUNK_SIZE = 512;
-
-            var canvas = document.createElement('canvas');
-            var context = canvas.getContext('2d');
-            const width = 100;
-            const height = 100;
-            canvas.width = width;
-            canvas.height = height;
-
-            // Draw the letter 'A' on the canvas
-            context.font = '80px Arial';
-            context.fillStyle = 'black';
-            context.fillText('A', 10, 80);
-
-            var imageData = context.getImageData(0, 0, width, height).data;
-            var monochromeData = convertToMonochrome(imageData, width, height);
-            var bitmapData = createBitmapData(monochromeData, width, height);
-
-            // Split bitmap data into smaller chunks
-            var chunks = splitIntoChunks(bitmapData, MAX_CHUNK_SIZE);
-
-            // Start printing
-            navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE] }] })
-                .then(device => {
-                    console.log(device);
-                    return device.gatt.connect();
-                })
-                .then(server => {
-                    console.log(server);
-                    return server.getPrimaryService(SERVICE);
-                })
-                .then(service => {
-                    console.log(service);
-                    return service.getCharacteristic(WRITE);
-                })
-                .then(channel => {
-                    console.log(channel);
-                    return printChunks(channel, chunks);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-
-            function convertToMonochrome(imageData, width, height) {
-                var monochromeData = [];
-                for (var y = 0; y < height; y++) {
-                    for (var x = 0; x < width; x++) {
-                        var index = (y * width + x) * 4;
-                        var r = imageData[index];
-                        var g = imageData[index + 1];
-                        var b = imageData[index + 2];
-                        var grayscale = (r + g + b) / 3;
-                        monochromeData.push(grayscale < 128 ? 0 : 1);
-                    }
-                }
-                return monochromeData;
-            }
-
-            function createBitmapData(monochromeData, width, height) {
-                var bitmapData = [];
-                for (var y = 0; y < height; y++) {
-                    for (var x = 0; x < width; x += 8) {
-                        var byte = 0;
-                        for (var bit = 0; bit < 8; bit++) {
-                            if (x + bit < width) {
-                                byte |= (monochromeData[y * width + x + bit] << (7 - bit));
-                            }
-                        }
-                        bitmapData.push(byte);
-                    }
-                }
-                return bitmapData;
-            }
-
-            function splitIntoChunks(data, chunkSize) {
-                var chunks = [];
-                for (var i = 0; i < data.length; i += chunkSize) {
-                    chunks.push(data.slice(i, i + chunkSize));
-                }
-                return chunks;
-            }
-
-            function printChunks(channel, chunks) {
-                let promise = Promise.resolve();
-                chunks.forEach(chunk => {
-                    promise = promise.then(() => {
-                        return channel.writeValue(new Uint8Array(chunk));
-                    });
-                });
-                return promise;
-            }
-        }
-    </script>
 <script src="{{ url_for('static', filename='/js/tools/print_test.js') }}"></script>
 <script src="{{ url_for('static', filename='/js/tools/scanner.js') }}"></script>
 {% endblock %}

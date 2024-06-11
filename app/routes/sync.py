@@ -25,9 +25,8 @@ def format_date_obj(date_obj):
     try:
         dateku = datetime.strptime(date_obj, '%Y-%m-%d %H:%M:%S.%f')
     except:
-        dateku=None
+        dateku = None
     return dateku
-
 
 
 @bp.route('/get-product-odoo')
@@ -40,13 +39,14 @@ def sync_get_product_odoo():
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()
+        print(response_json)
         for product in response_json:
             product_oid = product['odoo_id']
             product_json = {k: v for k, v in product.items() if k != 'id'}
             product_json['write_date'] = format_date_obj(product_json['write_date'])
             check_productodoo = ProductOdoo.query.filter_by(odoo_id=product_oid).first()
             if check_productodoo:
-              for key, value in product_json.items():
+                for key, value in product_json.items():
                     setattr(check_productodoo, key, value)
 
             else:
@@ -63,7 +63,7 @@ def sync_get_product_odoo():
     except Exception as e:
         print(e)
         return {"message": str(e), "status": 400}
-    
+
 
 @bp.route('/get-purchase-order-odoo')
 @login_required
@@ -152,7 +152,6 @@ def sync_get_farmer_odoo():
             oid = farmer['odoo_id']
             farmer_json = {k: v for k, v in farmer.items() if not k in ['id', 'commodity_items']}
 
-
             farmer_json['registration_date'] = None
             farmer_json['contract_date'] = None
             farmer_json['date_of_birth'] = None
@@ -209,7 +208,6 @@ def sync_user_odoo():
             oid = user['odoo_id']
 
             user_json = {k: v for k, v in user.items() if k != 'id'}
-
 
             user_json['write_date'] = format_date_obj(user_json['write_date'])
             check_data = ResUserOdoo.query.filter_by(odoo_id=oid).first()
@@ -360,8 +358,6 @@ def sync_cluster_odoo():
             else:
                 new_data = NfcappClusterOdoo(**cluster_json)
                 db.session.add(new_data)
-
-
 
         db.session.commit()
 
