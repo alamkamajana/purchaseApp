@@ -152,7 +152,7 @@ def purchase_order_view():
 @bp.route('/purchase-event/', methods=["GET"])
 def purchase_event_list():
     po_id = request.args.get('po', 0, type=int)
-    events = PurchaseEvent.query.filter_by(purchase_order_odoo_id=po_id).all()
+    events = PurchaseEvent.query.filter_by(purchase_order_odoo_id=po_id).order_by(PurchaseEvent.id.desc()).all()
     purchase_order = PurchaseOrderOdoo.query.get(po_id)
     purchase_order_line = po_order_line = PurchaseOrderLineOdoo.query.filter_by(order_id=int(purchase_order.odoo_id)).all()
     event_ids = [event.id for event in events]

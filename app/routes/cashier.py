@@ -26,7 +26,7 @@ def cashier_index():
             PurchaseOrder.purchase_event_id == int(pe),
             PurchaseOrder.status.ilike('confirm')
         )
-    )
+    ).order_by(PurchaseOrder.id.desc())
     purchase_order_paid = [po for po in purchase_orders if po.compute_is_paid]
     purchase_order_not_paid = [po for po in purchase_orders if not po.compute_is_paid]
     purchase_event = PurchaseEvent.query.get(int(pe))
@@ -57,7 +57,7 @@ def cashier_po_detail():
         farmer = NfcappFarmerOdoo.query.filter_by(id=purchase_order.farmer_id).first()
         odoo_purchase_order = PurchaseOrderOdoo.query.get(purchase_event.purchase_order_odoo_id)
         order_line = PurchaseOrderLine.query.filter_by(purchase_order_id=purchase_order.id).all()
-        money_data = Money.query.filter_by(purchase_order_id=purchase_order.id).filter(Money.amount < 0).all()
+        money_data = Money.query.filter_by(purchase_order_id=purchase_order.id).filter(Money.amount < 0).order_by(Money.id.desc()).all()
         payment_debt = purchase_order.amount_total
         money_total = sum(money.amount for money in money_data)
         payment_debt += money_total
