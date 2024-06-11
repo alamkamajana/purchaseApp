@@ -1,0 +1,92 @@
+{% extends '/server/base.html' %}
+{% block title %}
+    Commodity Items
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/master_farmer.css') }}">
+{% endblock %}
+
+{% block header %}
+    <b>Commodity Item List</b>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">commodity_item</span>
+
+    <div class="card">
+
+        <div class="card-body">
+            <div class="event-container">
+                <form>
+                    <div class="row">
+<!--                        <div class="col-3">-->
+<!--                            <label for="station_id">Station</label>-->
+<!--                            <select name="station_id" id="station_id">-->
+<!--                                {% for station in stations %}-->
+<!--                                    <option value="{{station.odoo_id}}" {% if station.odoo_id==station_id %} selected {% endif %} >{{station.name}}</option>-->
+<!--                                {% endfor %}-->
+<!--                            </select>-->
+<!--                        </div>-->
+                        <div class="col-3">
+                            <label for="commodity_id">Commodity Group</label>
+                            <select name="commodity_id" id="commodity_id">
+                                {% for commodity in commodities %}
+                                    <option value="{{commodity.odoo_id}}"  data-category="{{commodity.station_id}}" {% if commodity.odoo_id==commodity_id %} selected {% endif %}>{{commodity.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <button style="margin-top: 20px;" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if commodity_items%}
+
+                <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                    <tr>
+                        <th>
+                            Code
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Commodity Name
+                        </th>
+<!--                        <th>-->
+<!--                            Station-->
+<!--                        </th>-->
+                        <th>
+                            Certification Status
+                        </th>
+                        <th>
+                            Variant
+                        </th>
+                        <th>
+                            Sync Date
+                        </th>
+                    </tr>
+                    {% for item in commodity_items %}
+                        <tr>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.product_id_name }}</td>
+                            <td>{{ item.commodity_name }}</td>
+                            <td>{{ item.certStatus }}</td>
+                            <td>{{ item.variant }}</td>
+                            <td>{{ item.sync_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script_plugin %}
+<script src="{{ url_for('static', filename='/js/server/master_farmer.js') }}"></script>
+{% endblock %}
