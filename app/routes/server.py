@@ -117,7 +117,6 @@ def reset_db():
     db.session.query(PurchaseOrderOdoo).delete()
     db.session.query(PurchaseOrderLineOdoo).delete()
     db.session.query(NfcappFarmerOdoo).delete()
-    db.session.query(ResUserOdoo).delete()
     db.session.query(NfcappCommodityOdoo).delete()
     db.session.query(NfcappCommodityItemOdoo).delete()
     db.session.query(NfcappStationOdoo).delete()
