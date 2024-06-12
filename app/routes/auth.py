@@ -83,7 +83,7 @@ def login():
             # print(session['user_odoo_id'])
             # login_user(user)
             flash('Login successful!', 'success')
-            return redirect(url_for('routes.auth.main_page'))
+            return redirect(url_for('routes.server.sync_menu'))
         else:
             flash('Invalid username or password', 'danger')
 

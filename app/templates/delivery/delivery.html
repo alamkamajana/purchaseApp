@@ -10,8 +10,10 @@
           type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/delivery/delivery.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
     <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='/assets/html5-qrcode/js/html5-qrcode.min.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
     <script src="{{ url_for('static', filename='/assets/quanggaJS/quanggaJS.js') }}"></script>
     <style>
@@ -149,10 +151,12 @@
                 display: flex;
                 align-items: center;
                 justify-content: right;
+                text-align: right;
             }
 
             .responsive-table .responsive-th{
                 justify-content: left;
+                text-align: left;
             }
 
             .responsive-table .overflow-container {
@@ -203,6 +207,39 @@
             <div class="d-flex justify-content-center mb-4">
                 <a href="/delivery/create?pe={{ pe.id }}" class="btn btn-success btn-custom">Tambah Surat Jalan</a>
                 <button class="btn btn-primary btn-custom" type="button" onclick="btPrintTest()" style="margin-left: 16px;">Tes Print</button>
+                <button type="button" onclick="startScanTest('test-input')" class="btn btn-secondary btn-custom" style="margin-left:16px">
+                    Tes Kamera
+                </button>
+                <div class="modal fade" id="scannerModal" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+
+                                <h5 class="modal-title">QR Scanner</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="stopScan()">
+                                    <span><i class='bx bx-x bx-md'></i></span>
+                                </button>
+
+
+                            </div>
+                            <div class="modal-body">
+                                <div style="width: 100%;" id="reader"></div>
+                                <div>
+                                    <label for="test-input">Hasil</label>
+                                    <input type="text" name="test-input" id="test-input" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <button type="button" class="btn btn-danger" onclick="stopScan()">Stop Scan</button>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
             <input type="hidden" id="purchase_event_name" value="{{ pe.name }}">
             <input type="hidden" id="purchase_event_id" value="{{ pe.id }}">
@@ -266,8 +303,8 @@
                         <td nowrap="nowrap">
                             <a href="/delivery/detail?do={{ do.id }}" value="{{ do.id }}"
                                class="btn btn-sm btn-success btn-add-goods"><i class="bx bxs-cart-add"></i></a>
-                            <a href="/delivery/edit?do={{ do.id }}&pe={{ pe.id }}" class="btn btn-sm btn-primary"><i
-                                    class="bx bxs-pencil"></i></a>
+                            <!-- <a href="/delivery/edit?do={{ do.id }}&pe={{ pe.id }}" class="btn btn-sm btn-primary"><i
+                                    class="bx bxs-pencil"></i></a> -->
                             {% if do.status != "Confirm" %}
                             <a href="/delivery/delete?do={{ do.id }}" class="btn btn-sm btn-danger"><i
                                     class="bx bxs-trash"></i></a>
@@ -287,6 +324,7 @@
 
 <script src="{{ url_for('static', filename='/js/delivery/delivery.js') }}"></script>
 <script src="{{ url_for('static', filename='/js/tools/print_test.js') }}"></script>
+<script src="{{ url_for('static', filename='/js/tools/scanner.js') }}"></script>
 
 </body>
 </html>

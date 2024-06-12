@@ -1,0 +1,219 @@
+{% extends 'server/base.html' %}
+{% block title %}
+    Backup
+{% endblock %}
+{% block plugin %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/server/sync.css') }}">
+
+{% endblock %}
+
+{% block header %}
+    <b>Backup Database</b>
+    <style>
+        .modal-header{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-header button{
+            color: gray;
+            background-color: inherit;
+            border: none;
+        }
+
+        .back-btn{
+            background-color: inherit !important;
+            box-shadow: none !important;
+            padding:0 !important;
+
+        }
+
+        .upload-button{
+            border: none;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 240px;
+            height: 160px;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .download-button{
+            border: none;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 240px;
+            height: 160px;
+            border-radius: 10px;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            border: 1px solid #000;
+            background-color: rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #007bff;
+        }
+        .progress-text {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+        }
+        #progress-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
+        .loader {
+            width: 8px;
+            height: 40px;
+            border-radius: 4px;
+            display: block;
+            margin: 20px auto;
+            position: relative;
+            background: currentColor;
+            color: #FFF;
+            box-sizing: border-box;
+            animation: animloader 0.3s 0.3s linear infinite alternate;
+        }
+
+        .loader::after, .loader::before {
+            content: '';
+            width: 8px;
+            height: 40px;
+            border-radius: 4px;
+            background: currentColor;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 20px;
+            box-sizing: border-box;
+            animation: animloader 0.3s  0.45s  linear infinite alternate;
+        }
+        .loader::before {
+            left: -20px;
+            animation-delay: 0s;
+        }
+
+        @keyframes animloader {
+            0%   { height: 48px}
+            100% { height: 4px}
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <span id="selected-menu" style="display: none;">backup</span>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <button class="download-button">
+                    <div style="color: blue">
+                        <i class='bx bxs-download bx-lg'></i>
+                    </div>
+                    <div>
+                        Download Backup
+                    </div>
+                </button>
+            </div>
+
+            <div class="col-6">
+                <button class="upload-button" onclick="openUploadModal()">
+                    <div style="color: blue">
+                        <i class='bx bx-upload bx-lg'></i>
+                    </div>
+                    <div>
+                        Upload Database
+                    </div>
+                </button>
+            </div>
+            <div class="modal fade" id="uploadDatabaseModal" role="dialog">
+                <div class="modal-dialog">
+    
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+    
+                            <h5 class="modal-title">Upload Database</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                                <span><i class='bx bx-x bx-md'></i></span>
+                            </button>
+    
+    
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <form method="post" enctype="multipart/form-data" action="/server/master/upload_database">
+                                    <input type="file" name="file">
+                                    <button class="btn btn-primary" type="submit" value="Upload">Upload</button>
+                                </form>
+                            </div>
+    
+    
+    
+    
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="" id="progress-container">
+        <div class="text-center" id="progress-bar" style="display: none">
+            <h1>Syncing</h1>
+            <div class="progress-bar" style="display: block;">
+                <div class="progress" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <div id="upload-text" style="display: none;">
+            <span class="loader"></span>
+        </div>
+    </div>
+
+    <script>
+        const downloadButton = document.querySelector('.download-button');
+        const progressBar = document.getElementById('progress-bar');
+        const progressValue = progressBar.querySelector('.progress');
+        const progressContainer = document.querySelector('#progress-container');
+
+        downloadButton.addEventListener('click', () => {
+            let url = "/server/master/download_backup"
+            window.open(url, '_blank').focus();
+        });
+
+        function openUploadModal(){
+            $('#uploadDatabaseModal').modal('show');
+        }
+
+        function closeModal(){
+            $('#uploadDatabaseModal').modal('hide');
+        }
+
+
+
+
+    </script>
+
+{% endblock %}
+
+{% block script_plugin %}
+
+{% endblock %}

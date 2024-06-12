@@ -1,0 +1,162 @@
+@media (min-width: 576px){
+    .responsive-th{
+        display:none;
+    }
+}
+
+@media (max-width: 576px) {
+
+
+    .event-container h1 {
+        font-size: 1.5em;
+    }
+
+    .event-container .btn {
+        width: 100%;
+    }
+
+
+
+    .event-container .form-control {
+        margin-bottom: 10px;
+    }
+
+    .event-container .table-responsive {
+        border: 0;
+    }
+
+    .event-container table {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .event-container thead, .event-container th {
+        display: none;
+    }
+
+    .event-container tbody, .event-container td, .event-container tr {
+        display: block;
+        width: 100%;
+    }
+
+    /* .event-container tr {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+    } */
+
+    .event-container td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        text-align: left;
+    }
+
+    /* .event-container td:before {
+        content: attr(data-label);
+        flex-basis: 50%;
+        text-align: left;
+        font-weight: bold;
+        color: #495057;
+    } */
+
+
+    .event-container td {
+        width: 40%;
+        box-sizing: border-box;
+        display: inline-block;
+    }
+
+    .event-container tr{
+        margin-bottom: 16px;
+    }
+
+    .responsive-table {
+        display: block;
+    }
+
+    .responsive-table th, .responsive-table thead {
+        display: none;
+    }
+
+    .responsive-table tbody {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .responsive-table tr {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .responsive-table td {
+        width: 50%;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        text-align: end;
+    }
+
+    .responsive-table .responsive-th{
+        justify-content: left;
+        text-align: start;
+    }
+
+    .responsive-table .overflow-container {
+        width: 50%;
+        box-sizing: border-box;
+        display: flex;
+        overflow-x: auto;
+        justify-content: left;
+        white-space: nowrap;
+    }
+
+    .responsive-table td:last-child{
+        width:100% ;
+    }
+
+
+    .responsive-table .total-price-container td {
+        width:50% !important;
+
+    }
+
+    .text-right{
+        justify-content: right !important;
+    }
+
+    .responsive-table .total-price-container td:first-child{
+
+        justify-content: left !important;
+    }
+
+    .responsive-table td a{
+        width:100%;
+    }
+
+    .mobile-hidden{
+        display: none !important;
+    }
+
+    .responsive-table .product-code{
+        width:100%
+    }
+
+    .responsive-table  .mobile-first-tr{
+        background-color: #f1f1f1;
+    }
+
+    .responsive-table  .grand-total-title{
+        justify-content: left;
+    }
+
+
+}
+
+
+    .farmer-photo{
+        padding : 0;
+    }
+

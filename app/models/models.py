@@ -86,7 +86,7 @@ class PurchaseEvent(db.Model):
     write_uid = db.Column(db.Integer)
     note = db.Column(db.Text)
     date_stamp = db.Column(db.Date)
-    money_entries = db.relationship('Money', backref='purchase_event', lazy='dynamic')
+    money_entries = db.relationship('Money', back_populates='purchase_event', lazy='dynamic')
 
     @property
     def compute_balance(self):
@@ -109,6 +109,12 @@ class PurchaseEvent(db.Model):
                 money_in += money.amount
         return money_in
 
+    @property
+    def purchase_order_odoo_true_id(self):
+        if self.purchase_order_odoo:
+            return self.purchase_order_odoo.odoo_id
+        else:
+            return None
 
 
 class PurchaseOrder(db.Model):
@@ -130,7 +136,7 @@ class PurchaseOrder(db.Model):
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
-    money_entries = db.relationship('Money', backref='purchase_order', lazy='dynamic')
+    money_entries = db.relationship('Money', back_populates='purchase_order', lazy='dynamic')
     signature = db.Column(db.LargeBinary)
 
     @property
@@ -145,12 +151,23 @@ class PurchaseOrder(db.Model):
     def compute_is_paid(self):
         calculation = self.amount_total + self.compute_payment
         payment_positive = abs(self.compute_payment)
-        if payment_positive == self.amount_total and int(self.compute_payment) != 0 :
+
+        if payment_positive >= self.amount_total and int(self.compute_payment) != 0 :
+
             return True
         elif int(calculation) > 0 :
+
             return False
         else :
+
             return False
+
+    @property
+    def purchase_event_uniq_id(self):
+        if self.purchase_event:
+            return self.purchase_event.uniq_id
+        else:
+            return None
 
 
 class PurchaseOrderLine(db.Model):
@@ -159,11 +176,17 @@ class PurchaseOrderLine(db.Model):
     change_id = db.Column(db.String(36), default=get_change_id, onupdate=get_change_id)
     id = db.Column(db.Integer, primary_key=True)
     product_odoo_id = db.Column(db.Integer, db.ForeignKey('product_odoo.id'))
+    nfcapp_commodity_item_odoo_id = db.Column(db.Integer, db.ForeignKey('nfcapp_commodity_item_odoo.id'))
+    nfcapp_commodity_item_odoo = db.relationship('NfcappCommodityItemOdoo')
     qty = db.Column(db.Float)
     unit_price = db.Column(db.Float)
     barcode = db.Column(db.String)
     commodity_name = db.Column(db.String)
     variant = db.Column(db.String)
+    is_organic = db.Column(db.Boolean)
+    is_ra_cert = db.Column(db.Boolean)
+    color_name = db.Column(db.String)
+    color_hex = db.Column(db.String)
     subtotal = db.Column(db.Float)
     currency = db.Column(db.String)
     delivery_order_id = db.Column(db.Integer, db.ForeignKey('delivery_order.id'))
@@ -175,6 +198,21 @@ class PurchaseOrderLine(db.Model):
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
     note = db.Column(db.Text)
+
+    @property
+    def delivery_order_uniq_id(self):
+        if self.delivery_order:
+            return self.delivery_order.uniq_id
+        else:
+            return None
+
+    @property
+    def purchase_order_uniq_id(self):
+        if self.purchase_order:
+            return self.purchase_order.uniq_id
+        else:
+            return None
+
 
 class Payment(db.Model):
     __tablename__ = 'payment'
@@ -191,6 +229,14 @@ class Payment(db.Model):
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+
+    @property
+    def purchase_event_uniq_id(self):
+        if self.purchase_event:
+            return self.purchase_event.uniq_id
+        else:
+            return None
+
 
 class DeliveryOrder(db.Model):
     __tablename__ = 'delivery_order'
@@ -218,7 +264,12 @@ class DeliveryOrder(db.Model):
         total_qty = sum(m.qty for m in self.purchase_order_lines)
         return total_qty
 
-
+    @property
+    def purchase_event_uniq_id(self):
+        if self.purchase_event:
+            return self.purchase_event.uniq_id
+        else:
+            return None
 
 
 class Money(db.Model):
@@ -236,6 +287,22 @@ class Money(db.Model):
     modified = db.Column(db.DateTime)
     create_uid = db.Column(db.Integer)
     write_uid = db.Column(db.Integer)
+    purchase_event = db.relationship('PurchaseEvent', back_populates='money_entries')
+    purchase_order = db.relationship('PurchaseOrder', back_populates='money_entries')
+
+    @property
+    def purchase_event_uniq_id(self):
+        if self.purchase_event:
+            return self.purchase_event.uniq_id
+        else:
+            return None
+
+    @property
+    def purchase_order_uniq_id(self):
+        if self.purchase_order:
+            return self.purchase_order.uniq_id
+        else:
+            return None
 
 
 class Expense(db.Model):

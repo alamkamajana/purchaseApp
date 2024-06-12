@@ -31,7 +31,7 @@ def delivery_index():
     purchase_event = PurchaseEvent.query.filter_by(id=int(pe)).first()
 
     pe_list = PurchaseEvent.query.all()
-    do_list = DeliveryOrder.query.filter_by(purchase_event_id=int(pe))
+    do_list = DeliveryOrder.query.filter_by(purchase_event_id=int(pe)).order_by(DeliveryOrder.id.desc()).all()
     return render_template('delivery/delivery.html', pe_list=pe_list, do_list=do_list, pe=purchase_event)
 
 @bp.route('/create', methods=["POST","GET"])
@@ -56,7 +56,8 @@ def delivery_add():
         destination = request.form['destination']
         note = request.form['note']
         status = "Draft"
-        do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=8, prefix="DO-")
+        purchase_event = PurchaseEvent.query.get(int(pe))
+        do_name = generate_unique_sequence_number(DeliveryOrder, DeliveryOrder.name, length=4, prefix=purchase_event.name+"-")
         today_datetime = datetime.now()
         new_do = DeliveryOrder(name=do_name,purchase_event_id=int(pe),driver=driver,vehicle_number=vehicle, created=today_datetime,sent_date=sent_date, received_date=received_date,origin=origin,destination=destination,note=note, status=status)
         db.session.add(new_do)
@@ -103,7 +104,7 @@ def delivery_update():
         delivery_order.destination = destination
         delivery_order.note = note
         db.session.commit()
-        return redirect(f"/delivery/index?pe={pe}")
+        return redirect(f"/delivery/detail?do={do}")
     except Exception as e :
         print(e)
         return jsonify(status=400, text=5555555)
@@ -164,10 +165,10 @@ def delivery_delete():
     db.session.commit()
     return redirect(request.referrer)
 
-@bp.route('/detail/add', methods=["GET","POST"])
+@bp.route('/detail/add', methods=["GET"])
 def delivery_detail_add():
-    do = request.form['do']
-    barcode = request.form['barcode']
+    do = request.args.get('do')
+    barcode = request.args.get('barcode')
 
     delivery_order = DeliveryOrder.query.filter_by(id=int(do)).first()
     order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).first()

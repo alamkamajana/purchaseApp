@@ -1,6 +1,6 @@
 {% extends 'server/base.html' %}
 {% block title %}
-Purchase Event
+Cashier
 {% endblock %}
 {% block plugin %}
 
@@ -17,6 +17,8 @@ Purchase Event
       type="text/css">
 <link rel="stylesheet" href="{{ url_for('static', filename='/assets/boxicons/css/boxicons.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='/css/cashier/breadcumb.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/cashier/cashier.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='/css/tools/scanner.css') }}">
 <script src="{{ url_for('static', filename='/assets/bootstrap/js/bootstrap.js') }}"></script>
 <script src="{{ url_for('static', filename='/assets/jquery/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='/assets/sweetalert2/sweetalert2.js') }}"></script>
@@ -38,7 +40,10 @@ Purchase Event
         <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{purchase_order.id}}" style="color: #e27f34;">
             Odoo PO ({{purchase_order.name}},{{purchase_order.partner_ref}})</a></li>
         <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
-        <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}}</p></li>
+        <li class="breadcrumb-item"><a href="/server/purchase-event/view?pe={{purchase_event.id}}" style="color: #e27f34;">
+            Purchase Event {{purchase_event.name}}</a></li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item active" aria-current="page"><p>Purchase Event {{purchase_event.name}} (Cashier)</p></li>
     </ol>
 </nav>
 
@@ -55,7 +60,7 @@ Purchase Event
                     </div>
                 </form>
             </div>
-            <div class="col-1">
+            <div class="col-2 col-sm-1">
                 <div id="scanned-result">
                     <div class="form-group">
                         <button type="button" class="btn btn-info" onclick="startScan()" id="scan-barcode-btn"><i
@@ -82,11 +87,11 @@ Purchase Event
                     </div>
                 </div>
             </div>
-            <div class="col-5">
-                <button style="width: 30%; background-color: #e27f34;" type="submit" class="btn btn-primary"
+            <div class="col-4 col-sm-5">
+                <!-- <button style="width: 160px; max-width: 100%; background-color: #e27f34;" type="submit" class="btn btn-primary"
                         id="process-payment">
                     Submit
-                </button>
+                </button> -->
             </div>
         </div>
 
@@ -109,7 +114,7 @@ Purchase Event
                     </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade" id="pills-home" role="tabpanel"
+                    <div class="tab-pane fade responsive-table" id="pills-home" role="tabpanel"
                          aria-labelledby="pills-home-tab">
                         <table class="table">
                             <thead>
@@ -126,11 +131,29 @@ Purchase Event
                             <tbody>
                             {% for po in purchase_order_paid %}
                             <tr>
+                                <td class="responsive-th mobile-first-tr">
+                                    <b>Name</b>
+                                </td>
                                 <td>{{ po.name }}</td>
+                                <td class="responsive-th">
+                                    <b>Farmer Code</b>
+                                </td>
                                 <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).code }}</td>
+                                <td class="responsive-th">
+                                    <b>Farmer Name</b>
+                                </td>
                                 <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).farmer_name }}</td>
+                                <td class="responsive-th">
+                                    <b>Total</b>
+                                </td>
                                 <td align="right">Rp {{ "{:,.2f}".format(po.amount_total) }}</td>
+                                <td class="responsive-th">
+                                    <b>Status</b>
+                                </td>
                                 <td>{{ po.status }}</td>
+                                <td class="responsive-th">
+                                    <b>Payment Status</b>
+                                </td>
                                 <td>
                                     {% if po.compute_is_paid %}
                                     <p>Paid</p>
@@ -140,14 +163,14 @@ Purchase Event
                                 </td>
                                    <td>
                                     <a href="/cashier/po/detail?po={{ po.id }}"
-                                       class="btn btn-sm btn-success">Open</a>
+                                       class="btn btn-sm btn-success">View</a>
                                 </td>
                             </tr>
                             {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                    <div class="tab-pane fade active show" id="pills-profile" role="tabpanel"
+                    <div class="tab-pane fade active show responsive-table" id="pills-profile" role="tabpanel"
                          aria-labelledby="pills-profile-tab">
                         <table class="table">
                             <thead>
@@ -164,11 +187,29 @@ Purchase Event
                             <tbody>
                             {% for po in purchase_order_not_paid %}
                             <tr>
-                                <td>{{ po.name }}</td>
+                                <td class="responsive-th mobile-first-tr">
+                                    <b>Name</b>
+                                </td>
+                                <td class="mobile-first-tr">{{ po.name }}</td>
+                                <td class="responsive-th">
+                                    <b>Farmer Code</b>
+                                </td>
                                 <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).code }}</td>
+                                <td class="responsive-th">
+                                    <b>Farmer Name</b>
+                                </td>
                                 <td>{{ NfcappFarmerOdoo.query.get(po.farmer_id).farmer_name }}</td>
+                                <td class="responsive-th">
+                                    <b>Total</b>
+                                </td>
                                 <td align="right">Rp {{ "{:,.2f}".format(po.amount_total) }}</td>
+                                <td class="responsive-th">
+                                    <b>Status</b>
+                                </td>
                                 <td>{{ po.status }}</td>
+                                <td class="responsive-th">
+                                    <b>Payment Status</b>
+                                </td>
                                 <td>
                                     {% if po.compute_is_paid %}
                                     <p>Paid</p>
@@ -178,7 +219,7 @@ Purchase Event
                                 </td>
                                 <td>
                                     <a href="/cashier/po/detail?po={{ po.id }}"
-                                       class="btn btn-sm btn-success">Open</a>
+                                       class="btn btn-sm btn-success">View</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -208,6 +249,23 @@ Purchase Event
 
                     // the UI should be cleared here
                     $('.modal').modal('hide');
+                    // let barcodeInput = document.getElementById('barcode-input');
+                    let barcodeValue = decodedText //barcodeInput.value.trim();
+                    if (barcodeValue) {
+                        fetchPurchaseOrder(barcodeValue);
+                    }
+
+                    function fetchPurchaseOrder(poNumber) {
+                        const url = `{{ url_for('routes.cashier.cashier_search_po') }}?po=${poNumber}`;
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                window.location.href = `/cashier/po/detail?po=${data.po}`
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    }
                 }).catch(error => {
                     // Could not stop scanning for reasons specified in `error`.
                     // This conditions should ideally not happen.

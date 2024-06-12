@@ -15,6 +15,7 @@ from app.models.db import db
 from .auth import login_required
 import json
 import logging
+import base64
 
 
 load_dotenv()
@@ -37,12 +38,27 @@ def serialize_model(model_instance):
     """
     Serialize a SQLAlchemy model instance to a dictionary.
     """
+    uniq_id_upload_columns = {
+        "purchase_event": "purchase_event_uniq_id",
+        "purchase_order": "purchase_order_uniq_id",
+        "delivery_order": "delivery_order_uniq_id",
+        "purchase_order_odoo": "purchase_order_odoo_true_id",
+    }
     serialized_data = {}
     for column in model_instance.__table__.columns:
-        value = getattr(model_instance, column.name)
-        if isinstance(value, (datetime, date)):
-            value = value.strftime('%Y-%m-%d %H:%M:%S')
+        if column.name == 'signature':
+            value = getattr(model_instance, column.name)
+            if value is not None:
+                value = base64.b64encode(value).decode('utf-8')  # Convert binary data to base64 string
+        else:
+            value = getattr(model_instance, column.name)
+            if isinstance(value, (datetime, date)):
+                value = value.strftime('%Y-%m-%d %H:%M:%S')
         serialized_data[column.name] = value
+
+    for column_name, uniq_id_name in uniq_id_upload_columns.items():
+        if hasattr(model_instance, column_name) and hasattr(model_instance, uniq_id_name):
+            serialized_data[uniq_id_name] = getattr(model_instance, uniq_id_name)
 
     return serialized_data
 
@@ -64,7 +80,6 @@ async def async_upload_ids(session, nfcpurchase):
     nfcpurchase_ids = model.query.with_entities(model.uniq_id, model.change_id).all()
     nfcpurchase_dict = [{'uniq_id': item[0], 'change_id': item[1]} for item in nfcpurchase_ids]
     data = {"model": nfcpurchase, "token": TOKEN, "nfcpurchase_dict": nfcpurchase_dict}
-
     url = f"{ODOO_BASE_URL}/nfcpurchase/upload/all/get_ids/"
 
     try:
@@ -88,7 +103,6 @@ async def async_upload_all():
                 continue
 
             if "result" not in get_ids_list:
-                print(get_ids_list)
                 continue
 
             result = json.loads(get_ids_list["result"])
@@ -158,7 +172,6 @@ def update_with_update_type():
         url = f"{ODOO_BASE_URL}/nfcpurchase/upload/all/{update_type}/"
         query_data = [serialize_model(query_model)]
         data = {"model": model_name, "token": TOKEN, "data": query_data}
-        print(data)
         headers = {"Content-Type": "application/json"}
         response = requests.post(url, json=data, headers=headers)
         # response = post_data(url, data)

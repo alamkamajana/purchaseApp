@@ -16,7 +16,7 @@ $(document).ready(function() {
             $(this).hide();
         }
     });
-    $('#parent_id').val(first_option).trigger('change');
+    // $('#parent_id').val(first_option).trigger('change');
     
     $('#station_id').on('change', function() {
         var selectedStation = $(this).val();

@@ -10,6 +10,17 @@
 {% block header %}
     <b>Sync Server Data</b>
     <style>
+        .modal-header{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-header button{
+            color: gray;
+            background-color: inherit;
+            border: none;
+        }
+
         .upload-button{
             border: none;
             background-color: white;
@@ -20,6 +31,85 @@
             justify-content: center;
             align-items: flex-end;
         }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            border: 1px solid #000;
+            background-color: rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #007bff;
+        }
+        .progress-text {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #000;
+        }
+        #progress-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+        }
+
+        .loader {
+            width: 8px;
+            height: 40px;
+            border-radius: 4px;
+            display: block;
+            margin: 20px auto;
+            position: relative;
+            background: currentColor;
+            color: #FFF;
+            box-sizing: border-box;
+            animation: animloader 0.3s 0.3s linear infinite alternate;
+        }
+
+        .loader::after, .loader::before {
+            content: '';
+            width: 8px;
+            height: 40px;
+            border-radius: 4px;
+            background: currentColor;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 20px;
+            box-sizing: border-box;
+            animation: animloader 0.3s  0.45s  linear infinite alternate;
+        }
+        .loader::before {
+            left: -20px;
+            animation-delay: 0s;
+        }
+
+        @keyframes animloader {
+            0%   { height: 48px}
+            100% { height: 4px}
+        }
+
+        .container{
+            min-height: 280px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 576px){
+            .card{
+                width:60%
+            }
+        }
+
+
     </style>
 {% endblock %}
 
@@ -41,7 +131,7 @@
             <div class="col-6">
                 <button class="upload-button">
                     <div style="color: blue">
-                        <i class='bx bx-sync bx-lg'></i>
+                        <i class='bx bx-cloud-upload bx-lg'></i>
                     </div>
                     <div>
                         Upload Data
@@ -49,18 +139,150 @@
                 </button>
             </div>
         </div>
-
     </div>
     <div class="container">
-        <div id="progress-bar" class="progress" style="display: none;">
-            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="card">
+            <div class="row">
+                <div class="col-12">
+                    <div><span>Data Info:</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Product Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="product-odoo-count">{{count.product_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span id="">Purchase Order Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="purchase-order-odoo-count">{{count.purchase_order_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Purchase Order Line Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="purchase-order-line-odoo-count">{{count.purchase_order_line_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Farmer Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="farmer-odoo-count">{{count.farmer_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>User Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="user-odoo-count">{{count.user_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Commodity Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="commodity-odoo-count">{{count.commodity_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Commodity Item Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="commodityitem-odoo-count">{{count.commodityitem_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Station Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="station-odoo-count">{{count.station_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Cluster Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="cluster-odoo-count">{{count.cluster_odoo}}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="reset-db" style="display: none; justify-content: end;">
+        <button class="btn btn-danger" onclick="openResetModal()"><i class='bx bx-trash'></i></button>
+    </div>
+    <div class="modal fade" id="resetDbModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title">Reset Database</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                        <span><i class='bx bx-x bx-md'></i></span>
+                    </button>
+
+
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <span>Are you sure you want to reset the database?</span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div>
+                        <button class="btn  btn-secondary" onclick="closeModal()">Cancel</button>
+                        <a href="/server/reset-db" class="btn btn-danger">Reset</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="" id="progress-container">
+        <div class="text-center" id="progress-bar" style="display: none">
+            <h1>Syncing</h1>
+            <div class="progress-bar" style="display: block;">
+                <div class="progress" style="width: 0%;"></div>
+            </div>
+            <div id="in-progress-urls" class="text-start">
+                <h3>In Progress</h3>
+            </div>
+            <div id="completed-urls" class="text-start">
+                <h3>Completed</h3>
+            </div>
+        </div>
+
+        <div id="upload-text" style="display: none;">
+            <span class="loader"></span>
         </div>
     </div>
 
     <script>
         const syncButton = document.querySelector('.sync-button');
         const progressBar = document.getElementById('progress-bar');
-        const progressValue = progressBar.querySelector('.progress-bar');
+        const progressValue = progressBar.querySelector('.progress');
+        const progressContainer = document.querySelector('#progress-container');
+        const inProgressUrlsContainer = document.getElementById('in-progress-urls');
+        const completedUrlsContainer = document.getElementById('completed-urls');
 
         const apiUrls = [
 <!--            '/sync/get-farmer-photo',-->
@@ -77,51 +299,102 @@
         ];
 
         syncButton.addEventListener('click', () => {
+            progressContainer.style.display = 'flex';
             progressBar.style.display = 'block'; // Show progress bar
-            callApiSequence(apiUrls, 0); // Start calling APIs
+            inProgressUrlsContainer.innerHTML = '<h3>In Progress</h3>'; // Clear previous in-progress URLs
+            completedUrlsContainer.innerHTML = '<h3>Completed</h3>'; // Clear previous completed URLs
+            callApisConcurrently(apiUrls); // Start calling APIs concurrently
         });
 
-        async function callApiSequence(urls, index) {
-            if (index >= urls.length) {
-                progressBar.style.display = 'none'; // Hide progress bar
-                alert('Synchronization completed!');
-                return;
-            }
+        async function callApisConcurrently(urls) {
+            let completedRequests = 0;
 
-            const percentage = Math.round((index / urls.length) * 100);
-            console.log(percentage)
-            progressValue.style.width = `${percentage}%`;
-            progressValue.ariaValueNow = percentage;
+            const updateProgress = () => {
+                const percentage = Math.round((completedRequests / urls.length) * 100);
+                progressValue.style.width = `${percentage}%`;
+                progressValue.ariaValueNow = percentage;
+            };
+
+            const showInProgressUrl = (url) => {
+                const urlElement = document.createElement('div');
+                urlElement.textContent = `In Progress: ${url}`;
+                urlElement.id = `url-${url}`;
+                inProgressUrlsContainer.appendChild(urlElement);
+            };
+
+            const showCompletedUrl = (url) => {
+                const urlElement = document.getElementById(`url-${url}`);
+                if (urlElement) {
+                    urlElement.remove();
+                }
+                const completedUrlElement = document.createElement('div');
+                completedUrlElement.textContent = `Completed: ${url}`;
+                completedUrlsContainer.appendChild(completedUrlElement);
+            };
 
             try {
-                const response = await fetch(urls[index]);
-                if (response.status === 200) {
-                    callApiSequence(urls, index + 1); // Call next API
-                } else {
-                    throw new Error(`Error calling ${urls[index]}: ${response.status}`);
-                }
+                const promises = urls.map(url => {
+                    showInProgressUrl(url); // Display the in-progress URL
+                    return fetch(url).then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error calling ${url}: ${response.status}`);
+                        }
+                        completedRequests++;
+                        showCompletedUrl(url); // Move URL to completed
+                        updateProgress();
+                    });
+                });
+
+                await Promise.all(promises);
+
+                progressContainer.style.display = 'none';
+                progressBar.style.display = 'none'; // Hide progress bar
+                alert('Synchronization completed!');
+                location.reload();
             } catch (error) {
+                progressContainer.style.display = 'none';
                 progressBar.style.display = 'none'; // Hide progress bar on error
                 alert(`Synchronization failed: ${error.message}`);
             }
         }
 
 
-        const uploadButton = document.querySelector('.upload-button');
-        var url = '/nfcpurchase/upload/all';
-        uploadButton.addEventListener('click', () => {
-            callUploadApi(url);
+        $(document).ready(function() {
+            const uploadButton = $('.upload-button');
+            var urlUploadAll = '/nfcpurchase/upload/all';
+
+            uploadButton.click(function() {
+                $('#progress-container').css('display', 'flex');
+                $('#upload-text').show();
+
+                $.ajax({
+                    url: urlUploadAll,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response) {
+                            alert('Upload success');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Upload failed');
+                    },
+                    complete: function() {
+                        $('#upload-text').hide();
+                        $('#progress-container').hide();
+                    }
+                });
+            });
         });
-        function callUploadApi(url) {
-            try {
-                var response = fetch(url);
-                if (response) {
-                    console.log(response);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        };
+
+        function openResetModal(){
+            $('#resetDbModal').modal('show');
+        }
+
+        function closeModal(){
+            $('.modal').modal('hide');
+        }
+
     </script>
 
 {% endblock %}

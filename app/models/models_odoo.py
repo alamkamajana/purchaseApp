@@ -148,7 +148,6 @@ class NfcappCommodityOdoo(db.Model):
 
 class NfcappCommodityItemOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_item_odoo'
-
     farmer_id = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String)
@@ -157,7 +156,15 @@ class NfcappCommodityItemOdoo(db.Model):
     commodity_id = db.Column(db.Integer)
     commodity_name = db.Column(db.String)
     variant = db.Column(db.String)
+    commodity_name = db.Column(db.String)
+    variant = db.Column(db.String)
     packing = db.Column(db.String)
+    total_premium = db.Column(db.Integer)
+    cu_number = db.Column(db.String)
+    is_organic = db.Column(db.Boolean)
+    is_ra_cert = db.Column(db.Boolean)
+    color_name = db.Column(db.String)
+    color_hex = db.Column(db.String)
     product_id = db.Column(db.Integer)
     product_id_code = db.Column(db.String)
     product_id_name = db.Column(db.String)
@@ -167,6 +174,8 @@ class NfcappCommodityItemOdoo(db.Model):
     create_date = db.Column(db.DateTime)
     write_date = db.Column(db.DateTime)
     sync_date = db.Column(db.DateTime, default=get_local_time, onupdate=get_local_time)
+
+
 
 class NfcappStationOdoo(db.Model):
     __tablename__ = 'nfcapp_station_odoo'

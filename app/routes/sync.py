@@ -25,9 +25,8 @@ def format_date_obj(date_obj):
     try:
         dateku = datetime.strptime(date_obj, '%Y-%m-%d %H:%M:%S.%f')
     except:
-        dateku=None
+        dateku = None
     return dateku
-
 
 
 @bp.route('/get-product-odoo')
@@ -36,7 +35,6 @@ def sync_get_product_odoo():
     try:
         url = f"{odoo_base_url}/nfcapp-purchase/get-product"
         data = {'token': token, 'odoo_user_id': session['user_odoo_id']}
-
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()
@@ -46,7 +44,7 @@ def sync_get_product_odoo():
             product_json['write_date'] = format_date_obj(product_json['write_date'])
             check_productodoo = ProductOdoo.query.filter_by(odoo_id=product_oid).first()
             if check_productodoo:
-              for key, value in product_json.items():
+                for key, value in product_json.items():
                     setattr(check_productodoo, key, value)
 
             else:
@@ -63,7 +61,7 @@ def sync_get_product_odoo():
     except Exception as e:
         print(e)
         return {"message": str(e), "status": 400}
-    
+
 
 @bp.route('/get-purchase-order-odoo')
 @login_required
@@ -152,7 +150,6 @@ def sync_get_farmer_odoo():
             oid = farmer['odoo_id']
             farmer_json = {k: v for k, v in farmer.items() if not k in ['id', 'commodity_items']}
 
-
             farmer_json['registration_date'] = None
             farmer_json['contract_date'] = None
             farmer_json['date_of_birth'] = None
@@ -166,22 +163,23 @@ def sync_get_farmer_odoo():
             else:
                 new_data = NfcappFarmerOdoo(**farmer_json)
                 db.session.add(new_data)
-                for commodity in farmer['commodity_items']:
-                    oid = commodity['odoo_id']
-                    commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
-                    # print(commodity_json)
 
-                    commodity_json['write_date'] = format_date_obj(commodity_json['write_date'])
+            for commodity in farmer['commodity_items']:
+                oid = commodity['odoo_id']
+                commodity_json = {k: v for k, v in commodity.items() if k != 'id'}
+                # print(commodity_json)
 
-                    check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,
-                                                                          farmer_id=farmer['odoo_id']).first()
-                    if check_data2:
-                        if check_data2.write_date != commodity_json['write_date']:
-                            for key, value in commodity_json.items():
-                                setattr(check_data2, key, value)
-                    else:
-                        new_data2 = NfcappCommodityItemOdoo(**commodity_json)
-                        db.session.add(new_data2)
+                commodity_json['write_date'] = format_date_obj(commodity_json['write_date'])
+
+                check_data2 = NfcappCommodityItemOdoo.query.filter_by(odoo_id=oid,
+                                                                      farmer_id=farmer['odoo_id']).first()
+                if check_data2:
+                    if check_data2.write_date != commodity_json['write_date']:
+                        for key, value in commodity_json.items():
+                            setattr(check_data2, key, value)
+                else:
+                    new_data2 = NfcappCommodityItemOdoo(**commodity_json)
+                    db.session.add(new_data2)
 
         db.session.commit()
 
@@ -208,7 +206,6 @@ def sync_user_odoo():
             oid = user['odoo_id']
 
             user_json = {k: v for k, v in user.items() if k != 'id'}
-
 
             user_json['write_date'] = format_date_obj(user_json['write_date'])
             check_data = ResUserOdoo.query.filter_by(odoo_id=oid).first()
@@ -359,8 +356,6 @@ def sync_cluster_odoo():
             else:
                 new_data = NfcappClusterOdoo(**cluster_json)
                 db.session.add(new_data)
-
-
 
         db.session.commit()
 

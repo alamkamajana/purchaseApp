@@ -45,10 +45,19 @@
                                     {% for product in product_can_purchase %}
                                     <tr>
                                         <td>
+<!--                                            {{product}}-->
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio" name="product"
                                                     id="product-{{ product.product_id }}" value="{{ product.product_id }}"
-                                                    data-price="{{ product.commodityitem_price }}" data-commodity_name="{{ product.commodity_name }}" data-variant="{{ product.variant }}" onchange="updatePrice(this)" required>
+                                                    data-price="{{ product.commodityitem_price }}"
+                                                       data-commodity_name="{{ product.commodity_name }}"
+                                                       data-variant="{{ product.variant }}"
+                                                       data-is_organic="{{ product.is_organic }}"
+                                                       data-is_ra_cert="{{ product.is_ra_cert }}"
+                                                       data-color_hex="{{ product.color_hex }}"
+                                                       data-color_name="{{ product.color_name }}"
+                                                       data-nfcapp_commodity_item_odoo_id="{{ product.commodityitem_id }}"
+                                                       onchange="updatePrice(this)" required>
             
                                                 <label class="form-check-label" for="product-{{ product.product_id }}"
                                                     style="width:80%">
@@ -65,6 +74,11 @@
                         </div>
                          <input type="hidden" class="form-control" id="commodity_name" name="commodity_name" value="" required>
                         <input type="hidden" class="form-control" id="variant" name="variant" value="" required>
+                        <input type="hidden" class="form-control" id="is_organic" name="is_organic" value="" required>
+                        <input type="hidden" class="form-control" id="is_ra_cert" name="is_ra_cert" value="" required>
+                        <input type="hidden" class="form-control" id="color_hex" name="color_hex" value="" required>
+                        <input type="hidden" class="form-control" id="color_name" name="color_name" value="" required>
+                        <input type="hidden" class="form-control" id="nfcapp_commodity_item_odoo_id" name="nfcapp_commodity_item_odoo_id" value="" required>
                         <div class="form-group">
                             <label for="qty">Quantity</label>
                             <input type="number" class="form-control" id="qty" name="qty" value="" step="0.01" required>
@@ -83,7 +97,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-9 col-sm-11">
-                                    <label for="barcode">Barcode</label>
+                                    <label for="barcode">QR Code : <span id="qrcode-color"></span></label>
                                     <input type="text" class="form-control" id="barcode" name="barcode" value="" required>
                                 </div>
                                 <div class="col-3 col-sm-1 d-flex justify-content-right">
@@ -133,9 +147,21 @@
         let price = radio.getAttribute('data-price');
         let commodity_name = radio.getAttribute('data-commodity_name');
         let variant = radio.getAttribute('data-variant');
+        let is_organic = radio.getAttribute('data-is_organic');
+        let is_ra_cert = radio.getAttribute('data-is_ra_cert');
+        let color_hex = radio.getAttribute('data-color_hex');
+        let color_name = radio.getAttribute('data-color_name');
+        let nfcapp_commodity_item_odoo_id = radio.getAttribute('data-nfcapp_commodity_item_odoo_id');
         document.getElementById('price-unit').value = price;
         document.getElementById('commodity_name').value = commodity_name;
         document.getElementById('variant').value = variant;
+        document.getElementById('is_organic').value = is_organic;
+        document.getElementById('is_ra_cert').value = is_ra_cert;
+        document.getElementById('color_hex').value = color_hex;
+        document.getElementById('color_name').value = color_name;
+        document.getElementById('qrcode-color').innerHTML = color_name;
+        document.getElementById('qrcode-color').style.color = color_hex;
+        document.getElementById('nfcapp_commodity_item_odoo_id').value = nfcapp_commodity_item_odoo_id;
         calculateSubtotal();
     }
 

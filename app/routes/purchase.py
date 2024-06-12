@@ -24,19 +24,45 @@ import string
 import socket
 import io
 import base64
+from io import BytesIO
+import qrcode
 
 
 bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 
-def generate_unique_sequence_number(model, column, length=8, prefix=""):
+def generate_unique_sequence_number(model, column, length=4, prefix=""):
     sequence_number = prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     if not model.query.filter(column == sequence_number).first():
         return sequence_number
+
 
 def get_current_ip():
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
     return ip_address
+
+def generate_qr_code(data):
+    # Generate QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Create an image from the QR Code instance
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Save the image to a BytesIO object
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    # Encode the image to base64
+    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return img_str
 
 
 @bp.route('/search_farmers', methods=["POST","GET"])
@@ -94,6 +120,7 @@ def transaction_order():
     transaction_list = pagination
     po_lines = PurchaseOrderLine.query.filter_by(purchase_order_id=po.id).all()
     total_price = 0
+    total_premium = 0
     product_list = ProductOdoo.query.all()
 
     purchase_order_odoo = PurchaseOrderOdoo.query.filter_by(id=event.purchase_order_odoo_id).first().odoo_id
@@ -136,6 +163,10 @@ def transaction_order():
 
     for po_line in po_lines:
         total_price += po_line.subtotal
+        po_line_premium = po_line.nfcapp_commodity_item_odoo.total_premium/100 if po_line.nfcapp_commodity_item_odoo.total_premium else 0
+        total_premium += po_line.subtotal * po_line_premium
+
+
 
     po_status = po.status if po else None
     # print(po_line_product_arr)
@@ -148,16 +179,20 @@ def transaction_order():
     for order in po_order_line:
         grand_total=grand_total+(order.price_unit*order.product_qty)
 
+
     commodity_items = NfcappCommodityItemOdoo.query.filter(
             NfcappCommodityItemOdoo.farmer_id == farmer.odoo_id,
             NfcappCommodityItemOdoo.product_id.isnot(None)
     ).all()
 
+    data_po = po.name
+    qr_code_po = generate_qr_code(data_po)
+
     return render_template('purchase/transaction.html', po=po, event=event, farmer=farmer,farmer_odoo=farmer_odoo,
                            product_list=product_can_purchase_arr, transaction_list=transaction_list, total_price=total_price,
-                           ProductOdoo=ProductOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
+                           ProductOdoo=ProductOdoo, NfcappCommodityItemOdoo=NfcappCommodityItemOdoo, po_status = po_status, commodity_item_product_arr=commodity_item_product_arr,
                            po_line_product_arr=po_line_product_arr, commodity_items=commodity_items,
-                           po_order_line=po_order_line, grand_total=grand_total )
+                           po_order_line=po_order_line, grand_total=grand_total, total_premium=total_premium, qr_code_po=qr_code_po )
 
 @bp.route('/payment-note', methods=["GET"])
 def purchase_payment_note():
@@ -169,13 +204,14 @@ def purchase_payment_note():
 
 @bp.route('/order/add', methods=["POST","GET"])
 def transaction_order_add():
-    if request.method.lower() == 'post' :
-        purchase_event = request.form['pe']
-        farmer = request.form['farmer']
-    else :
-        purchase_event = request.args.get('pe')
-        farmer = request.args.get('farmer')
-    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix="ORDER-")
+    # if request.method.lower() == 'post' :
+    #     purchase_event = request.form['pe']
+    #     farmer = request.form['farmer']
+    # else :
+    purchase_event = request.args.get('pe')
+    farmer = request.args.get('farmer')
+    pe = PurchaseEvent.query.get(int(purchase_event))
+    po_name = generate_unique_sequence_number(PurchaseOrder, PurchaseOrder.name, prefix=f"{pe.name}-")
     new_po = PurchaseOrder(name=po_name,purchase_event_id=int(purchase_event), farmer_id=int(farmer), status='draft')
     db.session.add(new_po)
     db.session.commit()
@@ -238,6 +274,8 @@ def transaction_list():
             price_data_json['po_id'] = purchase.id
             price_data_json['total'] = total_price
             price_list.append(price_data_json)
+
+
         return render_template('purchase/purchase.html', purchase_event=event_obj, purchase_lists=purchase_lists, Farmer=NfcappFarmerOdoo, price_list=price_list, po_order_line=po_order_line, grand_total=grand_total)
 
     except Exception as e :
@@ -253,6 +291,11 @@ def transaction_add():
     price_unit = request.form['price-unit']
     commodity_name = request.form['commodity_name']
     variant = request.form['variant']
+    is_organic = request.form['is_organic']
+    is_ra_cert = request.form['is_ra_cert']
+    color_hex = request.form['color_hex']
+    color_name = request.form['color_name']
+    nfcapp_commodity_item_odoo_id = request.form['nfcapp_commodity_item_odoo_id']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -265,6 +308,11 @@ def transaction_add():
         unit_price = price_unit,
         commodity_name=commodity_name,
         variant=variant,
+        is_organic = bool(is_organic),
+        is_ra_cert = bool(is_ra_cert),
+        color_name = color_name,
+        color_hex = color_hex,
+        nfcapp_commodity_item_odoo_id=nfcapp_commodity_item_odoo_id,
         qty = qty,
         barcode = barcode,
         note=note,
@@ -301,7 +349,7 @@ def transaction_create():
 
     commodity_item_product_arr = []
     for item in item_odoo_arr:
-        commodityitem = NfcappCommodityItemOdoo.query.filter_by(odoo_id=int(item)).first()
+        commodityitem = NfcappCommodityItemOdoo.query.filter_by(farmer_id=farmer.odoo_id,odoo_id=int(item)).first()
         if commodityitem.product_id:
             commodityitem_json = {}
             commodityitem_json['commodityitem_id'] = commodityitem.id
@@ -314,6 +362,10 @@ def transaction_create():
             commodityitem_json['commodity_name'] = commodityitem.commodity_name
             commodityitem_json['variant'] = commodityitem.variant
             commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodityitem_json['is_organic'] = commodityitem.is_organic
+            commodityitem_json['is_ra_cert'] = commodityitem.is_ra_cert
+            commodityitem_json['color_hex'] = commodityitem.color_hex
+            commodityitem_json['color_name'] = commodityitem.color_name
             commodity_item_product_arr.append(commodityitem_json)
 
     product_can_purchase_arr = []
@@ -353,6 +405,11 @@ def transaction_update():
     price_unit = request.form['price-unit']
     commodity_name = request.form['commodity_name']
     variant = request.form['variant']
+    is_organic = request.form['is_organic']
+    is_ra_cert = request.form['is_ra_cert']
+    color_hex = request.form['color_hex']
+    color_name = request.form['color_name']
+    nfcapp_commodity_item_odoo_id = request.form['nfcapp_commodity_item_odoo_id']
     qty = request.form['qty']
     barcode = request.form['barcode']
     note = request.form['note']
@@ -367,6 +424,12 @@ def transaction_update():
         transaction.unit_price = price_unit
         transaction.commodity_name = commodity_name
         transaction.variant = variant
+        transaction.is_organic = bool(is_organic)
+        transaction.is_ra_cert = bool(is_ra_cert)
+        transaction.color_name = color_name
+        transaction.color_hex = color_hex
+        transaction.nfcapp_commodity_item_odoo_id = nfcapp_commodity_item_odoo_id
+
         transaction.qty = qty
         transaction.product_odoo_id = product_odoo.id
         transaction.barcode = barcode
@@ -417,6 +480,10 @@ def transaction_detail():
             commodityitem_json['certStatus'] = commodityitem.certStatus
             commodityitem_json['commodity_name'] = commodityitem.commodity_name
             commodityitem_json['variant'] = commodityitem.variant
+            commodityitem_json['is_organic'] = commodityitem.is_organic
+            commodityitem_json['is_ra_cert'] = commodityitem.is_ra_cert
+            commodityitem_json['color_hex'] = commodityitem.color_hex
+            commodityitem_json['color_name'] = commodityitem.color_name
             commodity_item_product_arr.append(commodityitem_json)
 
     product_can_purchase_arr = []
@@ -436,6 +503,15 @@ def transaction_confirm():
     db.session.commit()
     return redirect(request.referrer)
 
+@bp.route('/transaction/reset-to-draft', methods=["POST","GET"])
+def transaction_reset():
+    purchase_order = request.args.get('purchase_order')
+    po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
+    po.status = 'draft'
+    po.date = datetime.today()
+    db.session.commit()
+    return redirect(request.referrer)
+
 @bp.route('/transaction/confirm2', methods=["POST","GET"])
 def transaction_confirm2():
     purchase_order = request.args.get('purchase_order')
@@ -451,11 +527,9 @@ def transaction_items():
     po = PurchaseOrder.query.filter_by(id=int(purchase_order)).first()
     data_arr = []
     for line in po.purchase_order_lines :
-        product_name = ProductOdoo.query.get(line.product_odoo_id)
-        commodity_item = NfcappCommodityItemOdoo.query.filter_by(product_id=product_name.odoo_id).first()
         data_json = {}
-        data_json['product_code'] = commodity_item.code
-        data_json['product_name'] = commodity_item.desc
+        data_json['product_code'] = line.commodity_name
+        data_json['product_name'] = line.variant
         data_json['price'] = line.unit_price
         data_json['quantity'] = line.qty
         data_json['subtotal'] = line.subtotal
