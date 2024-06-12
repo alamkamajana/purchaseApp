@@ -10,6 +10,17 @@
 {% block header %}
     <b>Sync Server Data</b>
     <style>
+        .modal-header{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-header button{
+            color: gray;
+            background-color: inherit;
+            border: none;
+        }
+
         .upload-button{
             border: none;
             background-color: white;
@@ -86,6 +97,19 @@
             0%   { height: 48px}
             100% { height: 4px}
         }
+
+        .container{
+            min-height: 280px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 576px){
+            .card{
+                width:60%
+            }
+        }
+
+
     </style>
 {% endblock %}
 
@@ -114,6 +138,122 @@
                     </div>
                 </button>
             </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="card">
+            <div class="row">
+                <div class="col-12">
+                    <div><span>Data Info:</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Product Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="product-odoo-count">{{count.product_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span id="">Purchase Order Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="purchase-order-odoo-count">{{count.purchase_order_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Purchase Order Line Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="purchase-order-line-odoo-count">{{count.purchase_order_line_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Farmer Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="farmer-odoo-count">{{count.farmer_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>User Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="user-odoo-count">{{count.user_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Commodity Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="commodity-odoo-count">{{count.commodity_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Commodity Item Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="commodityitem-odoo-count">{{count.commodityitem_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Station Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="station-odoo-count">{{count.station_odoo}}</span></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-9 col-sm-6">
+                    <div><span>Cluster Odoo Count</span></div>
+                </div>
+                <div class="col-3">
+                    <div>: <span id="cluster-odoo-count">{{count.cluster_odoo}}</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="reset-db" style="display: none; justify-content: end;">
+        <button class="btn btn-danger" onclick="openResetModal()"><i class='bx bx-trash'></i></button>
+    </div>
+    <div class="modal fade" id="resetDbModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title">Reset Database</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                        <span><i class='bx bx-x bx-md'></i></span>
+                    </button>
+
+
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <span>Are you sure you want to reset the database?</span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div>
+                        <button class="btn  btn-secondary" onclick="closeModal()">Cancel</button>
+                        <a href="/server/reset-db" class="btn btn-danger">Reset</a>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -155,6 +295,7 @@
             '/sync/get-commodityitem-odoo',
             '/sync/get-station-odoo',
             '/sync/get-cluster-odoo',
+
         ];
 
         syncButton.addEventListener('click', () => {
@@ -209,6 +350,7 @@
                 progressContainer.style.display = 'none';
                 progressBar.style.display = 'none'; // Hide progress bar
                 alert('Synchronization completed!');
+                location.reload();
             } catch (error) {
                 progressContainer.style.display = 'none';
                 progressBar.style.display = 'none'; // Hide progress bar on error
@@ -244,6 +386,14 @@
                 });
             });
         });
+
+        function openResetModal(){
+            $('#resetDbModal').modal('show');
+        }
+
+        function closeModal(){
+            $('.modal').modal('hide');
+        }
 
     </script>
 
