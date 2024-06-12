@@ -11,6 +11,7 @@ import ssl
 import requests
 from app.models.models import User
 from app.models.models import PurchaseEvent, PurchaseOrder, PurchaseOrderLine, Payment, DeliveryOrder, Money
+from app.models.models_odoo import NfcappFarmerOdoo, ProductOdoo
 from app.models.db import db
 from .auth import login_required
 import json
@@ -43,6 +44,8 @@ def serialize_model(model_instance):
         "purchase_order": "purchase_order_uniq_id",
         "delivery_order": "delivery_order_uniq_id",
         "purchase_order_odoo": "purchase_order_odoo_true_id",
+        "farmer_id": "farmer_odoo_true_id",
+        "product_odoo_id": "product_odoo_true_id",
     }
     serialized_data = {}
     for column in model_instance.__table__.columns:
@@ -57,8 +60,19 @@ def serialize_model(model_instance):
         serialized_data[column.name] = value
 
     for column_name, uniq_id_name in uniq_id_upload_columns.items():
-        if hasattr(model_instance, column_name) and hasattr(model_instance, uniq_id_name):
-            serialized_data[uniq_id_name] = getattr(model_instance, uniq_id_name)
+        if hasattr(model_instance, column_name):
+            if column_name == "farmer_id":
+                farmer_id = getattr(model_instance, "farmer_id")
+                if farmer_id:
+                    farmer = NfcappFarmerOdoo.query.get(farmer_id)
+                    serialized_data["farmer_odoo_true_id"] = farmer.odoo_id
+            elif column_name == "product_odoo_id":
+                product_odoo_id = getattr(model_instance, "product_odoo_id")
+                if product_odoo_id:
+                    product_odoo = ProductOdoo.query.get(product_odoo_id)
+                    serialized_data["product_odoo_true_id"] = product_odoo.odoo_id
+            elif hasattr(model_instance, uniq_id_name):
+                serialized_data[uniq_id_name] = getattr(model_instance, uniq_id_name)
 
     return serialized_data
 
