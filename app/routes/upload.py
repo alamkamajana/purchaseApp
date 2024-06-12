@@ -38,6 +38,12 @@ def serialize_model(model_instance):
     """
     Serialize a SQLAlchemy model instance to a dictionary.
     """
+    uniq_id_upload_columns = {
+        "purchase_event": "purchase_event_uniq_id",
+        "purchase_order": "purchase_order_uniq_id",
+        "delivery_order": "delivery_order_uniq_id",
+        "purchase_order_odoo": "purchase_order_odoo_true_id",
+    }
     serialized_data = {}
     for column in model_instance.__table__.columns:
         if column.name == 'signature':
@@ -49,6 +55,11 @@ def serialize_model(model_instance):
             if isinstance(value, (datetime, date)):
                 value = value.strftime('%Y-%m-%d %H:%M:%S')
         serialized_data[column.name] = value
+
+    for column_name, uniq_id_name in uniq_id_upload_columns.items():
+        if hasattr(model_instance, column_name) and hasattr(model_instance, uniq_id_name):
+            serialized_data[uniq_id_name] = getattr(model_instance, uniq_id_name)
+
     return serialized_data
 
 
