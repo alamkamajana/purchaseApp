@@ -332,3 +332,7 @@ textarea:focus,
       vertical-align: middle;
       height: 60px;
   }
+
+    .l-navbar a{
+        text-decoration: none;
+    }
