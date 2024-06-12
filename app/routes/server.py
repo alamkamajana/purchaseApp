@@ -124,7 +124,7 @@ def reset_db():
     db.session.query(NfcappClusterOdoo).delete()
     db.session.commit()
 
-    return redirect(url_for('routes.server.master_data_backup'))
+    return redirect(url_for('routes.server.sync_menu'))
 
 
 @bp.route('/master/farmer', methods=["GET"])
