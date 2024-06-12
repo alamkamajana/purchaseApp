@@ -39,7 +39,6 @@ def sync_get_product_odoo():
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()
-        print(response_json)
         for product in response_json:
             product_oid = product['odoo_id']
             product_json = {k: v for k, v in product.items() if k != 'id'}
