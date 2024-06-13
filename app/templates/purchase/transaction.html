@@ -652,8 +652,10 @@ Nama : ${nama_petani}
 Certification : ${certification_status}
 `
                 let DATA3 = table
-                let DATA4 = `\n Total : Rp ${formattedTotalAmount} \n`
-                let DATA5 = `\n Premium ${percentage_premium}% : Rp ${formattedTotalPremium} \n`
+                let DATA4 = `
+Total : Rp ${formattedTotalAmount}
+Premium ${percentage_premium}% : Rp ${formattedTotalPremium}
+`
                 let DATA6 = `
 *Note : harga diatas
 sudah termasuk tambahan
@@ -672,7 +674,7 @@ diluar premium anggota
                     return service.getCharacteristic(WRITE);
                 }).then(characteristic => {
                     // Combine your data into a single string
-                    let allData = DATA + DATA2 + DATA3 + DATA4 + DATA5
+                    let allData = DATA + DATA2 + DATA3 + DATA4
                     if (note_check) {
                         allData += data_note
                     }
