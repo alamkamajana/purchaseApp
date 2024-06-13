@@ -65,6 +65,18 @@ def generate_qr_code(data):
     return img_str
 
 
+def str_to_bool(value):
+    if isinstance(value, str):
+        if value.lower() in ('true', '1'):
+            return True
+        elif value.lower() in ('false', 'none', '0'):
+            return False
+        else:
+            raise ValueError("Invalid boolean string")
+    else:
+        raise TypeError("Input must be a string")
+
+
 @bp.route('/search_farmers', methods=["POST","GET"])
 def transaction_search_farmer():
     search_term = request.args.get('q')
@@ -150,6 +162,7 @@ def transaction_order():
             commodityitem_json['product_name'] = commodityitem.product_name
             commodityitem_json['commodity_id'] = commodityitem.commodity_id
             commodityitem_json['certStatus'] = commodityitem.certStatus
+            commodityitem_json['is_organic'] = commodityitem.is_organic
             commodity_item_product_arr.append(commodityitem_json)
 
 
@@ -301,15 +314,13 @@ def transaction_add():
     note = request.form['note']
     subtotal = request.form['subtotal']
     product_odoo = ProductOdoo.query.filter_by(odoo_id=int(product)).first()
-
-
     new_transaction = PurchaseOrderLine(
         purchase_order_id=purchase_order_id,
         unit_price = price_unit,
         commodity_name=commodity_name,
         variant=variant,
-        is_organic = bool(is_organic),
-        is_ra_cert = bool(is_ra_cert),
+        is_organic = str_to_bool(is_organic) ,
+        is_ra_cert=str_to_bool(is_ra_cert),
         color_name = color_name,
         color_hex = color_hex,
         nfcapp_commodity_item_odoo_id=nfcapp_commodity_item_odoo_id,
