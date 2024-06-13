@@ -435,8 +435,8 @@ def transaction_update():
         transaction.unit_price = price_unit
         transaction.commodity_name = commodity_name
         transaction.variant = variant
-        transaction.is_organic = bool(is_organic)
-        transaction.is_ra_cert = bool(is_ra_cert)
+        transaction.is_organic = str_to_bool(is_organic)
+        transaction.is_ra_cert = str_to_bool(is_ra_cert)
         transaction.color_name = color_name
         transaction.color_hex = color_hex
         transaction.nfcapp_commodity_item_odoo_id = nfcapp_commodity_item_odoo_id
