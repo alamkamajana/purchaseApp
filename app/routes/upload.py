@@ -74,12 +74,6 @@ def serialize_model(model_instance):
             elif hasattr(model_instance, uniq_id_name):
                 serialized_data[uniq_id_name] = getattr(model_instance, uniq_id_name)
 
-    if model_instance.__tablename__ == "delivery_order":
-        purchase_event_id = getattr(model_instance, "purchase_event_id")
-        if purchase_event_id:
-            purchase_event = PurchaseEvent.query.get(purchase_event_id)
-            serialized_data["purchase_event_uniq_id"] = purchase_event.uniq_id
-
     return serialized_data
 
 
