@@ -312,23 +312,40 @@ Cashier Order
                     {% endfor %}
 
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td class="responsive-th">
+                            <b>Total : </b>
+                        </td>
+                        <td class="responsive-th">
+                            <b>Rp {{ "{:,.2f}".format(ns.fund) }} </b>
+                        </td>
+                        <th>Total : </th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <th style="text-align: right;">Rp {{ "{:,.2f}".format(ns.fund) }}</th>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
 
                 </table>
             </div>
         </div>
 
         <div class="row mt-4">
-            <div class="col-3">
+            <div class="col-6">
                 {% if purchase_order.compute_is_paid != True %}
                 <button type="button" class="btn btn-success" id="addMoneyButton">Pay</button>
                 {% endif %}
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal">
-                    + Cash In
+                    <i class='bx bxs-left-arrow-alt'></i> Take Money
                 </button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal2">
-                    - Cash Out
+                    <i class='bx bxs-right-arrow-alt'></i> Give Money
                 </button>
             </div>
         </div>
