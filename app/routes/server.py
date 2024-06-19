@@ -28,6 +28,7 @@ import qrcode
 from barcode.writer import ImageWriter
 from io import BytesIO
 import base64
+from werkzeug.utils import secure_filename
 
 
 load_dotenv()

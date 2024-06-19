@@ -145,8 +145,8 @@ function sendTextData(product) {
     + '\nNomor CU\t: '+ product.cu_number
     + '\nNomor PO\t: '+ poName
     + '\nKode Petani\t: '+ poPartner
-    + '\nJumlah Box\t: '+ product.amount
-    + '\nBerat Barang: '+ product.qty
+    + '\nJumlah Karung\t: '+ product.amount
+    + '\nBerat Barang: '+ product.qty + +' Kg'
     + '\n--------------------------------\n'
     ;    
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))
@@ -232,8 +232,8 @@ function getTextData(product) {
     + '\nNomor CU\t: '+ product.cu_number
     + '\nNomor PO\t: '+ poName
     + '\nKode Petani\t: '+ poPartner
-    + '\nJumlah Box\t: '+ product.amount
-    + '\nBerat Barang: '+ product.qty
+    + '\nJumlah Karung\t: '+ product.amount
+    + '\nBerat Barang: '+ product.qty +' Kg'
     + '\n--------------------------------\n'
     ;
     return printCharacteristic.writeValue(new TextEncoder("utf-8").encode(text))

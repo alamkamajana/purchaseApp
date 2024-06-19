@@ -19,25 +19,33 @@ Cashier Order
         color: black;
     }
 
+    .l-navbar .active{
+        color: white;
+    }
+
     .payment_label{
         font-size: 12px;
     }
 </style>
-<span id="selected-menu" style="display: none;">purchase_event</span>
+<span id="selected-menu" style="display: none;">purchase_order</span>
 
 
-     <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a></li>
-                    <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
-                <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{odoo_purchase_order.id}}" style="color: #e27f34;"> Odoo PO ({{odoo_purchase_order.name}},{{odoo_purchase_order.partner_ref}})</a></li>
-                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
-                     <li class="breadcrumb-item"><a href="/cashier/index?pe={{purchase_event.id}}" style="color: #e27f34;"> Purchase Event {{purchase_event.name}}</a></li>
-                <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/server/master/purchase-order" style="color: #e27f34;"> Odoo PO List</a>
+        </li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item"><a href="/server/purchase-event/?po={{odoo_purchase_order.id}}"
+                                       style="color: #e27f34;"> Odoo PO
+            ({{odoo_purchase_order.name}},{{odoo_purchase_order.partner_ref}})</a></li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
+        <li class="breadcrumb-item"><a href="/cashier/index?pe={{purchase_event.id}}" style="color: #e27f34;"> Purchase
+            Event {{purchase_event.name}}</a></li>
+        <span style="color: #e27f34;">&nbsp; / &nbsp;</span>
 
-                <li class="breadcrumb-item active" aria-current="page" ><p>Purchase {{purchase_order.name}}</p></li>
-            </ol>
-        </nav>
+        <li class="breadcrumb-item active" aria-current="page"><p>Purchase {{purchase_order.name}}</p></li>
+    </ol>
+</nav>
 
 
 <div class="card">
@@ -60,262 +68,369 @@ Cashier Order
         </div>
         <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                     <div class="purchase-data row " style="padding:15px">
+                <div class="purchase-data row " style="padding:15px">
 
-                           <div class="status" style="text-align: right;">
+                    <div class="status" style="text-align: right;">
                         <div style="">
-                             <b><u> STATUS :     {% if purchase_order.compute_is_paid %}
-                                    <span>PAID</span>
-                                    {% else %}
-                                    <span>{{purchase_order.status.upper()}}</span>
-                                    {% endif %}
+                            <b><u> STATUS : {% if purchase_order.compute_is_paid %}
+                                <span>PAID</span>
+                                {% else %}
+                                <span>{{purchase_order.status.upper()}}</span>
+                                {% endif %}
 
-                             </u></b>
+                            </u></b>
                         </div>
                     </div>
-                            <div class="farmer-photo">
-                                <img width="200px" height="200px"
-                                    src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
-                                    alt="Farmer Photo" />
-                            </div>
-                            <table id="farmer-detail" class="data-table">
-                                <tbody>
-                                     <tr>
-                                <th style="width: 50%;">Date</th>
-                                <td>{{ purchase_order.date }}</td>
-                            </tr>
-                                    <tr>
-                                        <th style="">Farmer Code</th>
-                                        <td>{{ farmer.code }}</td>
-                                    </tr>  <tr>
-                                        <th style="">Farmer</th>
-                                        <td>{{ farmer.farmer_name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Purchase Event</th>
-                                        <td>{{ purchase_event.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Odoo PO#</th>
-                                        <td>{{ odoo_purchase_order.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Order</th>
-                                        <td>{{ purchase_order.name }}</td>
-                                    </tr>
-                                    <tr>
+                    <div class="farmer-photo">
+                        <img width="200px" height="200px"
+                             src="{{ url_for('static', filename='image/' ~ farmer.odoo_id ~ '.png') }}"
+                             alt="Farmer Photo"/>
+                    </div>
+                    <table id="farmer-detail" class="data-table">
+                        <tbody>
+                        <tr>
+                            <th style="width: 50%;">Date</th>
+                            <td>{{ purchase_order.date }}</td>
+                        </tr>
+                        <tr>
+                            <th style="">Farmer Code</th>
+                            <td>{{ farmer.code }}</td>
+                        </tr>
+                        <tr>
+                            <th style="">Farmer</th>
+                            <td>{{ farmer.farmer_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Purchase Event</th>
+                            <td>{{ purchase_event.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Odoo PO#</th>
+                            <td>{{ odoo_purchase_order.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Order</th>
+                            <td>{{ purchase_order.name }}</td>
+                        </tr>
+                        <tr>
 
-                                    <tr>
-                                        <th>Certification Status</th>
-                                        <td>{{ farmer.certification_status_name }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <tr>
+                            <th>Certification Status</th>
+                            <td>{{ farmer.certification_status_name }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                       <div class="event-container responsive-table">
+                <div class="event-container responsive-table">
 
-                            <table class="table event-table" style="width: 100%; margin-top: 32px;">
-                                <tr>
-                                    <th style="width: 5%;">
-                                        No
-                                    </th>
-                                    <th style="width: 12%;">
-                                        Product
-                                    </th>
+                    <table class="table event-table" style="width: 100%; margin-top: 32px;">
+                        <tr>
+                            <th style="width: 5%;">
+                                No
+                            </th>
+                            <th style="width: 12%;">
+                                Product
+                            </th>
 
-                                    <th class="text-right" style="width: 12%;">
-                                        Price Unit
-                                    </th>
-                                    <th class="text-right" style="width: 8%;">
-                                        Qty
-                                    </th>
-                                    <th class="text-right" style="width: 16%;">
-                                        Subtotal
-                                    </th>
-                                    <th style="width: 16%;">
-                                        QR Code
-                                    </th>
-                                    <th style="width: 16%;">
-                                        Note
-                                    </th>
+                            <th class="text-right" style="width: 12%;">
+                                Price Unit
+                            </th>
+                            <th class="text-right" style="width: 8%;">
+                                Qty
+                            </th>
+                            <th class="text-right" style="width: 16%;">
+                                Subtotal
+                            </th>
+                            <th style="width: 16%;">
+                                QR Code
+                            </th>
+                            <th style="width: 16%;">
+                                Note
+                            </th>
 
-                                </tr>
+                        </tr>
 
-                                {% for transaction in order_line %}
+                        {% for transaction in order_line %}
 
-                                <tr class="event-row">
-                                    <td class="mobile-hidden">
-                                        {{ loop.index }}
-                                    </td>
-                                    <td class="responsive-th mobile-first-tr">
-                                        <b>Product</b>
-                                    </td>
-                                    <td class="text-wrap mobile-first-tr">
-                                        <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
-                                            {{ transaction.product_odoo_id.id }}
-                                        </div>
-                                        {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
-                                        {# {{transaction.product_odoo_id}}#}
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Price Unit</b>
-                                    </td>
-                                    <td class="text-right">
-                                        <div class="transaction-info{{ transaction.id }} text-right"
-                                            id="price-info{{ transaction.id }}">
-                                            Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
-                                        </div>
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Qty</b>
-                                    </td>
-                                    <td class="text-right">
-                                        <div class="transaction-info{{ transaction.id }} text-right"
-                                            id="qty-info{{ transaction.id }}">
-                                            {{ '{:,.0f}'.format(transaction.qty) }}
-                                        </div>
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Subtotal</b>
-                                    </td>
-                                    <td class="text-right">
-                                        <div id="subtotal-info{{ transaction.id }} text-right">
+                        <tr class="event-row">
+                            <td class="mobile-hidden">
+                                {{ loop.index }}
+                            </td>
+                            <td class="responsive-th mobile-first-tr">
+                                <b>Product</b>
+                            </td>
+                            <td class="text-wrap mobile-first-tr">
+                                <div class="update-form" id="product-id-{{ transaction.id }}" hidden>
+                                    {{ transaction.product_odoo_id.id }}
+                                </div>
+                                {{ ProductOdoo.query.filter_by(id=transaction.product_odoo_id).first().name }}
+                                {# {{transaction.product_odoo_id}}#}
+                            </td>
+                            <td class="responsive-th">
+                                <b>Price Unit</b>
+                            </td>
+                            <td class="text-right">
+                                <div class="transaction-info{{ transaction.id }} text-right"
+                                     id="price-info{{ transaction.id }}">
+                                    Rp {{ '{:,.2f}'.format(transaction.unit_price) }}
+                                </div>
+                            </td>
+                            <td class="responsive-th">
+                                <b>Qty</b>
+                            </td>
+                            <td class="text-right">
+                                <div class="transaction-info{{ transaction.id }} text-right"
+                                     id="qty-info{{ transaction.id }}">
+                                    {{ '{:,.0f}'.format(transaction.qty) }}
+                                </div>
+                            </td>
+                            <td class="responsive-th">
+                                <b>Subtotal</b>
+                            </td>
+                            <td class="text-right">
+                                <div id="subtotal-info{{ transaction.id }} text-right">
 
-                                            Rp {{ '{:,.2f}'.format(transaction.subtotal) }}
+                                    Rp {{ '{:,.2f}'.format(transaction.subtotal) }}
 
-                                        </div>
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>QR Code</b>
-                                    </td>
-                                    <td>
-                                        <div id="subtotal-info{{ transaction.id }}">
+                                </div>
+                            </td>
+                            <td class="responsive-th">
+                                <b>QR Code</b>
+                            </td>
+                            <td>
+                                <div id="subtotal-info{{ transaction.id }}">
 
-                                            {{ transaction.barcode }}
+                                    {{ transaction.barcode }}
 
-                                        </div>
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Note</b>
-                                    </td>
-                                      <td>
-                                        <div id="subtotal-info{{ transaction.id }}">
+                                </div>
+                            </td>
+                            <td class="responsive-th">
+                                <b>Note</b>
+                            </td>
+                            <td>
+                                <div id="subtotal-info{{ transaction.id }}">
 
-                                            {{ transaction.note }}
+                                    {{ transaction.note }}
 
-                                        </div>
-                                    </td>
-                                    <td style="display: none;">
-                                    </td>
-                                </tr>
+                                </div>
+                            </td>
+                            <td style="display: none;">
+                            </td>
+                        </tr>
 
-                                {% endfor %}
+                        {% endfor %}
 
 
-                                <tr>
-                                    <td colspan="4" class="grand-total-title">
-                                        <b>Grand Total</b>
-                                    </td>
-                                    <td>
-                                        <div id="total-price" class="text-right">
-                                            Rp {{ '{:,.2f}'.format(purchase_order.amount_total) }}
-                                        </div>
-                                    </td>
-                                    <td style="display: none;">
-                                    </td>
-                                </tr>
-                            </table>
+                        <tr>
+                            <td colspan="4" class="grand-total-title">
+                                <b>Grand Total</b>
+                            </td>
+                            <td>
+                                <div id="total-price" class="text-right">
+                                    Rp {{ '{:,.2f}'.format(purchase_order.amount_total) }}
+                                </div>
+                            </td>
+                            <td style="display: none;">
+                            </td>
+                        </tr>
+                    </table>
 
-                        </div>
+                </div>
 
 
             </div>
 
-            <div class="tab-pane fade responsive-table" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+            <div class="tab-pane fade responsive-table" id="nav-contact" role="tabpanel"
+                 aria-labelledby="nav-contact-tab">
                 <table class="table">
                     <thead>
                     <tr>
-                          <th>No</th>
-                                <th>Name</th>
-                                <th>Kind</th>
-                                <th>Source</th>
-                                <th style="text-align: right;">Amount</th>
-                                <th>Type</th>
-                                <th>Note</th>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Kind</th>
+                        <th>Source</th>
+                        <th style="text-align: right;">Amount</th>
+                        <th>Type</th>
+                        <th>Note</th>
 
                     </tr>
                     </thead>
                     <tbody>
-                          {% set ns = namespace(fund=0) %}
-                                {% set number = namespace(number=0) %}
-                                {% for payment in money_data %}
+                    {% set ns = namespace(fund=0) %}
+                    {% set number = namespace(number=0) %}
+                    {% for payment in money_data %}
 
                     <tr>
-                         {% set number.number = number.number + 1 %}
-                                    {% set ns.fund = ns.fund + payment.amount %}
-                                    <td class="mobile-hidden">
-                                        {{number.number}}
-                                    </td>
-                                    <td class="responsive-th mobile-first-tr">
-                                        <b>Name</b>
-                                    </td>
-                                    <td class="mobile-first-tr">
-                                        {{payment.number}}
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Kind</b>
-                                    </td>
+                        {% set number.number = number.number + 1 %}
+                        {% set ns.fund = ns.fund + payment.amount %}
+                        <td class="mobile-hidden">
+                            {{number.number}}
+                        </td>
+                        <td class="responsive-th mobile-first-tr">
+                            <b>Name</b>
+                        </td>
+                        <td class="mobile-first-tr">
+                            {{payment.number}}
+                        </td>
+                        <td class="responsive-th">
+                            <b>Kind</b>
+                        </td>
 
-                                    <td>
-                                        {% if payment.purchase_order_id %}
-                                        Purchase
-                                        {% else %}
-                                        Cash
-                                        {% endif %}
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Source</b>
-                                    </td>
+                        <td>
+                            {% if payment.purchase_order_id %}
+                            Purchase
+                            {% else %}
+                            Cash
+                            {% endif %}
+                        </td>
+                        <td class="responsive-th">
+                            <b>Source</b>
+                        </td>
 
-                                    <td>
-                                        {% if payment.purchase_order_id %}
-                                        {{ PurchaseOrder.query.get(payment.purchase_order_id).name }}
-                                        {% else %}
-                                        {{ purchase_event.name }}
-                                        {% endif %}
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Amount</b>
-                                    </td>
-                                    <td style="text-align: right;" class="" data-value="{{ payment.amount }}">Rp {{
-                                        "{:,.2f}".format(payment.amount) }}
-                                    </td>
-                                    <td class="responsive-th">
-                                        <b>Type</b>
-                                    </td>
-                                    <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
-                                    <td class="responsive-th">
-                                        <b>Note</b>
-                                    </td>
-                                    <td>{{ payment.note }}</td>
-                                    <td style="display: none;">
-                                    </td>
+                        <td>
+                            {% if payment.purchase_order_id %}
+                            {{ PurchaseOrder.query.get(payment.purchase_order_id).name }}
+                            {% else %}
+                            {{ purchase_event.name }}
+                            {% endif %}
+                        </td>
+                        <td class="responsive-th">
+                            <b>Amount</b>
+                        </td>
+                        <td style="text-align: right;" class="" data-value="{{ payment.amount }}">Rp {{
+                            "{:,.2f}".format(payment.amount) }}
+                        </td>
+                        <td class="responsive-th">
+                            <b>Type</b>
+                        </td>
+                        <td>{{ 'Credit' if payment.amount < 0 else 'Debit' }}</td>
+                        <td class="responsive-th">
+                            <b>Note</b>
+                        </td>
+                        <td>{{ payment.note }}</td>
+                        <td style="display: none;">
+                        </td>
 
                     </tr>
                     {% endfor %}
 
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td class="responsive-th">
+                            <b>Total : </b>
+                        </td>
+                        <td class="responsive-th">
+                            <b>Rp {{ "{:,.2f}".format(ns.fund) }} </b>
+                        </td>
+                        <th>Total : </th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <th style="text-align: right;">Rp {{ "{:,.2f}".format(ns.fund) }}</th>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
 
                 </table>
             </div>
         </div>
 
         <div class="row mt-4">
-            <div class="col-3">
+            <div class="col-6">
                 {% if purchase_order.compute_is_paid != True %}
                 <button type="button" class="btn btn-success" id="addMoneyButton">Pay</button>
                 {% endif %}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                    <i class='bx bxs-left-arrow-alt'></i> Take Money
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal2">
+                    <i class='bx bxs-right-arrow-alt'></i> Give Money
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cash In</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                       <input type="hidden" name="purchase_order" id="purchase_order_get2"
+                               value="{{ purchase_order.id }}">
+                        <input type="hidden" id="purchase_event_id_get2" name="purchase_event_id"
+                               value="{{ purchase_event.id }}">
+                        <input type="hidden" name="type" id="type_get2" value="debit">
+                        <label for="amount_get2">Amount</label>
+                        <div class="form-group form-floating number-input" style="margin-top: -8px;">
+                            <input type="number" id="amount_get2" class="form-control" name="amount"
+                                   step="0.01"
+                                   required>
+                            <label for="amount_get2" id="label_amount2" class="formatted_label">Rp 0.00</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="note_get2">Note</label>
+                            <textarea class="form-control" id="note_get2" name="note"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Close
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="addMoneyButton2">Add
+                            Money
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModal2Label">Cash Out</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                        <input type="hidden" name="purchase_order" id="purchase_order_get"
+                               value="{{ purchase_order.id }}">
+                        <input type="hidden" id="purchase_event_id_get" name="purchase_event_id"
+                               value="{{ purchase_event.id }}">
+                        <input type="hidden" name="type" id="type_get" value="credit">
+                        <label for="amount">Amount</label>
+                        <div class="form-group form-floating number-input" style="margin-top: -8px;">
+                            <input type="number" id="amount_get" class="form-control" name="amount"
+                                   step="0.01"
+                                   required>
+                            <label for="amount_get" id="amount_get_label" class="formatted_label">Rp 0.00</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Note</label>
+                            <textarea class="form-control" id="note_get" name="note"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Close
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="getMoneyButton">Get
+                            Money
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -335,50 +450,51 @@ Cashier Order
                         <input type="hidden" name="grand_total" value="{{purchase_order.amount_total}}">
 
 
-
-
-                            <div class="form-group number-input" style="margin-top: -8px;">
-                                <table class="payment_label">
-                                    <tr style="color: green;">
-                                        <td>Grand Total</td>
-                                        <td>: Rp</td>
-                                        <td class="text-end">
-                                            <span id="label_total" class="label_total">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr style="color: blue;">
-                                        <td>Paid Amount</td>
-                                        <td>: Rp</td>
-                                        <td class="text-end">
-                                            <span id="label_total" class="label_total">{{ '{:,.2f}'.format(paid_total) }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr style="color: red;">
-                                        <td>Difference</td>
-                                        <td>: Rp </td>
-                                        <td class="text-end">
-                                            <span id="label_difference" class="label_difference">{{ '{:,.2f}'.format(0) }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr style="color: black;">
-                                        <td>Payment Amount</td>
-                                        <td>: Rp </td>
-                                        <td class="text-end">
-                                            <span id="label_amount" class="label_amount">{{ '{:,.2f}'.format(purchase_order.amount_total-paid_total) }}</span>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <!-- <div class="payment_label"></div> -->
-                                <span id="var_total" class="var_total" style="display: none;">{{ purchase_order.amount_total }}</span>
-                                <span id="var_paid" class="var_total" style="display: none;">{{ paid_total }}</span>
-                                <!-- <div class="payment_label">Rp <span id="label_amount" class="label_amount">0.00</span>
-                                <div class="payment_label">Rp <span id="label_difference" class="label_difference">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span> -->
-                                <label for="amount">Amount</label>
-                                <input type="number" id="amount" class="form-control" name="amount" value="{{purchase_order.amount_total-paid_total}}"
-                                        step="0.01"
-                                        required>
-                                <!-- <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label> -->
-                            </div>
+                        <div class="form-group number-input" style="margin-top: -8px;">
+                            <table class="payment_label">
+                                <tr style="color: green;">
+                                    <td>Grand Total</td>
+                                    <td>: Rp</td>
+                                    <td class="text-end">
+                                        <span id="label_total" class="label_total">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span>
+                                    </td>
+                                </tr>
+                                <tr style="color: blue;">
+                                    <td>Paid Amount</td>
+                                    <td>: Rp</td>
+                                    <td class="text-end">
+                                        <span id="label_total"
+                                              class="label_total">{{ '{:,.2f}'.format(paid_total) }}</span>
+                                    </td>
+                                </tr>
+                                <tr style="color: red;">
+                                    <td>Difference</td>
+                                    <td>: Rp</td>
+                                    <td class="text-end">
+                                        <span id="label_difference"
+                                              class="label_difference">{{ '{:,.2f}'.format(0) }}</span>
+                                    </td>
+                                </tr>
+                                <tr style="color: black;">
+                                    <td>Payment Amount</td>
+                                    <td>: Rp</td>
+                                    <td class="text-end">
+                                        <span id="label_amount" class="label_amount">{{ '{:,.2f}'.format(purchase_order.amount_total-paid_total) }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- <div class="payment_label"></div> -->
+                            <span id="var_total" class="var_total" style="display: none;">{{ purchase_order.amount_total }}</span>
+                            <span id="var_paid" class="var_total" style="display: none;">{{ paid_total }}</span>
+                            <!-- <div class="payment_label">Rp <span id="label_amount" class="label_amount">0.00</span>
+                            <div class="payment_label">Rp <span id="label_difference" class="label_difference">{{ '{:,.2f}'.format(purchase_order.amount_total) }}</span> -->
+                            <label for="amount">Amount</label>
+                            <input type="number" id="amount" class="form-control" name="amount"
+                                   value="{{purchase_order.amount_total-paid_total}}"
+                                   step="0.01"
+                                   required>
+                            <!-- <label for="amount2" id="label_amount" class="formatted_label">Rp 0.00</label> -->
+                        </div>
                         <div class="form-group">
                             <label for="note">Note</label>
                             <textarea class="form-control" id="note" name="note"></textarea>
@@ -403,6 +519,25 @@ Cashier Order
         $('#addMoneyButtonClose').click(function () {
             $('#addMoneyModal').modal('hide');
         });
+
+        document.getElementById("addMoneyButton2").addEventListener("click", function (event) {
+            let amount = document.getElementById("amount_get2").value
+            let purchase_order = document.getElementById("purchase_order_get2").value
+            let purchase_event_id = document.getElementById("purchase_event_id_get2").value
+            let type = document.getElementById("type_get2").value
+            let note = document.getElementById("note_get2").value
+            window.location.href = `/cashier/money/add?purchase_event_id=${purchase_event_id}&amount=${amount}&type=${type}&note=${note}&purchase_order_id=${purchase_order}`
+        });
+
+        document.getElementById("getMoneyButton").addEventListener("click", function (event) {
+            let amount = document.getElementById("amount_get").value
+            let purchase_order = document.getElementById("purchase_order_get").value
+            let purchase_event_id = document.getElementById("purchase_event_id_get").value
+            let type = document.getElementById("type_get").value
+            let note = document.getElementById("note_get").value
+            window.location.href = `/cashier/money/add2?purchase_event_id=${purchase_event_id}&amount=${amount}&type=${type}&note=${note}&purchase_order_id=${purchase_order}`
+        });
+
     });
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -428,45 +563,79 @@ Cashier Order
     }
 
     document.addEventListener('DOMContentLoaded', (event) => {
-                const numberInputs = document.querySelectorAll('.number-input');
+        const numberInputs = document.querySelectorAll('.number-input');
 
-                numberInputs.forEach(form => {
-                    let input = form.querySelector('.form-control')
-                    let label_amount = form.querySelector('.label_amount')
-                    let label_difference = form.querySelector('.label_difference')
-                    let label_total = form.querySelector('.label_total')
-                    let var_total = parseFloat(document.getElementById('var_total').innerHTML.trim())
-                    let var_paid = parseFloat(document.getElementById('var_paid').innerHTML.trim())
-                    input.addEventListener('input', function (e) {
-                        let value = parseFloat(e.target.value).toFixed(2);
-                        let var_difference = var_total - var_paid -  value
+        numberInputs.forEach(form => {
+            let input = form.querySelector('.form-control')
+            let label_amount = form.querySelector('.label_amount')
+            let label_difference = form.querySelector('.label_difference')
+            let label_total = form.querySelector('.label_total')
+            let var_total = parseFloat(document.getElementById('var_total').innerHTML.trim())
+            let var_paid = parseFloat(document.getElementById('var_paid').innerHTML.trim())
+            input.addEventListener('input', function (e) {
+                let value = parseFloat(e.target.value).toFixed(2);
+                let var_difference = var_total - var_paid - value
 
-                        // Remove all non-digit characters except for the decimal point
-                        let formattedValue = value.replace(/[^0-9.]/g, '');
-                        let formattedDifference = var_difference.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-                        // Split the value on the decimal point
-                        const parts = formattedValue.split('.');
-
-                        // Add thousand separators to the integer part
-                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-                        // Rejoin the integer and decimal parts
-                        formattedValue = parts.join('.');
-
-                        if(formattedValue){
-                            label_amount.innerHTML = formattedValue
-                            label_difference.innerHTML = formattedDifference
-                        }else{
-                            label_amount.innerHTML = '0.00'
-                            label_difference.innerHTML = label_total.innerHTML
-
-                        }
-
-
-                    });
+                // Remove all non-digit characters except for the decimal point
+                let formattedValue = value.replace(/[^0-9.]/g, '');
+                let formattedDifference = var_difference.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 });
+
+                // Split the value on the decimal point
+                const parts = formattedValue.split('.');
+
+                // Add thousand separators to the integer part
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                // Rejoin the integer and decimal parts
+                formattedValue = parts.join('.');
+
+                if (formattedValue) {
+                    label_amount.innerHTML = formattedValue
+                    label_difference.innerHTML = formattedDifference
+                } else {
+                    label_amount.innerHTML = '0.00'
+                    label_difference.innerHTML = label_total.innerHTML
+
+                }
+
+
             });
+        });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const numberInputs = document.querySelectorAll('.number-input');
+
+        numberInputs.forEach(form => {
+            let input = form.querySelector('.form-control')
+            let label = form.querySelector('.formatted_label')
+            input.addEventListener('input', function (e) {
+                let value = parseFloat(e.target.value).toFixed(2);
+
+                // Remove all non-digit characters except for the decimal point
+                let formattedValue = value.replace(/[^0-9.]/g, '');
+
+                // Split the value on the decimal point
+                const parts = formattedValue.split('.');
+
+                // Add thousand separators to the integer part
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                // Rejoin the integer and decimal parts
+                formattedValue = parts.join('.');
+
+                if (formattedValue) {
+                    label.innerHTML = 'Rp ' + formattedValue
+                } else {
+                    label.innerHTML = 'Rp 0.00'
+                }
+            });
+        });
+    });
 
 </script>
 

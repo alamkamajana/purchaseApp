@@ -171,10 +171,10 @@ def delivery_detail_add():
     barcode = request.args.get('barcode')
 
     delivery_order = DeliveryOrder.query.filter_by(id=int(do)).first()
-    order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).first()
+    order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).all()
 
-    if order_line :
-        order_line.delivery_order_id = delivery_order.id
+    for line in order_line:
+        line.delivery_order_id = delivery_order.id
         db.session.commit()
 
     return redirect(f"/delivery/detail?do={delivery_order.id}")

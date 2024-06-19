@@ -25,3 +25,5 @@ python-dotenv==0.21.1
 requests==2.31.0
 python_barcode==0.15.1
 qrcode==7.4.2
+psutil==5.9.8
+aiohttp==3.9.5

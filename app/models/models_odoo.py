@@ -148,7 +148,6 @@ class NfcappCommodityOdoo(db.Model):
 
 class NfcappCommodityItemOdoo(db.Model):
     __tablename__ = 'nfcapp_commodity_item_odoo'
-
     farmer_id = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String)

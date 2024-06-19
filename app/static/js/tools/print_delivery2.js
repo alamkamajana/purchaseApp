@@ -86,8 +86,8 @@ function printDelivery(products) {
             + '\nNomor CU\t: ' + product.cu_number
             + '\nNomor PO\t: ' + poName
             + '\nKode Petani\t: ' + poPartner
-            + '\nJumlah Box\t: ' + product.amount
-            + '\nBerat Barang: ' + product.qty
+            + '\nJumlah Karung: ' + product.amount
+            + '\nBerat Barang: ' + product.qty +' Kg'
             + '\n--------------------------------\n'
             ;
         return text
