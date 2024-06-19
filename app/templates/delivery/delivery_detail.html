@@ -297,6 +297,7 @@
     </style>
 </head>
 <body>
+<img style="display: none;" id="sig-qr" src="data:image/png;base64,{{ qr_code }}">
 <div class="container">
     <div class="row text-center">
         <div class="col">
@@ -466,6 +467,7 @@
                                 <b>Order</b>
                             </td>
                             <td> {{ order.purchase_order.name }}</td>
+                            <input type="hidden" value="{{order.barcode}}" class="product_barcode"/>
                             <td style="display: none;" class="product-id">{{order.product_odoo_id}}</td>
                             
                             <td style="display: none;" class="product-farmer">{{order.product_odoo_id}}</td>

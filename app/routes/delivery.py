@@ -14,11 +14,37 @@ import random
 import string
 from datetime import datetime
 from sqlalchemy import and_
+from io import BytesIO
+import qrcode
+import base64
 
 load_dotenv()
 bp = Blueprint('delivery', __name__, url_prefix='/delivery')
 odoo_base_url = os.getenv('BASE_URL_ODOO')
 token = os.getenv('TOKEN')
+
+def generate_qr_code(data):
+    # Generate QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    # Create an image from the QR Code instance
+    img = qr.make_image(fill='black', back_color='white')
+
+    # Save the image to a BytesIO object
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    # Encode the image to base64
+    img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return img_str
 
 def generate_unique_sequence_number(model, column, length=8, prefix=""):
     sequence_number = prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
@@ -142,10 +168,11 @@ def delivery_detail():
         order_lines = PurchaseOrderLine.query.filter(and_(PurchaseOrderLine.delivery_order_id==None, PurchaseOrderLine.purchase_order_id == order.id))
         for order2 in order_lines:
             available_order_line.append(order2)
-    
-    print(available_order_line)
 
-    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line, po_odoo=po_odoo)
+    delivery_url = f"https://odoo.tripper.com/nfcpurchase/scan/{delivery_order.uniq_id}"
+    qr_code = generate_qr_code(delivery_url)
+
+    return render_template('delivery/delivery_detail.html', do=do, order_line=order_line, DeliveryOrder=DeliveryOrder, ProductOdoo=ProductOdoo, delivery_order=delivery_order, purchase_event = purchase_event, available_order_line = available_order_line, po_odoo=po_odoo, qr_code=qr_code)
 
 @bp.route('/detail/delete', methods=["GET"])
 def delivery_detail_delete():
@@ -171,10 +198,19 @@ def delivery_detail_add():
     barcode = request.args.get('barcode')
 
     delivery_order = DeliveryOrder.query.filter_by(id=int(do)).first()
-    order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).first()
+    order_line = PurchaseOrderLine.query.filter_by(barcode=barcode).all()
+    order_line_arr = []
+    for order in order_line :
+        po = PurchaseOrder.query.get(order.purchase_order_id)
+        print(po.purchase_event_id)
+        if po.purchase_event_id == delivery_order.purchase_event_id :
+            order_line_arr.append(order)
+    # order_line = PurchaseOrderLine.query.filter(
+    #     and_(PurchaseOrderLine.barcode == barcode, PurchaseOrderLine.delivery == 3)
+    # ).all()
 
-    if order_line :
-        order_line.delivery_order_id = delivery_order.id
+    for line in order_line_arr:
+        line.delivery_order_id = delivery_order.id
         db.session.commit()
 
     return redirect(f"/delivery/detail?do={delivery_order.id}")

@@ -201,7 +201,7 @@
                                         }}
                                     </div>
 
-                                {{transaction.is_organic}}
+
                                 </td>
                                 <td class="responsive-th">
                                     <b>Price Unit</b>
@@ -659,11 +659,7 @@ Premium ${percentage_premium}% : Rp ${formattedTotalPremium}
                 let DATA6 = `
 *Note : harga diatas
 sudah termasuk tambahan
-<<<<<<< HEAD
-premium organic 2500/kg
-=======
 premium organic Rp. 2.500/Kg
->>>>>>> ec8512929448d3bf8f3f24fca3337bcd572f0fee
 diluar premium anggota
 `
                 let data_note = DATA6
@@ -825,7 +821,7 @@ diluar premium anggota
                     let imageChunks = splitImageDataIntoChunks(imageData, 128);
 
                     let imageData2 = getImagePrintData('sig-image');
-                    let imageChunks2 = splitImageDataIntoChunks(imageData2, 64);
+                    let imageChunks2 = splitImageDataIntoChunks(imageData2, 128);
                     return sendImageDataChunks(characteristic, imageChunks).then(() => {
                         return sendNextChunk().then(() => {
                             return sendImageDataChunks(characteristic, imageChunks2)
