@@ -35,7 +35,6 @@ def sync_get_product_odoo():
     try:
         url = f"{odoo_base_url}/nfcapp-purchase/get-product"
         data = {'token': token, 'odoo_user_id': session['user_odoo_id']}
-
         # GET Request
         response = requests.get(url, data=data)
         response_json = response.json()

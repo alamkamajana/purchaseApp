@@ -11,13 +11,19 @@ from app.models.models import User, PurchaseOrder, PurchaseOrderLine, Money, Pur
 import ast
 from flask import jsonify
 from sqlalchemy import and_
+from datetime import datetime
+import random
+import string
 
 load_dotenv()
 bp = Blueprint('cashier', __name__, url_prefix='/cashier')
 odoo_base_url = os.getenv('BASE_URL_ODOO')
 token = os.getenv('TOKEN')
 
-
+def generate_unique_sequence_number(model, column, length=4, prefix=""):
+    sequence_number = prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+    if not model.query.filter(column == sequence_number).first():
+        return sequence_number
 @bp.route('/index', methods=["GET"])
 def cashier_index():
     pe = request.args.get("pe")
@@ -57,7 +63,7 @@ def cashier_po_detail():
         farmer = NfcappFarmerOdoo.query.filter_by(id=purchase_order.farmer_id).first()
         odoo_purchase_order = PurchaseOrderOdoo.query.get(purchase_event.purchase_order_odoo_id)
         order_line = PurchaseOrderLine.query.filter_by(purchase_order_id=purchase_order.id).all()
-        money_data = Money.query.filter_by(purchase_order_id=purchase_order.id).filter(Money.amount < 0).order_by(Money.id.desc()).all()
+        money_data = Money.query.filter_by(purchase_order_id=purchase_order.id).order_by(Money.id.desc()).all()
         payment_debt = purchase_order.amount_total
         money_total = sum(money.amount for money in money_data)
         payment_debt += money_total
@@ -78,4 +84,51 @@ def cashier_payment_add():
         purchase_order = PurchaseOrder.query.filter_by(id=int(po)).first()
         return redirect(request.referrer)
     except Exception as e:
+        print(e)
+
+
+@bp.route('/money/add2', methods=["GET"])
+def cashier_money_add2():
+    try :
+        purchase_event_id = request.args.get('purchase_event_id')
+        purchase_order_id = request.args.get('purchase_order_id')
+        amount = request.args.get('amount')
+        type = request.args.get('type')
+        note = request.args.get('note')
+        amount = float(amount)
+        if type.lower() == 'credit' :
+            amount = -amount
+
+        purchase_event_id = int(purchase_event_id)
+        money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+        today_datetime = datetime.now()
+        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
+        print(money)
+        db.session.add(money)
+        db.session.commit()
+        return redirect(request.referrer)
+    except Exception as e :
+        print(e)
+
+@bp.route('/money/add', methods=["GET"])
+def cashier_money_add():
+    try :
+        purchase_event_id = request.args.get('purchase_event_id')
+        purchase_order_id = request.args.get('purchase_order_id')
+        amount = request.args.get('amount')
+        type = request.args.get('type')
+        note = request.args.get('note')
+        amount = float(amount)
+        if type.lower() == 'credit' :
+            amount = -amount
+
+        purchase_event_id = int(purchase_event_id)
+        money_name = generate_unique_sequence_number(Money, Money.number, length=8, prefix="MO-")
+        today_datetime = datetime.now()
+        money = Money(amount=amount,note=note,purchase_event_id=purchase_event_id,number=money_name,purchase_order_id=purchase_order_id if purchase_order_id else None, created = today_datetime)
+        print(money)
+        db.session.add(money)
+        db.session.commit()
+        return redirect(request.referrer)
+    except Exception as e :
         print(e)

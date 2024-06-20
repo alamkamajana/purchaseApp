@@ -1,0 +1,9 @@
+Give executable permission to all .command file in mac:
+1. Navigate to the purchaseApp directory.
+2. Right-click on any empty space within the directory (not on a file or folder).
+3. From the contextual menu that appears, select "New Terminal at Folder."
+4. Paste the code below in the terminal, without the tick (``)
+
+`find . -name "*.command" -exec chmod +x {} \;`
+
+5. Close the terminal.

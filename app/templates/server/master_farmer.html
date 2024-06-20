@@ -73,6 +73,10 @@
                             Product
 
                         </th>
+                        <th>
+                            %
+
+                        </th>
                     </tr>
                     {% for data in datas %}
                         <tr>
@@ -88,11 +92,49 @@
                                       <td> {{ data.farmer.sync_date.strftime('%Y-%m-%d %H:%M')   }}</td>
 
                             <td>
+                                <table>
+                                    <tr>
+                                        <th>Product</th>
+                                         <th>Premium</th>
+                                         <th>is organic</th>
+                                         <th>is RA</th>
+                                         <th>color</th>
+                                         <th>hex</th>
+                                           <th>CU</th>
+                                    </tr>
+
+
 
                               {% for commodity_item in data.commodity_items %}
 
-                                     [{{ commodity_item.product_id_code }}]  {{ commodity_item.product_id_name }}  <br/>
+                                 <tr>
+                                        <td>
+                                                [{{ commodity_item.product_id_code }}]  {{ commodity_item.product_id_name }}  <br/>
+                                        </td>
+                                       <td>
+                                                {{ commodity_item.total_premium }}
+                                        </td>
+                                        <td>
+                                                {{ commodity_item.is_organic }}
+                                        </td>
+                                     <td>
+                                                {{ commodity_item.is_ra_cert }}
+                                        </td>
+                                        <td>
+                                                {{ commodity_item.color_name }}
+                                        </td>
+                                       <td>
+                                                {{ commodity_item.color_hex }}
+                                        </td>
+                                      <td>
+                                                {{ commodity_item.cu_number }}
+                                        </td>
+                                    </tr>
+
+
                                  {% endfor %}
+
+                                                 </table>
 
                             </td>
 

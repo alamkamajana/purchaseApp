@@ -56,14 +56,14 @@
                                 <span>{{po.status.upper()}}</span>
                                 {% endif %}
                             </u></b>
-<!--                            {% if not po.compute_is_paid and po.status.lower() == 'confirm' %}-->
-<!--                            <br>-->
-<!--                            <a href="/purchase/order/set-to-draft?po={{po.id}}&farmer={{farmer.id}}"-->
-<!--                               class="btn btn-sm btn-success">-->
-<!--                                Set To Draft-->
-<!--                            </a>-->
-<!--                            {% else %}-->
-<!--                            {% endif %}-->
+                            <!--                            {% if not po.compute_is_paid and po.status.lower() == 'confirm' %}-->
+                            <!--                            <br>-->
+                            <!--                            <a href="/purchase/order/set-to-draft?po={{po.id}}&farmer={{farmer.id}}"-->
+                            <!--                               class="btn btn-sm btn-success">-->
+                            <!--                                Set To Draft-->
+                            <!--                            </a>-->
+                            <!--                            {% else %}-->
+                            <!--                            {% endif %}-->
                         </div>
                     </div>
                     <div class="purchase-data">
@@ -149,23 +149,23 @@
                         <table class="table event-table" style="width: 100%; margin-top: 32px;">
                             <tr>
 
-                                <th style="width: 12%;">
+                                <th>
                                     Product
                                 </th>
 
-                                <th class="text-right" style="width: 12%;">
+                                <th class="text-right">
                                     Price Unit
                                 </th>
-                                <th class="text-right" style="width: 8%;">
+                                <th class="text-right">
                                     Qty
                                 </th>
-                                <th class="text-right" style="width: 16%;">
+                                <th class="text-right">
                                     Subtotal
                                 </th>
-                                <th class="text-right">
+                                <th class="text-right" style="display: none;">
                                     Premium
                                 </th>
-                                <th class="text-right">
+                                <th class="text-right" style="display: none;">
                                     Pokok
                                 </th>
                                 <th>
@@ -181,7 +181,9 @@
                             {% set total_value = 0 %}
 
                             {% for transaction in transaction_list %}
-
+                            <input type="hidden" class="transaction_is_organic" value="{{transaction.is_organic}}">
+                            <input type="hidden" class="transaction_commodity_name"
+                                   value="{{transaction.commodity_name}}">
                             <tr class="event-row">
                                 <td class="responsive-th">
                                     <b>Product</b>
@@ -199,7 +201,7 @@
                                         }}
                                     </div>
 
-
+                                {{transaction.is_organic}}
                                 </td>
                                 <td class="responsive-th">
                                     <b>Price Unit</b>
@@ -224,15 +226,13 @@
                                 </td>
                                 <td class="text-right">
                                     <div id="subtotal-info{{ transaction.id }} text-right">
-
                                         Rp {{ '{:,.2f}'.format(transaction.subtotal) }}
-
                                     </div>
                                 </td>
-                                <td class="responsive-th">
+                                <td class="responsive-th" style="display: none;">
                                     <b>Premium</b>
                                 </td>
-                                <td class="text-right">
+                                <td class="text-right" style="display: none;">
                                     <div id="subtotal-info{{ transaction.id }} text-right">
                                         {% if transaction.nfcapp_commodity_item_odoo.total_premium %}
                                         Rp {{
@@ -245,10 +245,10 @@
 
                                     </div>
                                 </td>
-                                <td class="responsive-th">
+                                <td class="responsive-th" style="display: none;">
                                     <b>Pokok</b>
                                 </td>
-                                <td class="text-right">
+                                <td class="text-right" style="display: none;">
                                     <div id="subtotal-info{{ transaction.id }} text-right">
                                         {% if transaction.nfcapp_commodity_item_odoo.total_premium %}
                                         Rp {{
@@ -299,10 +299,7 @@
                                        onclick="return confirm('Are you sure you want to delete this item?');">
                                         <span><i class='bx bxs-trash'></i></span>
                                     </a>
-
                                     {% endif %}
-
-
                                 </td>
                             </tr>
 
@@ -319,19 +316,19 @@
                                     </div>
 
                                 </td>
-                                <td class="responsive-th">
+                                <td class="responsive-th" style="display: none;">
                                     <b>Total Premium</b>
                                 </td>
-                                <td>
+                                <td style="display: none;">
                                     <div id="total-premium-data" style="display: none;">{{total_premium}}</div>
                                     <div id="total-price" class="text-right">
                                         Rp {{ '{:,.2f}'.format(total_premium) }}
                                     </div>
                                 </td>
-                                <td class="responsive-th">
+                                <td class="responsive-th" style="display: none;">
                                     <b>Total Pokok</b>
                                 </td>
-                                <td>
+                                <td style="display: none;">
                                     <div id="total-pokok-data" style="display: none;">{{total_price-total_premium}}
                                     </div>
                                     <div id="total-price" class="text-right">
@@ -404,7 +401,8 @@
                                                                 Submit
                                                                 Signature
                                                             </button>
-                                                            <button class="btn btn-default" id="sig-clearBtn">Clear
+                                                            <button class="btn btn-default" id="sig-clearBtn"
+                                                                    style="display: none;">Clear
                                                                 Signature
                                                             </button>
                                                         </div>
@@ -577,11 +575,21 @@
         var nama_petani = document.getElementById("farmer_name").value;
         let order_id = document.getElementById("purchase_order_id").value;
         let order_name = document.getElementById("purchase_order_name").value;
-        let total_pokok = document.getElementById("total_pokok").value;
         let event_name = document.getElementById("purchase_event_id").value;
         let odoo_name = document.getElementById("purchase_order_odoo_id").value;
         let total_premium = document.getElementById("total_premium").value;
         let certification_status = document.getElementById("certification_status_id").value;
+        let note_check = false
+        const organicElements = document.querySelectorAll('.transaction_is_organic');
+        const commodityElements = document.querySelectorAll('.transaction_commodity_name');
+        for (let i = 0; i < organicElements.length; i++) {
+            const isOrganic = organicElements[i].value.toLowerCase();
+            const commodityName = commodityElements[i].value.toLowerCase();
+            if (isOrganic.includes("true") && commodityName.includes("vanilla")) {
+                note_check = true;
+                break;
+            }
+        }
 
 
         function splitDataIntoChunks(data, chunkSize) {
@@ -596,7 +604,7 @@
             .then(response => response.json())
             .then(data => {
                 const purchaseData = data
-                let table = "\n";
+                let table = "";
                 for (const item of purchaseData) {
                     const productName = item.product_name.substring(0, 25);
                     // Format price and subtotal as IDR currency, remove Rp and spaces
@@ -612,10 +620,12 @@
                         minimumFractionDigits: 0
                     }).format(item.subtotal).replace(/Rp\s*/g, "");
 
-                    table += `\n${item.product_code}\n${productName}\nRp.${formattedPrice}\n${item.quantity}\nRp.${formattedSubtotal}\n`;
+                    table += `\nProduct : ${item.product_code} ${productName}\nPrice : Rp.${formattedPrice}\nQty : ${item.quantity} Kg\nSubtotal :Rp.${formattedSubtotal}\n`;
                 }
 
                 const totalAmount = purchaseData.reduce((sum, item) => sum + item.quantity * item.price, 0);
+                total_premium = total_premium || 0;
+                const percentage_premium = (total_premium / totalAmount) * 100;
                 const formattedTotalAmount = new Intl.NumberFormat("id-ID", {
                     style: "currency",
                     currency: "IDR",
@@ -626,15 +636,13 @@
                     currency: "IDR",
                     minimumFractionDigits: 0
                 }).format(total_premium).replace(/Rp\s*/g, "");
-                const formattedTotalPokok = new Intl.NumberFormat("id-ID", {
-                    style: "currency",
-                    currency: "IDR",
-                    minimumFractionDigits: 0
-                }).format(total_pokok).replace(/Rp\s*/g, "");
 
-                let DATA = ''
+                const ESC = '\x1B';  // ESC character
+                const ALIGN_LEFT = ESC + 'a' + '0';  // ESC + 'a' + '0' aligns text to the left
+
+                let DATA = ALIGN_LEFT
                     + 'TRIPPER\nWE ADD VALUE AT ORIGIN\n'
-                    + '------------------------'
+                    + '------------------------';
 
                 let DATA2 = `
 Order : ${order_name}
@@ -644,9 +652,17 @@ Nama : ${nama_petani}
 Certification : ${certification_status}
 `
                 let DATA3 = table
-                let DATA4 = `\n Total : Rp ${formattedTotalAmount} \n`
-                let DATA5 = `\n Total Premium : Rp ${formattedTotalPremium} \n`
-                let DATA6 = `\n Total Pokok : Rp ${formattedTotalPokok} \n`
+                let DATA4 = `
+Total : Rp ${formattedTotalAmount}
+Premium ${percentage_premium}% : Rp ${formattedTotalPremium}
+`
+                let DATA6 = `
+*Note : harga diatas
+sudah termasuk tambahan
+premium organic Rp. 2.500/Kg
+diluar premium anggota
+`
+                let data_note = DATA6
                 // DATA += `Total\t :${formattedTotalAmount}`
 
 
@@ -658,7 +674,10 @@ Certification : ${certification_status}
                     return service.getCharacteristic(WRITE);
                 }).then(characteristic => {
                     // Combine your data into a single string
-                    let allData = DATA + DATA2 + DATA3 + DATA4 + DATA5 + DATA6;
+                    let allData = DATA + DATA2 + DATA3 + DATA4
+                    if (note_check) {
+                        allData += data_note
+                    }
 
                     // Split the data into chunks
                     let chunks = splitDataIntoChunks(allData, 128);
@@ -693,6 +712,48 @@ Certification : ${certification_status}
                     }
 
                     // Function to get image print data
+                    function getImagePrintData2(image_id) {
+                        let image = document.querySelector(`#${image_id}`);
+                        let canvas = document.createElement('canvas');
+                        canvas.width = 360;
+                        canvas.height = 190;
+                        let context = canvas.getContext("2d");
+                        let imageWidth = canvas.width / 2;
+                        let imageHeight = imageWidth / 966 * 950;
+                        let offsetX = (canvas.width - imageWidth) / 2 + 1;
+                        context.drawImage(image, offsetX, 0, imageWidth, imageHeight);
+                        let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+                        function getDarkPixel(x, y) {
+                            let red = imageData[((canvas.width * y) + x) * 4];
+                            let green = imageData[((canvas.width * y) + x) * 4 + 1];
+                            let blue = imageData[((canvas.width * y) + x) * 4 + 2];
+                            return (red + green + blue) > 0 ? 0 : 1;
+                        }
+
+                        let printData = new Uint8Array(canvas.width / 8 * canvas.height + 8);
+                        let offset = 0;
+                        printData[0] = 29;
+                        printData[1] = 118;
+                        printData[2] = 48;
+                        printData[3] = 0;
+                        printData[4] = canvas.width / 8;
+                        printData[5] = 0;
+                        printData[6] = canvas.height % 256;
+                        printData[7] = canvas.height / 256;
+                        offset = 7;
+                        for (let i = 0; i < canvas.height; ++i) {
+                            for (let k = 0; k < canvas.width / 8; ++k) {
+                                let k8 = k * 8;
+                                printData[++offset] = getDarkPixel(k8 + 0, i) * 128 + getDarkPixel(k8 + 1, i) * 64 +
+                                    getDarkPixel(k8 + 2, i) * 32 + getDarkPixel(k8 + 3, i) * 16 +
+                                    getDarkPixel(k8 + 4, i) * 8 + getDarkPixel(k8 + 5, i) * 4 +
+                                    getDarkPixel(k8 + 6, i) * 2 + getDarkPixel(k8 + 7, i);
+                            }
+                        }
+                        return printData;
+                    }
+
                     function getImagePrintData(image_id) {
                         let image = document.querySelector(`#${image_id}`);
                         let canvas = document.createElement('canvas');
@@ -756,7 +817,7 @@ Certification : ${certification_status}
                     }
 
                     // Start sending data chunks and then image data chunks
-                    let imageData = getImagePrintData('sig-qr');
+                    let imageData = getImagePrintData2('sig-qr');
                     let imageChunks = splitImageDataIntoChunks(imageData, 128);
 
                     let imageData2 = getImagePrintData('sig-image');
@@ -913,7 +974,8 @@ Certification : ${certification_status}
         })();
 
         function clearCanvas() {
-            canvas.width = canvas.width;
+            canvas.width = canvas.width
+            canvas.height = canvas.height
         }
 
         // Set up the UI
@@ -940,7 +1002,6 @@ Certification : ${certification_status}
                 }).catch(error => {
                 console.error('Error:', error);
             });
-
         }, false);
 
     })();

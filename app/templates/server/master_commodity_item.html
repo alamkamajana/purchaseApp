@@ -31,7 +31,7 @@
                             <label for="commodity_id">Commodity Group</label>
                             <select name="commodity_id" id="commodity_id">
                                 {% for commodity in commodities %}
-                                    <option value="{{commodity.odoo_id}}"  data-category="{{commodity.station_id}}" {% if commodity.odoo_id==commodity_id %} selected {% endif %}>{{commodity.name}}</option>
+                                    <option value="{{commodity.odoo_id}}"  data-category="{{commodity.station_id}}" {% if commodity.odoo_id==commodity_id %} selected {% endif %}>{{commodity.name}} {{commodity.station_name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
