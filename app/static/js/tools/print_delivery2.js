@@ -72,6 +72,17 @@ function printDelivery(products) {
     let orderDate = document.getElementById('order_date').value
     let receivedDate = document.getElementById('received_date').value
     let doId = document.getElementById('do_id').innerHTML.trim()
+    let note = document.getElementsByClassName('note')[0].innerHTML.trim()
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = note;
+
+    // Extract text content (this will remove the <p> tags)
+    let textContent = tempDiv.textContent || tempDiv.innerText || '';
+
+    // Set the text content back to the first element
+    note = textContent.trim();
+    note = note.slice(0, 50)+'...';
+    console.log(note)
 
     const barcodes = document.querySelectorAll('.product_barcode');
     console.log(barcodes)
@@ -85,31 +96,44 @@ function printDelivery(products) {
     const length_producct = uniqueBarcodeArray.length
     console.log(length_producct)
 
-    function getTextData(product) {
+    function getTextHeader() {
         // Get the bytes for the text
         let encoder = new TextEncoder("utf-8");
         // Add line feed + carriage return chars to text
         let text = ''
             // + '\x1B' + '\x61' + '\x31'
-            + '            TRIPPER\n'
+            // + '            TRIPPER\n'
             + '\x1B' + '\x61' + '\x31'
-            + '\x1D' + '\x21' + '\x00' + 'SURAT JALAN PT. TRIPPER NATURE\n'
+            + '\x1D' + '\x21' + '\x00'
+            +'SURAT JALAN PT. TRIPPER NATURE\n'
             + orderName + '\n'
-            + 'PRODUK\n' + product.name + '\n'
-            + product.organic_message + '\n\n'
             + '\x1D' + '\x21' + '\x00' + '\x1B' + '\x61' + '\x00'
-            + 'Nama Sopir\t: ' + orderDriver
-            + '\nJenis Kendaraan & No. Polisi: \n' + orderVehicle
-            + '\nAlamat Asal\t: ' + orderOrigin
-            + '\nDikirim Ke\t: ' + orderDestination
             + '\nTgl Kirim\t: ' + orderDate
             + '\nTgl Sampai\t: ' + receivedDate
-            + '\n'
-            + '\nNomor CU\t: ' + product.cu_number
+            + '\nAlamat Asal\t: ' + orderOrigin
+            + '\nDikirim Ke\t: ' + orderDestination
+            + '\nNama Sopir\t: ' + orderDriver
+            + '\nJenis Kendaraan & \nNo. Polisi\t: ' + orderVehicle
             + '\nNomor PO\t: ' + poName
             + '\nKode Petani\t: ' + poPartner
-            + '\nJumlah Karung: ' + length_producct
-            + '\nBerat Barang: ' + product.qty + ' Kg'
+            + '\nNote\t: ' + '\n'+ note
+            + '\n--------------------------------\n'
+        ;
+        return text
+    }
+
+    function getTextData(product) {
+        // Get the bytes for the text
+        let encoder = new TextEncoder("utf-8");
+        // Add line feed + carriage return chars to text
+        let text = ''
+            + '\x1D' + '\x21' + '\x00' + '\x1B' + '\x61' + '\x00'
+            + 'Produk  : ' + product.name
+            // + product.organic_message + '\n\n'
+            // + '\nNomor CU\t: ' + product.cu_number
+            + '\nJumlah Karung : ' + product.amount
+            + '\nBerat Barang  : ' + product.qty + ' Kg'
+            + '\nBerat Diterima:          Kg'
             + '\n--------------------------------\n'
         ;
         return text
@@ -168,9 +192,9 @@ function printDelivery(products) {
             + 'Penerima:'
             + '\n\n\n\n\n'
             + '(                              )'
-            + '\n\n'
+            // + '\n\n'
             + '\n--------------------------------'
-            + '\n'
+            // + '\n'
         ;
         return text
     }
@@ -184,19 +208,21 @@ function printDelivery(products) {
     }
 
     let printCharacteristic;
+    let printCharacteristic2;
     let index = 0;
     let data;
     let test;
     let data2;
     let test2;
-    let image = document.querySelector('#sig-qr');
+    let image = document.querySelector('#tripper-logo-black');
     // Use the canvas to get image data
     let canvas = document.createElement('canvas');
     // Canvas dimensions need to be a multiple of 40 for this printer
     canvas.width = 360;
-    canvas.height = 200;
+    canvas.height = 90;
     let imageWidth = canvas.width / 2;
-    let imageHeight = imageWidth / 966 * 950;
+
+    let imageHeight = imageWidth / 966 * 277;
     let context = canvas.getContext("2d");
     let offsetX = (canvas.width - imageWidth) / 2 + 1;
     context.drawImage(image, offsetX, 0, imageWidth, imageHeight);
@@ -207,9 +233,9 @@ function printDelivery(products) {
     let canvas2 = document.createElement('canvas');
     // Canvas dimensions need to be a multiple of 40 for this printer
     canvas2.width = 360;
-    canvas2.height = 90;
-    imageWidth2 = canvas2.width / 2;
-    imageHeight2 = imageWidth2 / 966 * 277;
+    canvas2.height = 200;
+    let imageWidth2 = canvas2.width / 2;
+    let imageHeight2 = imageWidth2 / 966 * 950;
     let context2 = canvas2.getContext("2d");
     let offsetX2 = (canvas2.width - imageWidth2) / 2 + 1;
     context2.drawImage(image2, offsetX2, 0, imageWidth2, imageHeight2);
@@ -220,15 +246,15 @@ function printDelivery(products) {
         let red = imageData[((canvas.width * y) + x) * 4];
         let green = imageData[((canvas.width * y) + x) * 4 + 1];
         let blue = imageData[((canvas.width * y) + x) * 4 + 2];
-        return (red + green + blue) > 0 ? 0 : 1;
+        return (red + green + blue) > 0 ? 1 : 0;
     }
 
     function getDarkPixel2(x, y) {
         // Return the pixels that will be printed black
-        let red = imageData[((canvas2.width * y) + x) * 4];
-        let green = imageData[((canvas2.width * y) + x) * 4 + 1];
-        let blue = imageData[((canvas2.width * y) + x) * 4 + 2];
-        return (red + green + blue) > 0 ? 1 : 0;
+        let red = imageData2[((canvas2.width * y) + x) * 4];
+        let green = imageData2[((canvas2.width * y) + x) * 4 + 1];
+        let blue = imageData2[((canvas2.width * y) + x) * 4 + 2];
+        return (red + green + blue) > 0 ? 0 : 1;
     }
 
     function getImagePrintData() {
@@ -331,9 +357,7 @@ function printDelivery(products) {
         // Can only write 512 bytes at a time to the characteristic
         // Need to send the image data in 512 byte batches
         if (index + 128 < test2.length) {
-            console.log(data2.length)
-            console.log(test2.length)
-            printCharacteristic.writeValue(test2.slice(index, index + 128)).then(() => {
+            printCharacteristic2.writeValue(test2.slice(index, index + 128)).then(() => {
                 index += 128;
                 sendNextImageDataBatch2(resolve, reject);
             })
@@ -342,7 +366,7 @@ function printDelivery(products) {
             // Send the last bytes
             console.log(test2.length)
             if (index < test2.length) {
-                printCharacteristic.writeValue(test2.slice(index, test2.length)).then(() => {
+                printCharacteristic2.writeValue(test2.slice(index, test2.length)).then(() => {
                     resolve();
                 })
                     .catch(error => reject(error));
@@ -417,13 +441,23 @@ function printDelivery(products) {
         return service.getCharacteristic(WRITE);
     }).then(characteristic => {
         let chunks
+        allData = ''
+        allData += getTextHeader()
+        products.forEach(product => {
+            allData += getTextData(product)
+        });
+        // let product = products.shift();
+        // allData += getTextData(product)
+        allData += getTextKriteria1()
+        allData += getTextKriteria2()
+        allData += getTextTTD()
+        chunks = splitDataIntoChunks(allData, 128);
 
         function sendNextProducts() {
             return new Promise((resolve, reject) => {
                 function processProduct() {
                     if (products.length > 0) {
                         let product = products.shift();
-                        allData = ''
                         allData += getTextData(product)
                         allData += getTextKriteria1()
                         allData += getTextKriteria2()
@@ -465,6 +499,28 @@ function printDelivery(products) {
                 printCharacteristic = characteristic;
                 processItem()
                     .then(() => {
+                        // window.location.href = '/delivery/confirm?do=' + doId;
+                        resolve();  // Resolve the promise when both processItem() and processItem2() are complete
+                    })
+                    .catch((error) => {
+                        reject(error);  // Reject the promise if any error occurs
+                    });
+
+                // } else {
+                // processItem().then(()=> resolve())
+                // }
+            });
+        };
+
+        function printDelivery2() {
+            return new Promise((resolve, reject) => {
+                console.log("data");
+                // if (printCharacteristic == null) {
+                // Cache the characteristic
+                printCharacteristic2 = characteristic;
+                processItem2()
+                    .then(() => {
+                        window.location.href = '/delivery/confirm?do=' + doId;
                         resolve();  // Resolve the promise when both processItem() and processItem2() are complete
                     })
                     .catch((error) => {
@@ -499,9 +555,12 @@ function printDelivery(products) {
             });
         }
 
+
         // Start sending chunks and then write the additional data
-        // return printDelivery().then(() => {sendNextChunk();});
-        return sendNextProducts()
+
+        return printDelivery().then(()=>{sendNextChunk().then(() => {printDelivery2();})});
+        // return printDelivery2()
+        // return sendNextProducts()
     }).catch(error => {
         console.error('Error connecting to device:', error);
     });
